@@ -1,0 +1,5 @@
+{
+  "items": [
+    { "name": "test", "type": "invalid-type", "label": "Test" }
+  ]
+}

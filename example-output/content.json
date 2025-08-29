@@ -1,0 +1,4 @@
+{
+  "getting-started.md": "# Getting Started\n\nWelcome to the documentation!\n\n## Quick Start\n\n1. Install package\n2. Create content\n3. Build docs",
+  "guides/installation.md": "# Installation\n\n## Prerequisites\n\n- Node.js 18+\n- npm or yarn\n\n## Steps\n\n1. Install the package\n2. Create your content structure\n3. Build your documentation"
+}

@@ -1,0 +1,7 @@
+{
+  "items": [
+    { "name": "installation", "type": "page", "label": "Installation Guide" },
+    { "name": "configuration", "type": "page", "label": "Configuration" },
+    { "name": "advanced", "type": "section", "label": "Advanced Topics" }
+  ]
+}

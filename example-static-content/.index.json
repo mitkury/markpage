@@ -1,0 +1,14 @@
+{
+  "items": [
+    {
+      "name": "getting-started",
+      "type": "page",
+      "label": "Getting Started"
+    },
+    {
+      "name": "guides",
+      "type": "section",
+      "label": "Guides"
+    }
+  ]
+}

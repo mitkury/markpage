@@ -1,0 +1,7 @@
+{
+  "items": [
+    { "name": "builder", "type": "page", "label": "Builder API" },
+    { "name": "renderer", "type": "page", "label": "Renderer API" },
+    { "name": "types", "type": "page", "label": "Type Definitions" }
+  ]
+}
