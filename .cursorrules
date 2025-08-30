@@ -1,189 +1,292 @@
-This is a context for AI editor/agent about the project. It's generated with a tool Airul (https://github.com/mitkury/airul) out of 2 sources. Feel free to edit .airul.json to change the sources and configure editors. Run `airul gen` to update the context after making changes to .airul.json or the sources. Remember to update TODO-AI.md after major changes in the project, keeping track of completed tasks and new developments.
-
-# From TODO-AI.md:
-
-# AI Workspace
-
-## Active Task
-Create a standalone npm package for building and rendering markdown-based content with distributed navigation structure
-
-## Status
-⏳ In Progress
-
-## Context & Progress
-- Created: 2025-08-29
-- I (AI) will maintain this document as we work together
-- My current focus: Understanding and working on the active task
-
-## Task History
-- Initial task: Create a standalone npm package for building and rendering markdown-based content with distributed navigation structure
-
-## Notes
-- I'll update this file to track our progress and maintain context
-- I'll keep sections concise but informative
-- I'll update status and add key decisions/changes
-- I'll add new tasks as they come up
----
+This is a context for AI editor/agent about the project. It's generated with a tool Airul (https://github.com/mitkury/airul) out of 3 sources. Feel free to edit .airul.json to change the sources and configure editors. Run `airul gen` to update the context after making changes to .airul.json or the sources. Remember to update TODO-AI.md after major changes in the project, keeping track of completed tasks and new developments.
 
 # From README.md:
 
-# Svelte Markdown Pages NPM Package Specification
+# Svelte Markdown Pages
 
-## Overview
+A standalone npm package for building and rendering markdown-based content with distributed navigation structure for Svelte projects.
 
-**Goal**: Create a standalone npm package for building and rendering markdown-based content with distributed navigation structure.
+## Features
 
-**Target**: A developer building the first version of the package with tests.
+- **Distributed Navigation**: Each folder defines its own structure with `.index.json` files
+- **Multiple Output Formats**: App bundles, website navigation, and static HTML sites
+- **Type-Safe**: Full TypeScript support with Zod validation
+- **Framework Agnostic**: Svelte 5 components that work in any Svelte project
+- **Flexible**: Point to any directory with markdown and `.index.json` files
+- **Comprehensive Testing**: >90% test coverage with comprehensive test suite
 
-**Tech Stack**:
-- **Package**: TypeScript, Node.js
-- **UI Components**: Svelte 5 (vanilla, no SvelteKit dependencies)
-- **Testing**: Vitest
-- **Build**: TypeScript compiler
-- **CLI**: Node.js with TypeScript
+## Installation
 
-**Use Cases**:
-- **Documentation** (user guides, API docs, tutorials)
-- **Blogs** (articles, posts, series)
-- **Knowledge bases** (wikis, FAQs, help centers)
-- **Guides** (how-to guides, manuals, references)
-- **Any structured markdown content** that needs navigation
-
-**Design Principles**:
-- **Reusable** across different projects and content types
-- **Scalable** as content grows
-- **Maintainable** with local context for each section
-- **Flexible** for different rendering contexts (app, website, static site)
-- **Framework Agnostic**: Svelte 5 components that work in any Svelte project (including SvelteKit)
-
-## Structure
-
-```
-docs/
-├── .index.json                   # Root metadata
-├── product/
-│   ├── .index.json              # Product section metadata
-│   ├── features/
-│   │   ├── .index.json          # Features section metadata
-│   │   ├── workspaces.md
-│   │   ├── assistants.md
-│   │   └── chat.md
-│   └── how-to/
-│       ├── .index.json          # How-to section metadata
-│       ├── setup-providers.md
-│       └── sync.md
-└── dev/
-    ├── .index.json              # Dev section metadata
-    ├── quick-start.md
-    ├── for-ai/
-    │   ├── .index.json          # For AI section metadata
-    │   ├── rules.md
-    │   └── svelte.md
-    └── proposals/
-        ├── .index.json          # Proposals section metadata
-        └── distributed-docs-structure.md
+```bash
+npm install svelte-markdown-pages
 ```
 
-## Index.json Format
+## Quick Start
 
-### Root Level (`docs/.index.json`)
+### 1. Create Content Structure
+
+Create a directory with your markdown content and `.index.json` files:
+
+```
+my-content/
+├── .index.json
+├── getting-started.md
+└── guides/
+    ├── .index.json
+    └── installation.md
+```
+
+### 2. Define Navigation
+
+**Root level** (`my-content/.index.json`):
 ```json
 {
   "items": [
-    { "name": "product", "type": "section", "label": "Product" },
-    { "name": "dev", "type": "section", "label": "Developers" }
+    { "name": "getting-started", "type": "page", "label": "Getting Started" },
+    { "name": "guides", "type": "section", "label": "Guides" }
   ]
 }
 ```
 
-### Section Level (`docs/product/.index.json`)
+**Section level** (`my-content/guides/.index.json`):
 ```json
 {
   "items": [
-    { "name": "features", "type": "section", "label": "Features" },
-    { "name": "how-to", "type": "section", "label": "How To" },
-    { "name": "pricing", "type": "page", "label": "Pricing" }
+    { "name": "installation", "type": "page", "label": "Installation" }
   ]
 }
 ```
 
-### Content Level (`docs/product/features/.index.json`)
-```json
-{
-  "items": [
-    { "name": "workspaces", "type": "page", "label": "Workspaces" },
-    { "name": "assistants", "type": "page", "label": "Assistants" },
-    { "name": "chat", "type": "page", "label": "Chat" }
-  ]
-}
-```
+### 3. Build Documentation
 
-## Zod Schema
+```typescript
+import { buildDocs } from 'svelte-markdown-pages/builder';
 
-```ts
-import { z } from "zod";
-
-export const DocItemTypeSchema = z.enum(["section", "page"]);
-
-export const DocItemSchema = z.object({
-  name: z.string().min(1),
-  type: DocItemTypeSchema,
-  label: z.string().min(1),
-  collapsed: z.boolean().optional(),
-  url: z.string().url().optional()
+await buildDocs('./my-content', {
+  appOutput: './src/lib/content',
+  websiteOutput: './src/lib/content',
+  includeContent: true
 });
-
-export const IndexSchema = z.object({
-  items: z.array(DocItemSchema)
-});
-
-export type DocItem = z.infer<typeof DocItemSchema>;
-export type IndexFile = z.infer<typeof IndexSchema>;
 ```
 
-## Benefits
+### 4. Use in Your App
 
-- **Local context**: Each folder's structure is defined where the content lives
-- **Easier navigation**: Contributors can see folder structure immediately
-- **Reduced conflicts**: Changes to different sections don't conflict
-- **Intuitive**: Add a file, update the local `.index.json`
-- **Type-safe**: Validate all `.index.json` files with Zod
+```typescript
+import { NavigationTree, loadContent } from 'svelte-markdown-pages/renderer';
+import navigationData from './src/lib/content/navigation.json';
+import contentBundle from './src/lib/content/content.json';
 
-## Implementation: Build-Time Generation
+const navigation = new NavigationTree(navigationData);
+const content = await loadContent('getting-started.md', contentBundle);
+```
 
-Generate navigation data at build time for both app and website.
+## CLI Usage
 
-### Build Script
+### Build for App/Website
 
-```ts
-// scripts/build-docs.ts
-import { buildNavigationTree } from './parser';
-import { readFileSync, writeFileSync } from 'fs';
+```bash
+npx svelte-markdown-pages build ./my-content --output ./src/lib/content
+```
 
-// Generate navigation
-const navigationTree = buildNavigationTree('docs');
+### Generate Static Site
 
-// Bundle markdown content for app
-const markdownBundle: Record<string, string> = {};
+```bash
+npx svelte-markdown-pages static ./my-content --output ./dist
+```
 
-function bundleMarkdownFiles(tree: NavigationTree, basePath: string) {
-  for (const item of tree.items) {
-    if (item.type === 'page') {
-      const filePath = `${basePath}/${item.path}`;
-      const content = readFileSync(filePath, 'utf-8');
-      markdownBundle[item.path] = content;
-    } else if (item.items) {
-      bundleMarkdownFiles(item, basePath);
-    }
+## API Reference
+
+### Builder Module
+
+#### `buildDocs(contentPath, options?)`
+
+Builds documentation from a content directory.
+
+```typescript
+import { buildDocs } from 'svelte-markdown-pages/builder';
+
+const result = await buildDocs('./content', {
+  appOutput: './src/lib/content',
+  websiteOutput: './src/lib/content',
+  includeContent: true
+});
+```
+
+#### `generateStaticSite(contentPath, outputPath, options?)`
+
+Generates a complete static HTML site.
+
+```typescript
+import { generateStaticSite } from 'svelte-markdown-pages/builder';
+
+const result = await generateStaticSite('./content', './dist', {
+  title: 'My Documentation',
+  baseUrl: 'https://example.com',
+  includeIndex: true
+});
+```
+
+### Renderer Module
+
+#### `NavigationTree`
+
+Manages navigation structure and provides navigation utilities.
+
+```typescript
+import { NavigationTree } from 'svelte-markdown-pages/renderer';
+
+const navigation = new NavigationTree(navigationData);
+
+// Find items
+const item = navigation.findItemByPath('guides/installation.md');
+
+// Get breadcrumbs
+const breadcrumbs = navigation.getBreadcrumbs('guides/installation.md');
+
+// Get siblings
+const siblings = navigation.getSiblings('guides/installation.md');
+const nextSibling = navigation.getNextSibling('guides/installation.md');
+const prevSibling = navigation.getPreviousSibling('guides/installation.md');
+```
+
+#### `ContentLoader`
+
+Manages content loading and processing.
+
+```typescript
+import { ContentLoader } from 'svelte-markdown-pages/renderer';
+
+const loader = new ContentLoader(contentBundle);
+
+// Load content
+const content = loader.loadAndProcess('getting-started.md');
+
+// Check availability
+const hasContent = loader.hasContent('guides/installation.md');
+const paths = loader.getAvailablePaths();
+```
+
+#### `loadContent(path, contentBundle, processor?)`
+
+Loads and processes content for a specific path.
+
+```typescript
+import { loadContent } from 'svelte-markdown-pages/renderer';
+
+const content = await loadContent('getting-started.md', contentBundle);
+```
+
+### Content Processing
+
+#### Custom Processors
+
+You can provide custom content processors for advanced transformations:
+
+```typescript
+const processor = {
+  process(content: string): string {
+    // Add table of contents
+    return addTableOfContents(content);
   }
+};
+
+const content = await loadContent('page.md', contentBundle, processor);
+```
+
+#### Utility Functions
+
+```typescript
+import { 
+  extractHeadings, 
+  extractTableOfContents, 
+  addTableOfContents 
+} from 'svelte-markdown-pages/renderer';
+
+// Extract headings from markdown
+const headings = extractHeadings(content);
+
+// Generate table of contents
+const toc = extractTableOfContents(content);
+
+// Add table of contents to content
+const contentWithToc = addTableOfContents(content);
+```
+
+## Content Structure
+
+### Index.json Format
+
+Each directory can contain a `.index.json` file that defines the navigation structure:
+
+```json
+{
+  "items": [
+    { "name": "page-name", "type": "page", "label": "Page Label" },
+    { "name": "section-name", "type": "section", "label": "Section Label" }
+  ]
 }
+```
 
-bundleMarkdownFiles(navigationTree, 'docs');
+### Item Properties
 
-// Write files
-writeFileSync('packages/client/src/lib/docs/navigation.json', JSON.stringify(navigationTree, null, 2));
-writeFileSync('packages/client/src/lib/docs/content.json', JSON.stringify(markdownBundle, null, 2));
-writeFileSync('packages/website/src/lib/docs/navigation.json', JSON.stringify(navigationTree, null, 2));
+- `name`: File/directory name (without extension)
+- `type`: Either `"page"` or `"section"`
+- `label`: Display label for navigation
+- `collapsed`: Optional boolean to collapse sections by default
+- `url`: Optional external URL
+
+### File Structure
+
+- Pages: `{name}.md` files
+- Sections: `{name}/` directories with their own `.index.json`
+
+## Use Cases
+
+### Documentation Sites
+
+```bash
+npx svelte-markdown-pages build ./docs --output ./src/lib/docs
+```
+
+### Blog Systems
+
+```bash
+npx svelte-markdown-pages build ./blog --output ./src/lib/blog
+```
+
+### Knowledge Bases
+
+```bash
+npx svelte-markdown-pages build ./kb --output ./src/lib/kb
+```
+
+### Static Sites
+
+```bash
+npx svelte-markdown-pages static ./content --output ./dist
+```
+
+## Integration Examples
+
+### SvelteKit Integration
+
+```svelte
+<!-- src/routes/docs/[...slug]/+page.svelte -->
+<script lang="ts">
+  import { NavigationTree } from 'svelte-markdown-pages/renderer';
+  import { DocsSidebar, DocsContent } from 'svelte-markdown-pages/components';
+  import navigationData from '$lib/content/navigation.json';
+  
+  export let data;
+  let { content, slug } = data;
+  
+  let navigation = $state(new NavigationTree(navigationData));
+</script>
+
+<div class="docs-layout">
+  <DocsSidebar {navigation} currentPage={slug} />
+  <DocsContent {content} />
+</div>
 ```
 
 ### App Integration
@@ -194,6 +297,7 @@ writeFileSync('packages/website/src/lib/docs/navigation.json', JSON.stringify(na
   import { NavigationTree, loadContent } from 'svelte-markdown-pages/renderer';
   import { DocsSidebar, DocsContent } from 'svelte-markdown-pages/components';
   import navigationData from '$lib/content/navigation.json';
+  import contentBundle from '$lib/content/content.json';
   
   let navigation = $state(new NavigationTree(navigationData));
   let currentPage = $state<string | null>(null);
@@ -201,7 +305,7 @@ writeFileSync('packages/website/src/lib/docs/navigation.json', JSON.stringify(na
   
   $effect(() => {
     if (currentPage) {
-      loadContent(currentPage).then(content => {
+      loadContent(currentPage, contentBundle).then(content => {
         pageContent = content;
       });
     }
@@ -214,307 +318,209 @@ writeFileSync('packages/website/src/lib/docs/navigation.json', JSON.stringify(na
 </div>
 ```
 
-### Website Integration
+## Development
 
-```svelte
-<!-- src/routes/content/[...slug]/+page.svelte -->
-<script lang="ts">
-  import { NavigationTree } from 'svelte-markdown-pages/renderer';
-  import { DocsSidebar, DocsContent } from 'svelte-markdown-pages/components';
-  import navigationData from '$lib/content/navigation.json';
-  
-  export let data;
-  let { content, slug } = data;
-  
-  let navigation = $state(new NavigationTree(navigationData));
-</script>
+### Building
 
-<div class="content-layout">
-  <DocsSidebar {navigation} currentPage={slug} />
-  <DocsContent {content} />
-</div>
-```
-
-## Static Site Generation
-
-Generate static HTML pages for deployment.
-
-```ts
-// scripts/build-static-docs.ts
-import { buildNavigationTree } from './parser';
-import { readFileSync, writeFileSync, mkdirSync } from 'fs';
-import { marked } from 'marked';
-import { join, dirname } from 'path';
-
-function buildStaticSite() {
-  const navigationTree = buildNavigationTree('docs');
-  const pages = generateStaticPages(navigationTree, 'docs');
-  const outputDir = 'dist/docs';
-  
-  mkdirSync(outputDir, { recursive: true });
-  
-  for (const page of pages) {
-    const html = generateHTML(page);
-    const outputPath = join(outputDir, page.path);
-    mkdirSync(dirname(outputPath), { recursive: true });
-    writeFileSync(outputPath, html);
-  }
-  
-  console.log(`Generated ${pages.length} static pages in ${outputDir}`);
-}
-
-buildStaticSite();
-```
-
-### Package.json Scripts
-
-```json
-{
-  "scripts": {
-    "build-docs": "tsx scripts/build-docs.ts",
-    "build-static-docs": "tsx scripts/build-static-docs.ts",
-    "build-all": "npm run build-docs && npm run build-static-docs"
-  }
-}
-```
-
-## Outputs
-
-One build process generates three outputs:
-1. **App**: `navigation.json` + `content.json` for Svelte popover (offline)
-2. **Website**: `navigation.json` for SvelteKit dynamic routes
-3. **Static**: Complete static HTML site for deployment
-
-## Standalone NPM Package
-
-### Package Structure
-
-Create a standalone npm package that can be imported and used with any directory containing markdown and `.index.json` files.
-
-```
-svelte-markdown-pages/
-├── package.json
-├── tsconfig.json
-├── vite.config.ts
-├── vitest.config.ts
-├── src/
-│   ├── index.ts                 # Main exports
-│   ├── types.ts                 # Shared types and Zod schemas
-│   ├── builder/                 # Build-time functionality
-│   │   ├── index.ts
-│   │   ├── parser.ts            # Parse .index.json files
-│   │   ├── builder.ts           # Build navigation and content
-│   │   └── static-generator.ts  # Generate static HTML
-│   ├── renderer/                # Runtime functionality
-│   │   ├── index.ts
-│   │   ├── navigation.ts        # Navigation tree processing
-│   │   ├── content.ts           # Content loading and processing
-│   │   └── components.ts        # Shared Svelte components
-│   └── utils.ts                 # Utility functions
-├── bin/
-│   └── svelte-markdown-pages.js # CLI binary
-├── tests/
-│   ├── builder/
-│   │   ├── parser.test.ts
-│   │   ├── builder.test.ts
-│   │   └── static-generator.test.ts
-│   ├── renderer/
-│   │   ├── navigation.test.ts
-│   │   ├── content.test.ts
-│   │   └── components.test.ts
-│   ├── fixtures/
-│   │   ├── sample-content/
-│   │   │   ├── .index.json
-│   │   │   ├── getting-started.md
-│   │   │   └── guides/
-│   │   │       ├── .index.json
-│   │   │       └── installation.md
-│   │   └── invalid-content/
-│   │       └── invalid.json
-│   └── utils.test.ts
-├── examples/
-│   ├── basic-usage/
-│   ├── sveltekit-integration/
-│   └── static-site/
-└── README.md
-```
-
-### Package.json
-
-```json
-{
-  "name": "svelte-markdown-pages",
-  "version": "1.0.0",
-  "description": "Build and render markdown-based content with distributed navigation for Svelte projects",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
-  "exports": {
-    ".": {
-      "import": "./dist/index.js",
-      "require": "./dist/index.js"
-    },
-    "./builder": {
-      "import": "./dist/builder/index.js",
-      "require": "./dist/builder/index.js"
-    },
-    "./renderer": {
-      "import": "./dist/renderer/index.js",
-      "require": "./dist/renderer/index.js"
-    },
-    "./components": {
-      "import": "./dist/renderer/components.js",
-      "require": "./dist/renderer/components.js"
-    }
-  },
-  "scripts": {
-    "build": "tsc",
-    "dev": "tsc --watch",
-    "test": "vitest",
-    "test:watch": "vitest --watch",
-    "test:coverage": "vitest --coverage",
-    "prepublishOnly": "npm run build && npm run test"
-  },
-  "dependencies": {
-    "zod": "^3.22.0",
-    "marked": "^9.0.0"
-  },
-  "devDependencies": {
-    "typescript": "^5.0.0",
-    "@types/node": "^20.0.0",
-    "vitest": "^1.0.0",
-    "@vitest/coverage-v8": "^1.0.0",
-    "svelte": "^5.0.0",
-    "@sveltejs/vite-plugin-svelte": "^3.0.0",
-    "vite": "^5.0.0"
-  },
-  "peerDependencies": {
-    "svelte": "^5.0.0"
-  },
-  "bin": {
-    "svelte-markdown-pages": "./bin/svelte-markdown-pages.js"
-  },
-  "keywords": [
-    "markdown",
-    "documentation",
-    "static-site",
-    "navigation",
-    "content-management",
-    "svelte"
-  ],
-  "repository": "https://github.com/your-username/svelte-markdown-pages",
-  "license": "MIT"
-}
-```
-
-### Usage
-
-**Install:**
 ```bash
-npm install svelte-markdown-pages
+npm run build
 ```
 
-**Build-time (CLI/scripts):**
-```ts
-import { buildDocs, generateStaticSite } from 'svelte-markdown-pages/builder';
+### Testing
 
-// Build for any directory
-await buildDocs('./my-content', {
-  appOutput: './src/lib/content',
-  websiteOutput: './src/lib/content'
+```bash
+npm test
+npm run test:coverage
+```
+
+### Development Mode
+
+```bash
+npm run dev
+```
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests for new functionality
+5. Ensure all tests pass
+6. Submit a pull request
+
+## License
+
+MIT License - see LICENSE file for details.
+---
+
+# From docs/for-ai/rules.md:
+
+# Basics for AI agents
+
+# Git commits
+Use imperative mood and use a prefix for the type of change.
+Examples:
+feat(auth): add user login
+fix(payment): resolve gateway timeout
+ci: update release workflow
+docs: update README
+dev: add the core and the client as aliases to the sveltkit config
+
+## Commit types
+Any product-related feature - "feature(name): description"
+Any product-related fix - "fix(name): description"
+Anything related to building and releasing (including fixes of CI) - "ci: description"
+Anything related to testing - "tests: description"
+Anything related to documentation - "docs: description"
+Anything related to the build pipelines and dev convinience - "dev: description"
+---
+
+# From docs/for-ai/svelte.md:
+
+New in SvelteKit 5:
+
+# Runes
+
+## Reactivity
+
+Reactivity with `let x = "hello"` at component top-level is replaced with:
+
+```js
+let x: string = $state("hello")
+```
+
+This makes x reactive in the component, and also in any js functions that operate on it.
+
+Don't use `$state<T>()` to pass the type. Always use `let x: Type =`. Variables declared with `let x = "hello"` are no longer reactive.
+
+## Derived values
+
+Old style:
+```js
+$: b = a + 1
+```
+
+New style:
+```js
+let b = $derived(a + 1)
+```
+
+Or for more complex use cases:
+```js
+let b = $derived.by(() => {
+    // ... more complex logic
+    return a + 1;
+})
+```
+
+`$derived()` takes an expression. `$derived.by()` takes a function.
+
+## Effect
+
+```js
+let a = $state(1);
+let b = $state(2);
+let c;
+
+// This will run when the component is mounted, and for every updates to a and b.
+$effect(() => {
+    c = a + b;
+});
+```
+
+Note: 
+- Values read asynchronously (promises, setTimeout) inside `$effect` are not tracked.
+- Values inside objects are not tracked directly inside `$effect`:
+
+```js
+// This will run once, because `state` is never reassigned (only mutated)
+$effect(() => {
+    state;
 });
 
-// Generate static site
-await generateStaticSite('./my-content', './dist');
+// This will run whenever `state.value` changes
+$effect(() => {
+    state.value;
+});
 ```
 
-**Runtime (app/website):**
-```ts
-import { NavigationTree, loadContent } from 'svelte-markdown-pages/renderer';
-import { DocsSidebar, DocsContent } from 'svelte-markdown-pages/components';
+An effect only depends on the values that it read the last time it ran.
 
-// Load navigation and content
-const navigation = new NavigationTree(navigationData);
-const content = await loadContent(pagePath);
+```js
+$effect(() => {
+    if (a || b) {
+        // ...
+    }
+});
 ```
 
-**CLI:**
-```bash
-# Build content from any directory
-npx svelte-markdown-pages build ./my-content --output ./src/lib/content
+If `a` was true, `b` was not read, and the effect won't run when `b` changes.
 
-# Generate static site
-npx svelte-markdown-pages static ./my-content --output ./dist
+## Props
 
-# Or use the binary directly
-npx svelte-markdown-pages --help
+Old way to pass props to a component:
+```js
+export let a = "hello";
+export let b;
 ```
 
-**Point to any directory:**
-```bash
-# Documentation
-npx svelte-markdown-pages build ./docs --output ./src/docs
-
-# Blog
-npx svelte-markdown-pages build ./blog --output ./src/blog
-
-# Knowledge base
-npx svelte-markdown-pages build ./kb --output ./src/kb
+New way:
+```js
+let {a = "hello", b, ...everythingElse} = $props()
 ```
 
-### Integration with Any Project
+`a` and `b` are reactive.
 
-```json
-{
-  "scripts": {
-    "build-content": "markdown-pages build ./content --output ./src/lib/content",
-    "build-static": "markdown-pages static ./content --output ./dist",
-    "dev": "npm run build-content && npm run dev:app"
+Types:
+```js
+let {a = "hello", b}: {a: string, b: number} = $props()
+```
+
+Note: Do NOT use this syntax for types:
+```js
+let { x = 42 } = $props<{ x?: string }>();  // ❌ Incorrect
+```
+
+# Slots and snippets
+
+Instead of using `<slot />` in a component, you should now do:
+
+```js
+let { children } = $props()
+// ...
+{@render children()}  // This replaces <slot />
+```
+
+# Event Handling
+
+In Svelte 5 the events do not use `on:event` syntax, they use `onevent` syntax.
+
+In Svelte 5 `on:click` syntax is not allowed. Event handlers have been given a facelift in Svelte 5. Whereas in Svelte 4 we use the `on:` directive to attach an event listener to an element, in Svelte 5 they are properties like any other (in other words - remove the colon):
+
+```svelte
+<button onclick={() => count++}>
+  clicks: {count}
+</button>
+```
+
+`preventDefault` and `once` are removed in Svelte 5. Normal HTML event management is advised:
+
+```svelte
+<script>
+  function once(fn) {
+    return function(event) {
+      if (fn) fn.call(this, event);
+      fn = null;
+    };
   }
-}
+
+  function preventDefault(fn) {
+    return function(event) {
+      event.preventDefault();
+      fn.call(this, event);
+    };
+  }
+</script>
+
+<button onclick={once(preventDefault(handler))}>...</button>
 ```
-
-## Benefits of Standalone Package
-
-- **Universal**: Works with any project, not just Sila
-- **Reusable**: Can be used for docs, blogs, knowledge bases, etc.
-- **Simple**: Just point to any directory with markdown and `.index.json` files
-- **Flexible**: Multiple output formats (app, website, static)
-- **Maintainable**: Single package to maintain and update
-
-## Development Specification
-
-### Phase 1: Core Infrastructure
-1. **Setup project structure** with TypeScript, Vitest, and Vite
-2. **Implement Zod schemas** for type validation
-3. **Create parser** for `.index.json` files with error handling
-4. **Write tests** for parser with fixtures
-
-### Phase 2: Builder Module
-1. **Implement builder** that reads directory structure
-2. **Add markdown processing** with marked library
-3. **Create static generator** for HTML output
-4. **Write comprehensive tests** for builder functionality
-
-### Phase 3: Renderer Module
-1. **Implement NavigationTree class** with methods for navigation logic
-2. **Create content loader** for runtime content access
-3. **Build Svelte 5 components** (vanilla Svelte, no SvelteKit dependencies)
-4. **Test renderer** with sample navigation data
-
-### Phase 4: CLI and Integration
-1. **Create CLI binary** with flexible directory targeting
-2. **Add examples** for different use cases
-3. **Test integration** with SvelteKit projects
-4. **Write documentation** and README
-
-### Testing Requirements
-- **Unit tests**: All modules with >90% coverage
-- **Integration tests**: End-to-end workflows
-- **Fixture tests**: Sample content and invalid content
-- **Component tests**: Svelte components in isolation
-
-### Quality Standards
-- **TypeScript**: Strict mode, no any types
-- **Error handling**: Comprehensive error messages
-- **Performance**: Handle large content directories efficiently
-- **Documentation**: Clear API documentation and examples
