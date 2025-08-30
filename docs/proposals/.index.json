@@ -3,6 +3,7 @@
     { "name": "plugins", "type": "page", "label": "Plugin System" },
     { "name": "search", "type": "page", "label": "Semantic Search" },
     { "name": "search-quick-reference", "type": "page", "label": "Search Quick Reference" },
-    { "name": "client-side-search", "type": "page", "label": "Client-Side Search" }
+    { "name": "client-side-search", "type": "page", "label": "Client-Side Search" },
+    { "name": "hybrid-search", "type": "page", "label": "Hybrid Search" }
   ]
 }
