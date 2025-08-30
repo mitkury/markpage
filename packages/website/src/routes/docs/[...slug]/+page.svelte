@@ -4,7 +4,7 @@
 	import { page } from '$app/stores';
 	
 	// Build docs from the docs directory
-	let navigation = $state<NavigationTree | null>(null);
+	let navigation = $state<any>(null);
 	let contentBundle = $state<any>(null);
 	let currentPage = $state<string>("getting-started.md");
 	let pageContent = $state<string | null>(null);
@@ -17,6 +17,30 @@
 		if (!cleanPath || cleanPath === 'getting-started') {
 			return 'getting-started.md';
 		}
+		
+		// Use the navigation data to find the correct path
+		if (navigation) {
+			const findPath = (items: any[], targetPath: string): string | null => {
+				for (const item of items) {
+					if (item.path && targetPath === item.name) {
+						return item.path;
+					}
+					if (item.items) {
+						const found = findPath(item.items, targetPath);
+						if (found) return found;
+					}
+				}
+				return null;
+			};
+			
+			// Try to find the path in navigation
+			const foundPath = findPath(navigation.items, cleanPath);
+			if (foundPath) {
+				return foundPath;
+			}
+		}
+		
+		// Fallback mapping
 		const pathMap: Record<string, string> = {
 			'guides/installation': 'guides/installation.md',
 			'guides/configuration': 'guides/configuration.md',
@@ -32,7 +56,7 @@
 	// Load navigation and content bundle
 	$effect(() => {
 		import('$lib/content/navigation.json').then(navData => {
-			navigation = new NavigationTree(navData.default);
+			navigation = navData.default;
 		}).catch(err => {
 			console.error('Failed to load navigation:', err);
 			error = 'Failed to load navigation';
@@ -72,6 +96,30 @@
 	});
 	
 	function handlePageSelect(path: string) {
+		// Find the URL path from navigation data
+		if (navigation) {
+			const findUrlPath = (items: any[], targetPath: string): string | null => {
+				for (const item of items) {
+					if (item.path === targetPath) {
+						return `/docs/${item.name}`;
+					}
+					if (item.items) {
+						const found = findUrlPath(item.items, targetPath);
+						if (found) return found;
+					}
+				}
+				return null;
+			};
+			
+			const urlPath = findUrlPath(navigation.items, path);
+			if (urlPath) {
+				window.history.pushState({}, '', urlPath);
+				currentPage = path;
+				return;
+			}
+		}
+		
+		// Fallback mapping
 		const urlPathMap: Record<string, string> = {
 			'getting-started.md': '/docs/getting-started',
 			'guides/installation.md': '/docs/guides/installation',
@@ -87,7 +135,7 @@
 		currentPage = path;
 	}
 	
-	function renderNavigationItems(items: NavigationItem[]): string {
+	function renderNavigationItems(items: any[]): string {
 		return items.map(item => {
 			if (item.type === 'section') {
 				const sectionItems = renderNavigationItems(item.items || []);
@@ -98,11 +146,11 @@
 					</div>
 				`;
 			} else {
-				const isActive = currentPage === item.name + '.md';
+				const isActive = currentPage === item.path;
 				return `
 					<button 
 						class="nav-link ${isActive ? 'active' : ''}"
-						onclick="window.dispatchEvent(new CustomEvent('pageSelect', { detail: '${item.name}.md' }))"
+						onclick="window.dispatchEvent(new CustomEvent('pageSelect', { detail: '${item.path}' }))"
 					>
 						${item.label}
 					</button>
