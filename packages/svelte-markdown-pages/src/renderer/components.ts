@@ -1,7 +1,6 @@
 import { NavigationTree, NavigationItem } from '../types.js';
 
-// Svelte 5 components (vanilla Svelte, no SvelteKit dependencies)
-
+// Legacy class-based components for backward compatibility
 export interface DocsSidebarProps {
   navigation: NavigationTree;
   currentPage?: string | null;
@@ -25,19 +24,15 @@ export interface DocsLayoutProps {
   onSidebarToggle?: (() => void) | undefined;
 }
 
-// Component implementations would go here
-// For now, we'll export the interfaces and placeholder implementations
-
-export class DocsSidebar {
+// Legacy class-based implementations
+export class DocsSidebarClass {
   constructor(props: DocsSidebarProps) {
-    // Svelte component implementation
     this.props = props;
   }
 
   private props: DocsSidebarProps;
 
   render(): string {
-    // This is a placeholder - in a real implementation, this would be a Svelte component
     return `
       <nav class="docs-sidebar ${this.props.collapsed ? 'collapsed' : ''}">
         ${this.renderNavigationItems(this.props.navigation.items)}
@@ -69,7 +64,7 @@ export class DocsSidebar {
   }
 }
 
-export class DocsContent {
+export class DocsContentClass {
   constructor(props: DocsContentProps) {
     this.props = props;
   }
@@ -100,44 +95,36 @@ export class DocsContent {
   }
 }
 
-export class DocsLayout {
-  constructor(props: DocsLayoutProps) {
-    this.props = props;
-  }
+// Legacy exports for backward compatibility
+export { DocsSidebarClass as DocsSidebar, DocsContentClass as DocsContent };
 
-  private props: DocsLayoutProps;
-
-  render(): string {
-    return `
-      <div class="docs-layout">
-        <button class="sidebar-toggle" onclick="this.dispatchEvent(new CustomEvent('sidebarToggle'))">
-          ☰
-        </button>
-        <div class="docs-container">
-          ${new DocsSidebar({
-            navigation: this.props.navigation,
-            currentPage: this.props.currentPage || null,
-            onPageSelect: this.props.onPageSelect,
-            collapsed: this.props.sidebarCollapsed
-          }).render()}
-          ${new DocsContent({
-            content: this.props.content || null
-          }).render()}
-        </div>
-      </div>
-    `;
-  }
+// Utility functions
+export function createDocsSidebar(props: DocsSidebarProps): DocsSidebarClass {
+  return new DocsSidebarClass(props);
 }
 
-// Utility functions for component usage
-export function createDocsSidebar(props: DocsSidebarProps): DocsSidebar {
-  return new DocsSidebar(props);
+export function createDocsContent(props: DocsContentProps): DocsContentClass {
+  return new DocsContentClass(props);
 }
 
-export function createDocsContent(props: DocsContentProps): DocsContent {
-  return new DocsContent(props);
-}
+export function createDocsLayout(props: DocsLayoutProps): string {
+  const sidebar = new DocsSidebarClass({
+    navigation: props.navigation,
+    currentPage: props.currentPage,
+    onPageSelect: props.onPageSelect,
+    collapsed: props.sidebarCollapsed
+  });
 
-export function createDocsLayout(props: DocsLayoutProps): DocsLayout {
-  return new DocsLayout(props);
+  const content = new DocsContentClass({
+    content: props.content,
+    loading: false,
+    error: null
+  });
+
+  return `
+    <div class="docs-layout">
+      ${sidebar.render()}
+      ${content.render()}
+    </div>
+  `;
 }
