@@ -6,8 +6,8 @@ import {
   createDocsSidebar,
   createDocsContent,
   createDocsLayout
-} from '../../src/renderer/components.js';
-import { NavigationTree as NavigationTreeType } from '../../src/types.js';
+} from 'svelte-markdown-pages/components';
+import { NavigationTree as NavigationTreeType } from 'svelte-markdown-pages';
 
 describe('Components', () => {
   const sampleNavigationData: NavigationTreeType = {

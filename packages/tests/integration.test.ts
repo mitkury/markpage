@@ -2,8 +2,8 @@ import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { writeFileSync, mkdirSync, readFileSync, existsSync, rmSync } from 'fs';
 import { join } from 'path';
 import { tmpdir } from 'os';
-import { buildDocs, generateStaticSite } from '../src/builder/index.js';
-import { NavigationTree, ContentLoader } from '../src/renderer/index.js';
+import { buildDocs, generateStaticSite } from 'svelte-markdown-pages/builder';
+import { NavigationTree, ContentLoader } from 'svelte-markdown-pages/renderer';
 
 describe('Integration', () => {
   let tempDir: string;

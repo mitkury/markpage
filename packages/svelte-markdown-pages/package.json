@@ -1,0 +1,56 @@
+{
+  "name": "svelte-markdown-pages",
+  "version": "0.0.1",
+  "description": "Build and render markdown-based content with distributed navigation for Svelte projects",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.js"
+    },
+    "./builder": {
+      "import": "./dist/builder/index.js",
+      "require": "./dist/builder/index.js"
+    },
+    "./renderer": {
+      "import": "./dist/renderer/index.js",
+      "require": "./dist/renderer/index.js"
+    },
+    "./components": {
+      "import": "./dist/renderer/components.js",
+      "require": "./dist/renderer/components.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "prepublishOnly": "npm run build"
+  },
+  "dependencies": {
+    "marked": "^9.0.0",
+    "zod": "^3.22.0"
+  },
+  "devDependencies": {
+    "@sveltejs/vite-plugin-svelte": "^3.0.0",
+    "@types/node": "^20.0.0",
+    "svelte": "^5.0.0",
+    "typescript": "^5.0.0"
+  },
+  "peerDependencies": {
+    "svelte": "^5.0.0"
+  },
+  "bin": {
+    "svelte-markdown-pages": "./bin/svelte-markdown-pages.js"
+  },
+  "keywords": [
+    "markdown",
+    "documentation",
+    "static-site",
+    "navigation",
+    "content-management",
+    "svelte"
+  ],
+  "repository": "https://github.com/mitkury/svelte-markdown-pages",
+  "license": "MIT"
+}

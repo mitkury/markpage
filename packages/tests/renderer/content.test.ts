@@ -6,8 +6,8 @@ import {
   extractHeadings,
   extractTableOfContents,
   addTableOfContents
-} from '../../src/renderer/content.js';
-import { ContentProcessor } from '../../src/types.js';
+} from 'svelte-markdown-pages/renderer';
+import { ContentProcessor } from 'svelte-markdown-pages';
 
 describe('Content', () => {
   const sampleContentBundle = {

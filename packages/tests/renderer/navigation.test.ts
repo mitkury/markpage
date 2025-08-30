@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { NavigationTree, createNavigationTree } from '../../src/renderer/navigation.js';
-import { NavigationTree as NavigationTreeType, NavigationItem } from '../../src/types.js';
+import { NavigationTree, createNavigationTree } from 'svelte-markdown-pages/renderer';
+import { NavigationTree as NavigationTreeType, NavigationItem } from 'svelte-markdown-pages';
 
 describe('Navigation', () => {
   const sampleNavigationData: NavigationTreeType = {

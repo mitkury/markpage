@@ -15,20 +15,21 @@
     "noUncheckedIndexedAccess": true,
     "noImplicitOverride": true,
     "exactOptionalPropertyTypes": false,
-    "declaration": false,
-    "declarationMap": false,
+    "declaration": true,
+    "declarationMap": true,
     "sourceMap": true,
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "removeComments": false,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true
   },
   "include": [
-    "*.ts",
-    "*.js"
+    "src/**/*"
   ],
   "exclude": [
     "node_modules",
-    "dist",
-    "packages"
+    "dist"
   ]
 }

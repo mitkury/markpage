@@ -7,7 +7,7 @@ import {
   buildNavigationTree, 
   validateContentStructure,
   ParserError 
-} from '../../src/builder/parser.js';
+} from 'svelte-markdown-pages/builder';
 
 describe('Parser', () => {
   let tempDir: string;

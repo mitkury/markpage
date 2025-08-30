@@ -7,8 +7,8 @@ import {
   generateSitemap,
   generateRobotsTxt,
   StaticGeneratorError 
-} from '../../src/builder/static-generator.js';
-import { ContentProcessor } from '../../src/types.js';
+} from 'svelte-markdown-pages/builder';
+import { ContentProcessor } from 'svelte-markdown-pages';
 
 describe('Static Generator', () => {
   let tempDir: string;

@@ -7,8 +7,8 @@ import {
   processMarkdown, 
   generateStaticPages,
   BuilderError 
-} from '../../src/builder/builder.js';
-import { ContentProcessor } from '../../src/types.js';
+} from 'svelte-markdown-pages/builder';
+import { ContentProcessor } from 'svelte-markdown-pages';
 
 describe('Builder', () => {
   let tempDir: string;
