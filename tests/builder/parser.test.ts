@@ -1,20 +1,30 @@
-import { describe, it, expect, beforeEach } from 'vitest';
-import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'fs';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { readFileSync, writeFileSync, mkdirSync, existsSync, rmSync } from 'fs';
 import { join } from 'path';
+import { tmpdir } from 'os';
 import { 
   parseIndexFile, 
   buildNavigationTree, 
   validateContentStructure,
   ParserError 
 } from '../../src/builder/parser.js';
-import { DocItem } from '../../src/types.js';
 
 describe('Parser', () => {
   let tempDir: string;
 
   beforeEach(() => {
-    tempDir = join(process.cwd(), `temp-test-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`);
+    tempDir = join(tmpdir(), `svelte-markdown-pages-test-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`);
     mkdirSync(tempDir, { recursive: true });
+  });
+
+  afterEach(() => {
+    if (existsSync(tempDir)) {
+      try {
+        rmSync(tempDir, { recursive: true, force: true });
+      } catch (error) {
+        console.warn('Failed to clean up temp directory:', tempDir, error);
+      }
+    }
   });
 
   describe('parseIndexFile', () => {

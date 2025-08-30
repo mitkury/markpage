@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { writeFileSync, mkdirSync, readFileSync, existsSync } from 'fs';
+import { writeFileSync, mkdirSync, readFileSync, existsSync, rmSync } from 'fs';
 import { join } from 'path';
+import { tmpdir } from 'os';
 import { buildDocs, generateStaticSite } from '../src/builder/index.js';
 import { NavigationTree, ContentLoader } from '../src/renderer/index.js';
 
@@ -10,7 +11,8 @@ describe('Integration', () => {
   let outputDir: string;
 
   beforeEach(() => {
-    tempDir = join(process.cwd(), `temp-test-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`);
+    // Use system temp directory instead of project root
+    tempDir = join(tmpdir(), `svelte-markdown-pages-test-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`);
     contentDir = join(tempDir, 'content');
     outputDir = join(tempDir, 'output');
     
@@ -92,7 +94,12 @@ describe('Integration', () => {
   afterEach(() => {
     // Clean up temp files
     if (existsSync(tempDir)) {
-      // Note: In a real implementation, you'd want to recursively delete the directory
+      try {
+        rmSync(tempDir, { recursive: true, force: true });
+      } catch (error) {
+        // Ignore cleanup errors in tests
+        console.warn('Failed to clean up temp directory:', tempDir, error);
+      }
     }
   });
 

@@ -88,7 +88,9 @@ export class NavigationTree {
     if (!item && path.includes('/')) {
       const pathParts = path.split('/');
       const sectionName = pathParts[pathParts.length - 1];
-      item = this.findItemByName(sectionName);
+      if (sectionName) {
+        item = this.findItemByName(sectionName);
+      }
     }
     
     return item?.items || [];
