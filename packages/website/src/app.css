@@ -18,10 +18,10 @@ body {
 }
 
 .docs-sidebar {
-	width: 280px;
+	width: 260px;
 	background: #f8f9fa;
 	border-right: 1px solid #e9ecef;
-	padding: 1.5rem;
+	padding: 1rem;
 	overflow-y: auto;
 	position: sticky;
 	top: 0;
@@ -30,15 +30,16 @@ body {
 
 .docs-content {
 	flex: 1;
-	padding: 2rem 3rem;
+	padding: 2rem;
 	overflow-y: auto;
-	max-width: 900px;
+	max-width: 1000px;
 }
 
 .docs-header {
-	background: #fff;
+	background: #f8f9fa;
 	border-bottom: 1px solid #e9ecef;
-	padding: 1rem 2rem;
+	padding: 0.75rem 0;
+	margin-bottom: 1rem;
 	position: sticky;
 	top: 0;
 	z-index: 10;
@@ -46,27 +47,29 @@ body {
 
 .docs-header h1 {
 	margin: 0;
-	font-size: 1.5rem;
+	font-size: 1.1rem;
 	font-weight: 600;
 	color: #2c3e50;
+	text-align: center;
 }
 
 /* Navigation styles */
 .nav-link {
 	display: block;
 	width: 100%;
-	padding: 0.75rem 1rem;
+	padding: 0.5rem 0.75rem;
 	color: #495057;
 	text-decoration: none;
 	border: none;
 	background: none;
 	text-align: left;
-	border-radius: 6px;
-	margin-bottom: 0.25rem;
+	border-radius: 4px;
+	margin-bottom: 0.125rem;
 	cursor: pointer;
-	font-size: 0.95rem;
+	font-size: 0.9rem;
 	font-family: inherit;
 	transition: all 0.2s ease;
+	line-height: 1.3;
 }
 
 .nav-link:hover {
@@ -83,14 +86,14 @@ body {
 .nav-section-header {
 	font-weight: 600;
 	color: #6c757d;
-	margin: 1.5rem 0 0.75rem 0;
-	font-size: 0.85rem;
+	margin: 1rem 0 0.5rem 0;
+	font-size: 0.75rem;
 	text-transform: uppercase;
 	letter-spacing: 0.5px;
 }
 
 .nav-section {
-	margin-bottom: 1rem;
+	margin-bottom: 0.75rem;
 }
 
 /* Content styles */

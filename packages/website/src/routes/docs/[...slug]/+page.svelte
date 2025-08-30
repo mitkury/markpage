@@ -168,16 +168,15 @@
 </script>
 
 <div class="docs-layout">
-	<header class="docs-header">
-		<h1>svelte-markdown-pages</h1>
-	</header>
-	
 	{#if loading}
 		<div class="loading">Loading documentation...</div>
 	{:else if error}
 		<div class="error">Error: {error}</div>
 	{:else if navigation}
 		<nav class="docs-sidebar">
+			<header class="docs-header">
+				<h1>svelte-markdown-pages</h1>
+			</header>
 			{@html renderNavigationItems(navigation.items)}
 		</nav>
 		
