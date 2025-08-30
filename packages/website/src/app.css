@@ -211,3 +211,47 @@ body {
 		font-size: 2rem;
 	}
 }
+
+/* 404 Page Styles */
+.not-found {
+	text-align: center;
+	padding: 3rem 1rem;
+}
+
+.not-found h1 {
+	font-size: 3rem;
+	color: #6c757d;
+	margin-bottom: 1rem;
+}
+
+.not-found p {
+	font-size: 1.2rem;
+	color: #495057;
+	margin-bottom: 2rem;
+}
+
+.not-found ul {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+
+.not-found li {
+	margin: 0.5rem 0;
+}
+
+.not-found a {
+	color: #007acc;
+	text-decoration: none;
+	font-size: 1.1rem;
+	padding: 0.5rem 1rem;
+	border: 2px solid #007acc;
+	border-radius: 6px;
+	display: inline-block;
+	transition: all 0.2s ease;
+}
+
+.not-found a:hover {
+	background: #007acc;
+	color: white;
+}

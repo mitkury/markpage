@@ -10,9 +10,10 @@
 	let pageContent = $state<string | null>(null);
 	let loading = $state(true);
 	let error = $state<string | null>(null);
+	let notFound = $state(false);
 	
 	// Map URL path to content path
-	function getContentPathFromUrl(urlPath: string): string {
+	function getContentPathFromUrl(urlPath: string): string | null {
 		const cleanPath = urlPath.replace(/^\/docs\/?/, '').replace(/^\/+/, '');
 		if (!cleanPath || cleanPath === 'getting-started') {
 			return 'getting-started.md';
@@ -51,7 +52,7 @@
 			'api/renderer': 'api/renderer.md',
 			'api/types': 'api/types.md'
 		};
-		return pathMap[cleanPath] || 'getting-started.md';
+		return pathMap[cleanPath] || null;
 	}
 	
 	// Load navigation and content bundle
@@ -76,7 +77,15 @@
 	// Update current page when URL changes
 	$effect(() => {
 		const urlPath = $page.url.pathname;
-		currentPage = getContentPathFromUrl(urlPath);
+		const contentPath = getContentPathFromUrl(urlPath);
+		
+		if (contentPath) {
+			currentPage = contentPath;
+			notFound = false;
+		} else {
+			notFound = true;
+			currentPage = "getting-started.md";
+		}
 	});
 	
 	// Load content when current page or content bundle changes
@@ -184,7 +193,21 @@
 		</nav>
 		
 		<div class="docs-content">
-			{@html pageContent || 'No content selected'}
+			{#if notFound}
+				<div class="not-found">
+					<h1>404 - Page Not Found</h1>
+					<p>The page you're looking for doesn't exist.</p>
+					<p>Try one of these pages:</p>
+					<ul>
+						<li><a href="/docs/getting-started">Getting Started</a></li>
+						<li><a href="/docs/guides/installation">Installation Guide</a></li>
+						<li><a href="/docs/guides/configuration">Configuration</a></li>
+						<li><a href="/docs/api/builder">API Reference</a></li>
+					</ul>
+				</div>
+			{:else}
+				{@html pageContent || 'No content selected'}
+			{/if}
 		</div>
 	{/if}
 </div>
