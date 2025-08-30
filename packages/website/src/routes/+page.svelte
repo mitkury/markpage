@@ -4,7 +4,7 @@
 	
 	onMount(() => {
 		// Redirect to the documentation
-		goto('/docs/getting-started');
+		goto('/getting-started');
 	});
 </script>
 

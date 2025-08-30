@@ -14,7 +14,7 @@
 	
 	// Map URL path to content path
 	function getContentPathFromUrl(urlPath: string): string | null {
-		const cleanPath = urlPath.replace(/^\/docs\/?/, '').replace(/^\/+/, '');
+		const cleanPath = urlPath.replace(/^\/+/, '');
 		if (!cleanPath || cleanPath === 'getting-started') {
 			return 'getting-started.md';
 		}
@@ -112,7 +112,7 @@
 				for (const item of items) {
 					if (item.path === targetPath) {
 						const fullPath = parentPath ? `${parentPath}/${item.name}` : item.name;
-						return `/docs/${fullPath}`;
+						return `/${fullPath}`;
 					}
 					if (item.items) {
 						const currentPath = parentPath ? `${parentPath}/${item.name}` : item.name;
@@ -133,16 +133,16 @@
 		
 		// Fallback mapping
 		const urlPathMap: Record<string, string> = {
-			'getting-started.md': '/docs/getting-started',
-			'guides/installation.md': '/docs/guides/installation',
-			'guides/configuration.md': '/docs/guides/configuration',
-			'guides/advanced/customization.md': '/docs/guides/advanced/customization',
-			'guides/advanced/plugins.md': '/docs/guides/advanced/plugins',
-			'api/builder.md': '/docs/api/builder',
-			'api/renderer.md': '/docs/api/renderer',
-			'api/types.md': '/docs/api/types'
+			'getting-started.md': '/getting-started',
+			'guides/installation.md': '/guides/installation',
+			'guides/configuration.md': '/guides/configuration',
+			'guides/advanced/customization.md': '/guides/advanced/customization',
+			'guides/advanced/plugins.md': '/guides/advanced/plugins',
+			'api/builder.md': '/api/builder',
+			'api/renderer.md': '/api/renderer',
+			'api/types.md': '/api/types'
 		};
-		const urlPath = urlPathMap[path] || '/docs/getting-started';
+		const urlPath = urlPathMap[path] || '/getting-started';
 		window.history.pushState({}, '', urlPath);
 		currentPage = path;
 	}
@@ -199,10 +199,10 @@
 					<p>The page you're looking for doesn't exist.</p>
 					<p>Try one of these pages:</p>
 					<ul>
-						<li><a href="/docs/getting-started">Getting Started</a></li>
-						<li><a href="/docs/guides/installation">Installation Guide</a></li>
-						<li><a href="/docs/guides/configuration">Configuration</a></li>
-						<li><a href="/docs/api/builder">API Reference</a></li>
+						<li><a href="/getting-started">Getting Started</a></li>
+						<li><a href="/guides/installation">Installation Guide</a></li>
+						<li><a href="/guides/configuration">Configuration</a></li>
+						<li><a href="/api/builder">API Reference</a></li>
 					</ul>
 				</div>
 			{:else}
