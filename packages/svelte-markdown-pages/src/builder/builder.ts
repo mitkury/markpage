@@ -21,10 +21,10 @@ export async function buildDocs(
 ): Promise<BuildResult> {
   try {
     // Validate content structure
-    validateContentStructure(contentPath);
+    validateContentStructure(contentPath, { autoDiscover: options.autoDiscover });
     
     // Build navigation tree
-    const navigation = buildNavigationTree(contentPath);
+    const navigation = buildNavigationTree(contentPath, { autoDiscover: options.autoDiscover });
     
     // Bundle markdown content if requested
     let content: ContentBundle | undefined;

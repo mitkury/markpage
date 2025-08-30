@@ -19,6 +19,7 @@ export interface StaticSiteOptions {
   processor?: ContentProcessor;
   includeIndex?: boolean;
   indexTitle?: string;
+  autoDiscover?: boolean;
 }
 
 export interface StaticSiteResult {
@@ -40,10 +41,10 @@ export async function generateStaticSite(
 ): Promise<StaticSiteResult> {
   try {
     // Validate content structure
-    validateContentStructure(contentPath);
+    validateContentStructure(contentPath, { autoDiscover: options.autoDiscover });
     
     // Build navigation tree
-    const navigation = buildNavigationTree(contentPath);
+    const navigation = buildNavigationTree(contentPath, { autoDiscover: options.autoDiscover });
     
     // Generate static pages
     const pages = generateStaticPages(navigation, contentPath, {

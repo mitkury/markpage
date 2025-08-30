@@ -34,6 +34,7 @@ export interface BuildOptions {
   websiteOutput?: string;
   staticOutput?: string;
   includeContent?: boolean;
+  autoDiscover?: boolean; // Enable auto-discovery when .index.json is missing
 }
 
 export interface BuildResult {
