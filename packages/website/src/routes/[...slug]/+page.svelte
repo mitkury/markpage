@@ -1,22 +1,19 @@
 <script lang="ts">
-	import { NavigationTree, loadContent } from 'svelte-markdown-pages/renderer';
-	import type { NavigationItem } from 'svelte-markdown-pages';
-	import { page } from '$app/stores';
+	import { loadContent } from 'svelte-markdown-pages/renderer';
+	import { page } from '$app/state';
+	import navigationData from '$lib/content/navigation.json';
+	import contentData from '$lib/content/content.json';
 	
 	// Build docs from the docs directory
-	let navigation = $state<any>(null);
-	let contentBundle = $state<any>(null);
-	let currentPage = $state<string>("getting-started.md");
-	let pageContent = $state<string | null>(null);
-	let loading = $state(true);
-	let error = $state<string | null>(null);
-	let notFound = $state(false);
+	let navigation = $state<any>(navigationData);
+	let contentBundle = $state<any>(contentData);
 	
 	// Map URL path to content path
 	function getContentPathFromUrl(urlPath: string): string | null {
 		const cleanPath = urlPath.replace(/^\/+/, '').replace(/\.md$/, '');
-		if (!cleanPath || cleanPath === 'getting-started') {
-			return 'getting-started.md';
+		if (!cleanPath) {
+			// Return the first page from navigation as default
+			return navigation?.items?.[0]?.path || null;
 		}
 		
 		// Use the navigation data to find the correct path
@@ -42,70 +39,30 @@
 			}
 		}
 		
-		// Fallback mapping
-		const pathMap: Record<string, string> = {
-			'guides/installation': 'guides/installation.md',
-			'guides/configuration': 'guides/configuration.md',
-			'guides/advanced/customization': 'guides/advanced/customization.md',
-			'guides/advanced/plugins': 'guides/advanced/plugins.md',
-			'api/builder': 'api/builder.md',
-			'api/renderer': 'api/renderer.md',
-			'api/types': 'api/types.md'
-		};
-		return pathMap[cleanPath] || null;
+		return null;
 	}
-	
-	// Load navigation and content bundle
-	$effect(() => {
-		import('$lib/content/navigation.json').then(navData => {
-			navigation = navData.default;
-		}).catch(err => {
-			console.error('Failed to load navigation:', err);
-			error = 'Failed to load navigation';
-			loading = false;
-		});
-		
-		import('$lib/content/content.json').then(contentData => {
-			contentBundle = contentData.default;
-		}).catch(err => {
-			console.error('Failed to load content bundle:', err);
-			error = 'Failed to load content bundle';
-			loading = false;
-		});
-	});
-	
-	// Update current page when URL changes
-	$effect(() => {
-		const urlPath = $page.url.pathname;
-		const contentPath = getContentPathFromUrl(urlPath);
-		
-		if (contentPath) {
-			currentPage = contentPath;
-			notFound = false;
-		} else {
-			notFound = true;
-			currentPage = "getting-started.md";
-		}
-	});
-	
-	// Load content when current page or content bundle changes
-	$effect(() => {
-		if (currentPage && contentBundle) {
-			loading = true;
-			error = null;
-			loadContent(currentPage, contentBundle).then(content => {
-				pageContent = content;
-				loading = false;
-			}).catch(err => {
-				console.error('Failed to load content:', err);
-				pageContent = 'Failed to load content';
-				error = err instanceof Error ? err.message : 'Failed to load content';
-				loading = false;
-			});
-		}
-	});
-	
+  
+  let currentPage = $derived.by(() => {
+    const urlPath = page.url.pathname;
+    const contentPath = getContentPathFromUrl(urlPath);
+    
+    return contentPath || navigation?.items?.[0]?.path || null;
+  });
 
+  let notFound = $derived.by(() => !currentPage && page.url.pathname !== "/");
+
+  let pageContentPromise = $derived.by(async () => {
+    if (currentPage && contentBundle) {
+      try {
+        const content = await loadContent(currentPage, contentBundle);
+        return content;
+      } catch (err) {
+        console.error('Failed to load content:', err);
+        throw err;
+      }
+    }
+    return null;
+  });
 	
 	function renderNavigationItems(items: any[], parentPath: string = ''): string {
 		return items.map(item => {
@@ -137,11 +94,7 @@
 </script>
 
 <div class="docs-layout">
-	{#if loading}
-		<div class="loading">Loading documentation...</div>
-	{:else if error}
-		<div class="error">Error: {error}</div>
-	{:else if navigation}
+	{#if navigation}
 		<nav class="docs-sidebar">
 			<header class="docs-header">
 				<h1>svelte-markdown-pages</h1>
@@ -163,23 +116,18 @@
 					</ul>
 				</div>
 			{:else}
-				{@html pageContent || 'No content selected'}
+				{#await pageContentPromise}
+					<div>Loading...</div>
+				{:then content}
+					{@html content || 'No content selected'}
+				{:catch error}
+					<div>Error: {error.message}</div>
+				{/await}
 			{/if}
 		</div>
 	{/if}
 </div>
 
 <style>
-	.loading, .error {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		min-height: 100vh;
-		font-size: 1.2rem;
-		color: #666;
-	}
-	
-	.error {
-		color: #dc3545;
-	}
+	/* Add your styles here */
 </style>
