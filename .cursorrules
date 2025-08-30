@@ -1,4 +1,4 @@
-This is a context for AI editor/agent about the project. It's generated with a tool Airul (https://github.com/mitkury/airul) out of 3 sources. Feel free to edit .airul.json to change the sources and configure editors. Run `airul gen` to update the context after making changes to .airul.json or the sources. Remember to update TODO-AI.md after major changes in the project, keeping track of completed tasks and new developments.
+This is a context for AI editor/agent about the project. It's generated with a tool Airul (https://github.com/mitkury/airul) out of 15 sources. Feel free to edit .airul.json to change the sources and configure editors. Run `airul gen` to update the context after making changes to .airul.json or the sources. Remember to update TODO-AI.md after major changes in the project, keeping track of completed tasks and new developments.
 
 # From README.md:
 
@@ -376,6 +376,1602 @@ npx svelte-markdown-pages static ./content --output ./dist
 MIT License - see LICENSE file for details.
 ---
 
+# From docs/.index.json:
+
+{
+  "items": [
+    { "name": "getting-started", "type": "page", "label": "Getting Started" },
+    { "name": "guides", "type": "section", "label": "Guides" },
+    { "name": "api", "type": "section", "label": "API Reference" }
+  ]
+}
+---
+
+# From docs/api/.index.json:
+
+{
+  "items": [
+    { "name": "builder", "type": "page", "label": "Builder" },
+    { "name": "renderer", "type": "page", "label": "Renderer" },
+    { "name": "types", "type": "page", "label": "Types" }
+  ]
+}
+---
+
+# From docs/api/builder.md:
+
+# Builder API
+
+The builder module provides functions for building documentation from markdown content and generating various output formats.
+
+## Functions
+
+### `buildDocs(contentPath, options?)`
+
+Builds documentation from a content directory.
+
+**Parameters:**
+- `contentPath` (string): Path to the content directory
+- `options` (BuildOptions, optional): Build configuration options
+
+**Returns:** Promise<BuildResult>
+
+**Example:**
+```typescript
+import { buildDocs } from 'svelte-markdown-pages/builder';
+
+const result = await buildDocs('./docs', {
+  appOutput: './src/lib/content',
+  websiteOutput: './src/lib/content',
+  includeContent: true
+});
+```
+
+### `generateStaticSite(contentPath, outputPath, options?)`
+
+Generates a complete static HTML site from markdown content.
+
+**Parameters:**
+- `contentPath` (string): Path to the content directory
+- `outputPath` (string): Path where the static site will be generated
+- `options` (StaticSiteOptions, optional): Static site configuration options
+
+**Returns:** Promise<StaticSiteResult>
+
+**Example:**
+```typescript
+import { generateStaticSite } from 'svelte-markdown-pages/builder';
+
+const result = await generateStaticSite('./docs', './dist', {
+  title: 'My Documentation',
+  baseUrl: 'https://example.com',
+  includeIndex: true
+});
+```
+
+## Types
+
+### BuildOptions
+
+Configuration options for the `buildDocs` function.
+
+```typescript
+interface BuildOptions {
+  appOutput?: string;
+  websiteOutput?: string;
+  staticOutput?: string;
+  includeContent?: boolean;
+  processor?: ContentProcessor;
+  plugins?: Plugin[];
+  hooks?: BuildHooks;
+}
+```
+
+**Properties:**
+- `appOutput` (string, optional): Directory for app-specific output files
+- `websiteOutput` (string, optional): Directory for website-specific output files
+- `staticOutput` (string, optional): Directory for static site output
+- `includeContent` (boolean, optional): Whether to include content in output bundles (default: false)
+- `processor` (ContentProcessor, optional): Custom content processor
+- `plugins` (Plugin[], optional): Array of plugins to apply
+- `hooks` (BuildHooks, optional): Build lifecycle hooks
+
+### StaticSiteOptions
+
+Configuration options for the `generateStaticSite` function.
+
+```typescript
+interface StaticSiteOptions {
+  title?: string;
+  baseUrl?: string;
+  css?: string;
+  js?: string;
+  includeIndex?: boolean;
+  indexTitle?: string;
+  processor?: ContentProcessor;
+  plugins?: Plugin[];
+}
+```
+
+**Properties:**
+- `title` (string, optional): Site title for generated HTML
+- `baseUrl` (string, optional): Base URL for the site
+- `css` (string, optional): Custom CSS content to include
+- `js` (string, optional): Custom JavaScript content to include
+- `includeIndex` (boolean, optional): Whether to generate an index page (default: false)
+- `indexTitle` (string, optional): Title for the generated index page
+- `processor` (ContentProcessor, optional): Custom content processor
+- `plugins` (Plugin[], optional): Array of plugins to apply
+
+### BuildResult
+
+Result object returned by `buildDocs`.
+
+```typescript
+interface BuildResult {
+  navigation: NavigationData;
+  content?: ContentBundle;
+  files: string[];
+  stats: BuildStats;
+}
+```
+
+**Properties:**
+- `navigation` (NavigationData): Generated navigation structure
+- `content` (ContentBundle, optional): Content bundle (if includeContent is true)
+- `files` (string[]): List of generated files
+- `stats` (BuildStats): Build statistics
+
+### StaticSiteResult
+
+Result object returned by `generateStaticSite`.
+
+```typescript
+interface StaticSiteResult {
+  files: string[];
+  stats: BuildStats;
+  urls: string[];
+}
+```
+
+**Properties:**
+- `files` (string[]): List of generated files
+- `stats` (BuildStats): Build statistics
+- `urls` (string[]): List of generated URLs
+
+### ContentProcessor
+
+Interface for custom content processors.
+
+```typescript
+interface ContentProcessor {
+  process(content: string): string;
+}
+```
+
+**Methods:**
+- `process(content: string): string`: Process and transform content
+
+### Plugin
+
+Interface for plugins.
+
+```typescript
+interface Plugin {
+  name: string;
+  version: string;
+  process?: (content: string) => string;
+  transform?: (content: string) => string;
+  validate?: (content: string) => boolean;
+  beforeBuild?: () => void;
+  afterBuild?: (result: any) => void;
+}
+```
+
+**Properties:**
+- `name` (string): Plugin name
+- `version` (string): Plugin version
+- `process` (function, optional): Content processing function
+- `transform` (function, optional): Content transformation function
+- `validate` (function, optional): Content validation function
+- `beforeBuild` (function, optional): Pre-build hook
+- `afterBuild` (function, optional): Post-build hook
+
+### BuildHooks
+
+Lifecycle hooks for the build process.
+
+```typescript
+interface BuildHooks {
+  beforeBuild?: (contentPath: string) => void | Promise<void>;
+  afterBuild?: (result: BuildResult) => void | Promise<void>;
+  onError?: (error: Error) => void;
+}
+```
+
+**Properties:**
+- `beforeBuild` (function, optional): Called before build starts
+- `afterBuild` (function, optional): Called after build completes
+- `onError` (function, optional): Called when build errors occur
+
+### BuildStats
+
+Statistics about the build process.
+
+```typescript
+interface BuildStats {
+  pages: number;
+  sections: number;
+  totalFiles: number;
+  buildTime: number;
+  errors: string[];
+  warnings: string[];
+}
+```
+
+**Properties:**
+- `pages` (number): Number of pages processed
+- `sections` (number): Number of sections processed
+- `totalFiles` (number): Total number of files processed
+- `buildTime` (number): Build time in milliseconds
+- `errors` (string[]): List of build errors
+- `warnings` (string[]): List of build warnings
+
+## Examples
+
+### Basic Build
+
+```typescript
+import { buildDocs } from 'svelte-markdown-pages/builder';
+
+const result = await buildDocs('./docs', {
+  appOutput: './src/lib/content',
+  includeContent: true
+});
+
+console.log(`Built ${result.stats.pages} pages in ${result.stats.buildTime}ms`);
+```
+
+### Advanced Build with Plugins
+
+```typescript
+import { buildDocs } from 'svelte-markdown-pages/builder';
+
+const customProcessor = {
+  process(content: string): string {
+    return content.replace(/:::(.+?):::/g, '<CustomComponent>$1</CustomComponent>');
+  }
+};
+
+const customPlugin = {
+  name: 'custom-plugin',
+  version: '1.0.0',
+  process(content: string): string {
+    return content.replace(/\[\[(.+?)\]\]/g, '<InternalLink>$1</InternalLink>');
+  }
+};
+
+const result = await buildDocs('./docs', {
+  appOutput: './src/lib/content',
+  websiteOutput: './src/lib/content',
+  includeContent: true,
+  processor: customProcessor,
+  plugins: [customPlugin],
+  hooks: {
+    beforeBuild: (contentPath) => {
+      console.log(`Starting build for: ${contentPath}`);
+    },
+    afterBuild: (result) => {
+      console.log(`Build completed: ${result.files.length} files generated`);
+    },
+    onError: (error) => {
+      console.error('Build error:', error.message);
+    }
+  }
+});
+```
+
+### Static Site Generation
+
+```typescript
+import { generateStaticSite } from 'svelte-markdown-pages/builder';
+
+const result = await generateStaticSite('./docs', './dist', {
+  title: 'My Documentation',
+  baseUrl: 'https://docs.example.com',
+  css: `
+    body { font-family: 'Inter', sans-serif; }
+    .docs-content { max-width: 800px; margin: 0 auto; }
+  `,
+  js: `
+    // Add syntax highlighting
+    hljs.highlightAll();
+  `,
+  includeIndex: true,
+  indexTitle: 'Documentation Home'
+});
+
+console.log(`Generated ${result.files.length} files`);
+console.log(`Available URLs: ${result.urls.join(', ')}`);
+```
+
+### Error Handling
+
+```typescript
+import { buildDocs } from 'svelte-markdown-pages/builder';
+
+try {
+  const result = await buildDocs('./docs', {
+    appOutput: './src/lib/content',
+    includeContent: true
+  });
+  
+  if (result.stats.errors.length > 0) {
+    console.error('Build completed with errors:', result.stats.errors);
+  }
+  
+  if (result.stats.warnings.length > 0) {
+    console.warn('Build completed with warnings:', result.stats.warnings);
+  }
+} catch (error) {
+  console.error('Build failed:', error.message);
+  process.exit(1);
+}
+```
+
+## Error Codes
+
+The builder functions may throw errors with specific error codes:
+
+- `ENOENT`: Content directory not found
+- `INVALID_INDEX`: Invalid `.index.json` file
+- `MISSING_CONTENT`: Required content file missing
+- `PROCESSING_ERROR`: Content processing failed
+- `PLUGIN_ERROR`: Plugin execution failed
+
+## Performance Considerations
+
+### Large Documentation Sites
+
+For large documentation sites, consider:
+
+1. **Disable content inclusion** if not needed:
+   ```typescript
+   await buildDocs('./docs', {
+     appOutput: './src/lib/content',
+     includeContent: false
+   });
+   ```
+
+2. **Use efficient processors**:
+   ```typescript
+   const efficientProcessor = {
+     process(content: string): string {
+       // Use efficient string operations
+       return content.replace(/pattern/g, 'replacement');
+     }
+   };
+   ```
+
+3. **Implement caching**:
+   ```typescript
+   const cache = new Map();
+   
+   const cachedProcessor = {
+     process(content: string): string {
+       const hash = createHash(content);
+       if (cache.has(hash)) {
+         return cache.get(hash);
+       }
+       
+       const result = processContent(content);
+       cache.set(hash, result);
+       return result;
+     }
+   };
+   ```
+
+## Related
+
+- [Renderer API](./renderer.md) - Content rendering and navigation
+- [Types](./types.md) - Type definitions and interfaces
+---
+
+# From docs/api/renderer.md:
+
+# Renderer API
+
+The renderer module provides classes and functions for rendering content and managing navigation in your Svelte applications.
+
+## Classes
+
+### `NavigationTree`
+
+Manages navigation structure and provides navigation utilities.
+
+```typescript
+import { NavigationTree } from 'svelte-markdown-pages/renderer';
+
+const navigation = new NavigationTree(navigationData);
+```
+
+#### Constructor
+
+**Parameters:**
+- `navigationData` (NavigationData): Navigation structure data
+
+#### Methods
+
+##### `findItemByPath(path: string): NavigationItem | null`
+
+Finds a navigation item by its file path.
+
+**Parameters:**
+- `path` (string): File path to search for
+
+**Returns:** NavigationItem | null
+
+**Example:**
+```typescript
+const item = navigation.findItemByPath('guides/installation.md');
+if (item) {
+  console.log('Found item:', item.label);
+}
+```
+
+##### `getBreadcrumbs(path: string): NavigationItem[]`
+
+Gets the breadcrumb trail for a given path.
+
+**Parameters:**
+- `path` (string): File path to get breadcrumbs for
+
+**Returns:** NavigationItem[]
+
+**Example:**
+```typescript
+const breadcrumbs = navigation.getBreadcrumbs('guides/advanced/customization.md');
+// Returns: [root, guides, advanced, customization]
+```
+
+##### `getSiblings(path: string): NavigationItem[]`
+
+Gets sibling items for a given path.
+
+**Parameters:**
+- `path` (string): File path to get siblings for
+
+**Returns:** NavigationItem[]
+
+**Example:**
+```typescript
+const siblings = navigation.getSiblings('guides/installation.md');
+// Returns: [installation, configuration, advanced]
+```
+
+##### `getNextSibling(path: string): NavigationItem | null`
+
+Gets the next sibling item.
+
+**Parameters:**
+- `path` (string): Current file path
+
+**Returns:** NavigationItem | null
+
+**Example:**
+```typescript
+const next = navigation.getNextSibling('guides/installation.md');
+if (next) {
+  console.log('Next page:', next.label);
+}
+```
+
+##### `getPreviousSibling(path: string): NavigationItem | null`
+
+Gets the previous sibling item.
+
+**Parameters:**
+- `path` (string): Current file path
+
+**Returns:** NavigationItem | null
+
+**Example:**
+```typescript
+const prev = navigation.getPreviousSibling('guides/configuration.md');
+if (prev) {
+  console.log('Previous page:', prev.label);
+}
+```
+
+##### `getChildren(path: string): NavigationItem[]`
+
+Gets child items for a given path.
+
+**Parameters:**
+- `path` (string): Parent path to get children for
+
+**Returns:** NavigationItem[]
+
+**Example:**
+```typescript
+const children = navigation.getChildren('guides');
+// Returns: [installation, configuration, advanced]
+```
+
+##### `getParent(path: string): NavigationItem | null`
+
+Gets the parent item for a given path.
+
+**Parameters:**
+- `path` (string): Child path to get parent for
+
+**Returns:** NavigationItem | null
+
+**Example:**
+```typescript
+const parent = navigation.getParent('guides/installation.md');
+if (parent) {
+  console.log('Parent section:', parent.label);
+}
+```
+
+### `ContentLoader`
+
+Manages content loading and processing.
+
+```typescript
+import { ContentLoader } from 'svelte-markdown-pages/renderer';
+
+const loader = new ContentLoader(contentBundle);
+```
+
+#### Constructor
+
+**Parameters:**
+- `contentBundle` (ContentBundle): Content bundle data
+
+#### Methods
+
+##### `loadAndProcess(path: string, processor?: ContentProcessor): string`
+
+Loads and processes content for a specific path.
+
+**Parameters:**
+- `path` (string): Content path to load
+- `processor` (ContentProcessor, optional): Custom content processor
+
+**Returns:** string
+
+**Example:**
+```typescript
+const content = loader.loadAndProcess('getting-started.md');
+console.log('Content loaded:', content.length, 'characters');
+```
+
+##### `hasContent(path: string): boolean`
+
+Checks if content exists for a given path.
+
+**Parameters:**
+- `path` (string): Content path to check
+
+**Returns:** boolean
+
+**Example:**
+```typescript
+if (loader.hasContent('guides/installation.md')) {
+  console.log('Installation guide exists');
+}
+```
+
+##### `getAvailablePaths(): string[]`
+
+Gets all available content paths.
+
+**Returns:** string[]
+
+**Example:**
+```typescript
+const paths = loader.getAvailablePaths();
+console.log('Available content:', paths);
+```
+
+##### `getContentMetadata(path: string): ContentMetadata | null`
+
+Gets metadata for a content file.
+
+**Parameters:**
+- `path` (string): Content path to get metadata for
+
+**Returns:** ContentMetadata | null
+
+**Example:**
+```typescript
+const metadata = loader.getContentMetadata('getting-started.md');
+if (metadata) {
+  console.log('Title:', metadata.title);
+  console.log('Last modified:', metadata.lastModified);
+}
+```
+
+## Functions
+
+### `loadContent(path, contentBundle, processor?)`
+
+Loads and processes content for a specific path.
+
+**Parameters:**
+- `path` (string): Content path to load
+- `contentBundle` (ContentBundle): Content bundle data
+- `processor` (ContentProcessor, optional): Custom content processor
+
+**Returns:** Promise<string>
+
+**Example:**
+```typescript
+import { loadContent } from 'svelte-markdown-pages/renderer';
+
+const content = await loadContent('getting-started.md', contentBundle);
+```
+
+### `extractHeadings(content: string): Heading[]`
+
+Extracts headings from markdown content.
+
+**Parameters:**
+- `content` (string): Markdown content to extract headings from
+
+**Returns:** Heading[]
+
+**Example:**
+```typescript
+import { extractHeadings } from 'svelte-markdown-pages/renderer';
+
+const headings = extractHeadings(content);
+headings.forEach(heading => {
+  console.log(`${'#'.repeat(heading.level)} ${heading.text}`);
+});
+```
+
+### `extractTableOfContents(content: string): TableOfContentsItem[]`
+
+Extracts table of contents from markdown content.
+
+**Parameters:**
+- `content` (string): Markdown content to extract TOC from
+
+**Returns:** TableOfContentsItem[]
+
+**Example:**
+```typescript
+import { extractTableOfContents } from 'svelte-markdown-pages/renderer';
+
+const toc = extractTableOfContents(content);
+toc.forEach(item => {
+  console.log(`${'  '.repeat(item.depth)}- ${item.text}`);
+});
+```
+
+### `addTableOfContents(content: string, toc?: TableOfContentsItem[]): string`
+
+Adds a table of contents to markdown content.
+
+**Parameters:**
+- `content` (string): Markdown content to add TOC to
+- `toc` (TableOfContentsItem[], optional): Pre-generated TOC
+
+**Returns:** string
+
+**Example:**
+```typescript
+import { addTableOfContents } from 'svelte-markdown-pages/renderer';
+
+const contentWithToc = addTableOfContents(content);
+```
+
+## Types
+
+### NavigationItem
+
+Represents a navigation item.
+
+```typescript
+interface NavigationItem {
+  name: string;
+  type: 'page' | 'section';
+  label: string;
+  items?: NavigationItem[];
+  collapsed?: boolean;
+  url?: string;
+}
+```
+
+**Properties:**
+- `name` (string): File/directory name (without extension)
+- `type` ('page' | 'section'): Item type
+- `label` (string): Display label
+- `items` (NavigationItem[], optional): Child items (for sections)
+- `collapsed` (boolean, optional): Whether section is collapsed by default
+- `url` (string, optional): External URL
+
+### NavigationData
+
+Complete navigation structure.
+
+```typescript
+interface NavigationData {
+  items: NavigationItem[];
+}
+```
+
+### ContentBundle
+
+Bundle containing all content data.
+
+```typescript
+interface ContentBundle {
+  [path: string]: string;
+}
+```
+
+### ContentMetadata
+
+Metadata for a content file.
+
+```typescript
+interface ContentMetadata {
+  title: string;
+  description?: string;
+  lastModified: Date;
+  wordCount: number;
+  readingTime: number;
+}
+```
+
+### Heading
+
+Represents a markdown heading.
+
+```typescript
+interface Heading {
+  level: number;
+  text: string;
+  id: string;
+  line: number;
+}
+```
+
+**Properties:**
+- `level` (number): Heading level (1-6)
+- `text` (string): Heading text
+- `id` (string): Generated heading ID
+- `line` (number): Line number in source
+
+### TableOfContentsItem
+
+Represents a table of contents item.
+
+```typescript
+interface TableOfContentsItem {
+  level: number;
+  text: string;
+  id: string;
+  children: TableOfContentsItem[];
+}
+```
+
+**Properties:**
+- `level` (number): Heading level
+- `text` (string): Heading text
+- `id` (string): Heading ID
+- `children` (TableOfContentsItem[]): Child items
+
+### ContentProcessor
+
+Interface for content processors.
+
+```typescript
+interface ContentProcessor {
+  process(content: string): string;
+}
+```
+
+## Examples
+
+### Basic Navigation Usage
+
+```typescript
+import { NavigationTree } from 'svelte-markdown-pages/renderer';
+import navigationData from './content/navigation.json';
+
+const navigation = new NavigationTree(navigationData);
+
+// Find current page
+const currentPage = navigation.findItemByPath('guides/installation.md');
+
+// Get breadcrumbs
+const breadcrumbs = navigation.getBreadcrumbs('guides/installation.md');
+
+// Get navigation siblings
+const nextPage = navigation.getNextSibling('guides/installation.md');
+const prevPage = navigation.getPreviousSibling('guides/installation.md');
+```
+
+### Content Loading
+
+```typescript
+import { ContentLoader, loadContent } from 'svelte-markdown-pages/renderer';
+import contentBundle from './content/content.json';
+
+// Using ContentLoader class
+const loader = new ContentLoader(contentBundle);
+const content = loader.loadAndProcess('getting-started.md');
+
+// Using loadContent function
+const content = await loadContent('getting-started.md', contentBundle);
+```
+
+### Table of Contents
+
+```typescript
+import { 
+  extractHeadings, 
+  extractTableOfContents, 
+  addTableOfContents 
+} from 'svelte-markdown-pages/renderer';
+
+// Extract headings
+const headings = extractHeadings(content);
+
+// Generate table of contents
+const toc = extractTableOfContents(content);
+
+// Add table of contents to content
+const contentWithToc = addTableOfContents(content, toc);
+```
+
+### Custom Content Processing
+
+```typescript
+import { loadContent } from 'svelte-markdown-pages/renderer';
+
+const customProcessor = {
+  process(content: string): string {
+    // Add custom processing
+    return content
+      .replace(/:::(.+?):::/g, '<CustomComponent>$1</CustomComponent>')
+      .replace(/\[\[(.+?)\]\]/g, '<InternalLink>$1</InternalLink>');
+  }
+};
+
+const processedContent = await loadContent(
+  'getting-started.md', 
+  contentBundle, 
+  customProcessor
+);
+```
+
+### Svelte Component Integration
+
+```svelte
+<script lang="ts">
+  import { NavigationTree, loadContent } from 'svelte-markdown-pages/renderer';
+  import type { NavigationItem } from 'svelte-markdown-pages';
+  import navigationData from '$lib/content/navigation.json';
+  import contentBundle from '$lib/content/content.json';
+  
+  let navigation = $state(new NavigationTree(navigationData));
+  let currentPage = $state<string>("getting-started.md");
+  let pageContent = $state<string | null>(null);
+  
+  $effect(() => {
+    if (currentPage && contentBundle) {
+      loadContent(currentPage, contentBundle).then(content => {
+        pageContent = content;
+      });
+    }
+  });
+  
+  function handlePageSelect(path: string) {
+    currentPage = path;
+  }
+  
+  function renderNavigationItems(items: NavigationItem[]): string {
+    return items.map(item => {
+      if (item.type === 'section') {
+        return `
+          <div class="nav-section">
+            <h3>${item.label}</h3>
+            ${renderNavigationItems(item.items || [])}
+          </div>
+        `;
+      } else {
+        const isActive = currentPage === item.name + '.md';
+        return `
+          <button 
+            class="nav-link ${isActive ? 'active' : ''}"
+            onclick="window.dispatchEvent(new CustomEvent('pageSelect', { detail: '${item.name}.md' }))"
+          >
+            ${item.label}
+          </button>
+        `;
+      }
+    }).join('');
+  }
+  
+  // Set up event listener
+  if (typeof window !== 'undefined') {
+    window.addEventListener('pageSelect', (event: any) => {
+      handlePageSelect(event.detail);
+    });
+  }
+</script>
+
+<div class="docs-layout">
+  <nav class="docs-sidebar">
+    {@html renderNavigationItems(navigation.items)}
+  </nav>
+  
+  <div class="docs-content">
+    {@html pageContent || 'No content selected'}
+  </div>
+</div>
+```
+
+## Error Handling
+
+### Content Loading Errors
+
+```typescript
+import { loadContent } from 'svelte-markdown-pages/renderer';
+
+try {
+  const content = await loadContent('non-existent.md', contentBundle);
+} catch (error) {
+  if (error.code === 'CONTENT_NOT_FOUND') {
+    console.error('Content not found');
+  } else {
+    console.error('Failed to load content:', error.message);
+  }
+}
+```
+
+### Navigation Errors
+
+```typescript
+import { NavigationTree } from 'svelte-markdown-pages/renderer';
+
+try {
+  const navigation = new NavigationTree(navigationData);
+  const item = navigation.findItemByPath('invalid/path.md');
+  
+  if (!item) {
+    console.warn('Navigation item not found');
+  }
+} catch (error) {
+  console.error('Navigation error:', error.message);
+}
+```
+
+## Performance Considerations
+
+### Lazy Loading
+
+For large content bundles, consider lazy loading:
+
+```typescript
+const lazyLoader = {
+  async loadContent(path: string): Promise<string> {
+    // Load content on demand
+    const response = await fetch(`/api/content/${path}`);
+    return response.text();
+  }
+};
+```
+
+### Caching
+
+Implement caching for frequently accessed content:
+
+```typescript
+const contentCache = new Map();
+
+async function loadContentWithCache(path: string, contentBundle: any): Promise<string> {
+  if (contentCache.has(path)) {
+    return contentCache.get(path);
+  }
+  
+  const content = await loadContent(path, contentBundle);
+  contentCache.set(path, content);
+  return content;
+}
+```
+
+## Related
+
+- [Builder API](./builder.md) - Content building and generation
+- [Types](./types.md) - Type definitions and interfaces
+---
+
+# From docs/api/types.md:
+
+# Types
+
+Complete type definitions and interfaces for svelte-markdown-pages.
+
+## Core Types
+
+### NavigationItem
+
+Represents a navigation item in the documentation structure.
+
+```typescript
+interface NavigationItem {
+  name: string;
+  type: 'page' | 'section';
+  label: string;
+  items?: NavigationItem[];
+  collapsed?: boolean;
+  url?: string;
+}
+```
+
+**Properties:**
+- `name` (string): File/directory name without extension
+- `type` ('page' | 'section'): Type of navigation item
+- `label` (string): Display label for the item
+- `items` (NavigationItem[], optional): Child items for sections
+- `collapsed` (boolean, optional): Whether section is collapsed by default
+- `url` (string, optional): External URL for the item
+
+### NavigationData
+
+Complete navigation structure for the documentation.
+
+```typescript
+interface NavigationData {
+  items: NavigationItem[];
+}
+```
+
+**Properties:**
+- `items` (NavigationItem[]): Root-level navigation items
+
+### ContentBundle
+
+Bundle containing all content data indexed by file path.
+
+```typescript
+interface ContentBundle {
+  [path: string]: string;
+}
+```
+
+**Properties:**
+- `[path: string]` (string): Content indexed by file path
+
+## Builder Types
+
+### BuildOptions
+
+Configuration options for the `buildDocs` function.
+
+```typescript
+interface BuildOptions {
+  appOutput?: string;
+  websiteOutput?: string;
+  staticOutput?: string;
+  includeContent?: boolean;
+  processor?: ContentProcessor;
+  plugins?: Plugin[];
+  hooks?: BuildHooks;
+}
+```
+
+**Properties:**
+- `appOutput` (string, optional): Directory for app-specific output files
+- `websiteOutput` (string, optional): Directory for website-specific output files
+- `staticOutput` (string, optional): Directory for static site output
+- `includeContent` (boolean, optional): Whether to include content in output bundles
+- `processor` (ContentProcessor, optional): Custom content processor
+- `plugins` (Plugin[], optional): Array of plugins to apply
+- `hooks` (BuildHooks, optional): Build lifecycle hooks
+
+### StaticSiteOptions
+
+Configuration options for the `generateStaticSite` function.
+
+```typescript
+interface StaticSiteOptions {
+  title?: string;
+  baseUrl?: string;
+  css?: string;
+  js?: string;
+  includeIndex?: boolean;
+  indexTitle?: string;
+  processor?: ContentProcessor;
+  plugins?: Plugin[];
+}
+```
+
+**Properties:**
+- `title` (string, optional): Site title for generated HTML
+- `baseUrl` (string, optional): Base URL for the site
+- `css` (string, optional): Custom CSS content to include
+- `js` (string, optional): Custom JavaScript content to include
+- `includeIndex` (boolean, optional): Whether to generate an index page
+- `indexTitle` (string, optional): Title for the generated index page
+- `processor` (ContentProcessor, optional): Custom content processor
+- `plugins` (Plugin[], optional): Array of plugins to apply
+
+### BuildResult
+
+Result object returned by `buildDocs`.
+
+```typescript
+interface BuildResult {
+  navigation: NavigationData;
+  content?: ContentBundle;
+  files: string[];
+  stats: BuildStats;
+}
+```
+
+**Properties:**
+- `navigation` (NavigationData): Generated navigation structure
+- `content` (ContentBundle, optional): Content bundle (if includeContent is true)
+- `files` (string[]): List of generated files
+- `stats` (BuildStats): Build statistics
+
+### StaticSiteResult
+
+Result object returned by `generateStaticSite`.
+
+```typescript
+interface StaticSiteResult {
+  files: string[];
+  stats: BuildStats;
+  urls: string[];
+}
+```
+
+**Properties:**
+- `files` (string[]): List of generated files
+- `stats` (BuildStats): Build statistics
+- `urls` (string[]): List of generated URLs
+
+### BuildStats
+
+Statistics about the build process.
+
+```typescript
+interface BuildStats {
+  pages: number;
+  sections: number;
+  totalFiles: number;
+  buildTime: number;
+  errors: string[];
+  warnings: string[];
+}
+```
+
+**Properties:**
+- `pages` (number): Number of pages processed
+- `sections` (number): Number of sections processed
+- `totalFiles` (number): Total number of files processed
+- `buildTime` (number): Build time in milliseconds
+- `errors` (string[]): List of build errors
+- `warnings` (string[]): List of build warnings
+
+### BuildHooks
+
+Lifecycle hooks for the build process.
+
+```typescript
+interface BuildHooks {
+  beforeBuild?: (contentPath: string) => void | Promise<void>;
+  afterBuild?: (result: BuildResult) => void | Promise<void>;
+  onError?: (error: Error) => void;
+}
+```
+
+**Properties:**
+- `beforeBuild` (function, optional): Called before build starts
+- `afterBuild` (function, optional): Called after build completes
+- `onError` (function, optional): Called when build errors occur
+
+## Renderer Types
+
+### ContentMetadata
+
+Metadata for a content file.
+
+```typescript
+interface ContentMetadata {
+  title: string;
+  description?: string;
+  lastModified: Date;
+  wordCount: number;
+  readingTime: number;
+}
+```
+
+**Properties:**
+- `title` (string): Content title
+- `description` (string, optional): Content description
+- `lastModified` (Date): Last modification date
+- `wordCount` (number): Number of words in content
+- `readingTime` (number): Estimated reading time in minutes
+
+### Heading
+
+Represents a markdown heading.
+
+```typescript
+interface Heading {
+  level: number;
+  text: string;
+  id: string;
+  line: number;
+}
+```
+
+**Properties:**
+- `level` (number): Heading level (1-6)
+- `text` (string): Heading text
+- `id` (string): Generated heading ID
+- `line` (number): Line number in source
+
+### TableOfContentsItem
+
+Represents a table of contents item.
+
+```typescript
+interface TableOfContentsItem {
+  level: number;
+  text: string;
+  id: string;
+  children: TableOfContentsItem[];
+}
+```
+
+**Properties:**
+- `level` (number): Heading level
+- `text` (string): Heading text
+- `id` (string): Heading ID
+- `children` (TableOfContentsItem[]): Child items
+
+## Plugin Types
+
+### Plugin
+
+Interface for plugins.
+
+```typescript
+interface Plugin {
+  name: string;
+  version: string;
+  process?: (content: string) => string;
+  transform?: (content: string) => string;
+  validate?: (content: string) => boolean;
+  beforeBuild?: () => void;
+  afterBuild?: (result: any) => void;
+}
+```
+
+**Properties:**
+- `name` (string): Plugin name
+- `version` (string): Plugin version
+- `process` (function, optional): Content processing function
+- `transform` (function, optional): Content transformation function
+- `validate` (function, optional): Content validation function
+- `beforeBuild` (function, optional): Pre-build hook
+- `afterBuild` (function, optional): Post-build hook
+
+### PluginConfig
+
+Configuration for a plugin.
+
+```typescript
+interface PluginConfig {
+  enabled?: boolean;
+  options?: Record<string, any>;
+}
+```
+
+**Properties:**
+- `enabled` (boolean, optional): Whether plugin is enabled
+- `options` (Record<string, any>, optional): Plugin-specific options
+
+## Processor Types
+
+### ContentProcessor
+
+Interface for content processors.
+
+```typescript
+interface ContentProcessor {
+  process(content: string): string;
+}
+```
+
+**Methods:**
+- `process(content: string): string`: Process and transform content
+
+### ProcessorOptions
+
+Options for content processors.
+
+```typescript
+interface ProcessorOptions {
+  markdown?: boolean;
+  html?: boolean;
+  custom?: boolean;
+}
+```
+
+**Properties:**
+- `markdown` (boolean, optional): Whether to process markdown
+- `html` (boolean, optional): Whether to process HTML
+- `custom` (boolean, optional): Whether to apply custom processing
+
+## Error Types
+
+### BuildError
+
+Error thrown during build process.
+
+```typescript
+interface BuildError extends Error {
+  code: string;
+  path?: string;
+  details?: any;
+}
+```
+
+**Properties:**
+- `code` (string): Error code
+- `path` (string, optional): File path where error occurred
+- `details` (any, optional): Additional error details
+
+### ContentError
+
+Error thrown during content processing.
+
+```typescript
+interface ContentError extends Error {
+  code: string;
+  path: string;
+  content?: string;
+}
+```
+
+**Properties:**
+- `code` (string): Error code
+- `path` (string): Content file path
+- `content` (string, optional): Content that caused error
+
+## Utility Types
+
+### DeepPartial
+
+Makes all properties in T optional recursively.
+
+```typescript
+type DeepPartial<T> = {
+  [P in keyof T]?: T[P] extends object ? DeepPartial<T[P]> : T[P];
+};
+```
+
+### RequiredKeys
+
+Extracts keys of T that are required.
+
+```typescript
+type RequiredKeys<T> = {
+  [K in keyof T]-?: {} extends Pick<T, K> ? never : K;
+}[keyof T];
+```
+
+### OptionalKeys
+
+Extracts keys of T that are optional.
+
+```typescript
+type OptionalKeys<T> = {
+  [K in keyof T]-?: {} extends Pick<T, K> ? K : never;
+}[keyof T];
+```
+
+## Type Guards
+
+### Type Guards for Runtime Validation
+
+```typescript
+function isNavigationItem(obj: any): obj is NavigationItem {
+  return (
+    typeof obj === 'object' &&
+    obj !== null &&
+    typeof obj.name === 'string' &&
+    typeof obj.type === 'string' &&
+    (obj.type === 'page' || obj.type === 'section') &&
+    typeof obj.label === 'string'
+  );
+}
+
+function isNavigationData(obj: any): obj is NavigationData {
+  return (
+    typeof obj === 'object' &&
+    obj !== null &&
+    Array.isArray(obj.items) &&
+    obj.items.every(isNavigationItem)
+  );
+}
+
+function isContentBundle(obj: any): obj is ContentBundle {
+  return (
+    typeof obj === 'object' &&
+    obj !== null &&
+    Object.keys(obj).every(key => typeof obj[key] === 'string')
+  );
+}
+
+function isPlugin(obj: any): obj is Plugin {
+  return (
+    typeof obj === 'object' &&
+    obj !== null &&
+    typeof obj.name === 'string' &&
+    typeof obj.version === 'string'
+  );
+}
+```
+
+## Zod Schemas
+
+### Validation Schemas
+
+```typescript
+import { z } from 'zod';
+
+const NavigationItemSchema = z.object({
+  name: z.string(),
+  type: z.enum(['page', 'section']),
+  label: z.string(),
+  items: z.array(z.lazy(() => NavigationItemSchema)).optional(),
+  collapsed: z.boolean().optional(),
+  url: z.string().url().optional()
+});
+
+const NavigationDataSchema = z.object({
+  items: z.array(NavigationItemSchema)
+});
+
+const ContentBundleSchema = z.record(z.string(), z.string());
+
+const PluginSchema = z.object({
+  name: z.string(),
+  version: z.string(),
+  process: z.function().args(z.string()).returns(z.string()).optional(),
+  transform: z.function().args(z.string()).returns(z.string()).optional(),
+  validate: z.function().args(z.string()).returns(z.boolean()).optional(),
+  beforeBuild: z.function().returns(z.void()).optional(),
+  afterBuild: z.function().args(z.any()).returns(z.void()).optional()
+});
+
+const BuildOptionsSchema = z.object({
+  appOutput: z.string().optional(),
+  websiteOutput: z.string().optional(),
+  staticOutput: z.string().optional(),
+  includeContent: z.boolean().optional(),
+  processor: z.object({
+    process: z.function().args(z.string()).returns(z.string())
+  }).optional(),
+  plugins: z.array(PluginSchema).optional(),
+  hooks: z.object({
+    beforeBuild: z.function().args(z.string()).returns(z.union([z.void(), z.promise(z.void())])).optional(),
+    afterBuild: z.function().args(z.any()).returns(z.union([z.void(), z.promise(z.void())])).optional(),
+    onError: z.function().args(z.instanceof(Error)).returns(z.void()).optional()
+  }).optional()
+});
+```
+
+## Usage Examples
+
+### Type-Safe Navigation
+
+```typescript
+import type { NavigationItem, NavigationData } from 'svelte-markdown-pages';
+
+function validateNavigation(data: unknown): NavigationData {
+  if (!isNavigationData(data)) {
+    throw new Error('Invalid navigation data');
+  }
+  return data;
+}
+
+function findPage(items: NavigationItem[], name: string): NavigationItem | null {
+  for (const item of items) {
+    if (item.name === name && item.type === 'page') {
+      return item;
+    }
+    if (item.items) {
+      const found = findPage(item.items, name);
+      if (found) return found;
+    }
+  }
+  return null;
+}
+```
+
+### Type-Safe Content Processing
+
+```typescript
+import type { ContentProcessor, ContentBundle } from 'svelte-markdown-pages';
+
+function createProcessor(options: ProcessorOptions): ContentProcessor {
+  return {
+    process(content: string): string {
+      let processed = content;
+      
+      if (options.markdown) {
+        processed = processMarkdown(processed);
+      }
+      
+      if (options.html) {
+        processed = processHtml(processed);
+      }
+      
+      if (options.custom) {
+        processed = processCustom(processed);
+      }
+      
+      return processed;
+    }
+  };
+}
+
+function validateContentBundle(bundle: unknown): ContentBundle {
+  if (!isContentBundle(bundle)) {
+    throw new Error('Invalid content bundle');
+  }
+  return bundle;
+}
+```
+
+### Type-Safe Plugin Development
+
+```typescript
+import type { Plugin, PluginConfig } from 'svelte-markdown-pages';
+
+function createPlugin(config: PluginConfig): Plugin {
+  return {
+    name: 'my-plugin',
+    version: '1.0.0',
+    process(content: string): string {
+      if (!config.enabled) {
+        return content;
+      }
+      
+      // Apply plugin processing based on config.options
+      return content;
+    }
+  };
+}
+
+function validatePlugin(plugin: unknown): Plugin {
+  if (!isPlugin(plugin)) {
+    throw new Error('Invalid plugin');
+  }
+  return plugin;
+}
+```
+
+## Related
+
+- [Builder API](./builder.md) - Content building and generation
+- [Renderer API](./renderer.md) - Content rendering and navigation
+---
+
 # From docs/for-ai/rules.md:
 
 # Basics for AI agents
@@ -547,3 +2143,1580 @@ In Svelte 5 `on:click` syntax is not allowed. Event handlers have been given a f
 
 <button onclick={once(preventDefault(handler))}>...</button>
 ```
+---
+
+# From docs/getting-started.md:
+
+# Getting Started
+
+Welcome to **svelte-markdown-pages** - a powerful, flexible solution for building documentation sites with distributed navigation structure for Svelte projects.
+
+## What is svelte-markdown-pages?
+
+svelte-markdown-pages is a standalone npm package that transforms your markdown content into a fully-featured documentation site. It provides:
+
+- **Distributed Navigation**: Each folder defines its own structure with `.index.json` files
+- **Multiple Output Formats**: App bundles, website navigation, and static HTML sites
+- **Type-Safe**: Full TypeScript support with Zod validation
+- **Framework Agnostic**: Svelte 5 components that work in any Svelte project
+- **Flexible**: Point to any directory with markdown and `.index.json` files
+- **Comprehensive Testing**: >90% test coverage with comprehensive test suite
+
+## Key Features
+
+### 🗂️ Distributed Navigation
+Organize your documentation with a distributed navigation system. Each folder can define its own structure using `.index.json` files, making it easy to maintain large documentation sites.
+
+### 📦 Multiple Output Formats
+Generate different outputs for different use cases:
+- **App bundles** for integration into existing Svelte applications
+- **Website navigation** for standalone documentation sites
+- **Static HTML sites** for deployment to any hosting platform
+
+### 🔧 Type-Safe Development
+Built with TypeScript and Zod validation, providing excellent developer experience with full type safety and runtime validation.
+
+### 🎨 Framework Agnostic
+Svelte 5 components that work seamlessly in any Svelte project, including SvelteKit applications.
+
+### ⚡ Flexible & Extensible
+Point to any directory with markdown content and `.index.json` files. Customize everything from styling to content processing with plugins.
+
+## Quick Start
+
+### 1. Install the Package
+
+```bash
+npm install svelte-markdown-pages
+```
+
+### 2. Create Your Content Structure
+
+Create a directory with your markdown content and `.index.json` files:
+
+```
+my-docs/
+├── .index.json
+├── getting-started.md
+└── guides/
+    ├── .index.json
+    └── installation.md
+```
+
+### 3. Define Navigation
+
+**Root level** (`my-docs/.index.json`):
+```json
+{
+  "items": [
+    { "name": "getting-started", "type": "page", "label": "Getting Started" },
+    { "name": "guides", "type": "section", "label": "Guides" }
+  ]
+}
+```
+
+**Section level** (`my-docs/guides/.index.json`):
+```json
+{
+  "items": [
+    { "name": "installation", "type": "page", "label": "Installation" }
+  ]
+}
+```
+
+### 4. Build Your Documentation
+
+```typescript
+import { buildDocs } from 'svelte-markdown-pages/builder';
+
+await buildDocs('./my-docs', {
+  appOutput: './src/lib/content',
+  websiteOutput: './src/lib/content',
+  includeContent: true
+});
+```
+
+### 5. Use in Your App
+
+```typescript
+import { NavigationTree, loadContent } from 'svelte-markdown-pages/renderer';
+import navigationData from './src/lib/content/navigation.json';
+import contentBundle from './src/lib/content/content.json';
+
+const navigation = new NavigationTree(navigationData);
+const content = await loadContent('getting-started.md', contentBundle);
+```
+
+## Use Cases
+
+### Documentation Sites
+Perfect for project documentation, API references, and user guides.
+
+### Blog Systems
+Create blog systems with hierarchical organization and easy content management.
+
+### Knowledge Bases
+Build comprehensive knowledge bases with distributed content management.
+
+### Static Sites
+Generate complete static HTML sites for deployment to any hosting platform.
+
+## What's Next?
+
+Ready to get started? Check out the [Installation](./guides/installation.md) guide to set up your first documentation site!
+
+## Examples
+
+- **This Website**: Built using svelte-markdown-pages itself
+- **Example Project**: See the `packages/examples` directory for a complete working example
+- **Test Suite**: Comprehensive examples in the `packages/tests` directory
+---
+
+# From docs/guides/.index.json:
+
+{
+  "items": [
+    { "name": "installation", "type": "page", "label": "Installation" },
+    { "name": "configuration", "type": "page", "label": "Configuration" },
+    { "name": "advanced", "type": "section", "label": "Advanced" }
+  ]
+}
+---
+
+# From docs/guides/advanced/.index.json:
+
+{
+  "items": [
+    { "name": "customization", "type": "page", "label": "Customization" },
+    { "name": "plugins", "type": "page", "label": "Plugins" }
+  ]
+}
+---
+
+# From docs/guides/advanced/customization.md:
+
+# Advanced Customization
+
+Learn how to customize svelte-markdown-pages for your specific needs with advanced configuration options.
+
+## Custom Components
+
+You can create custom components to extend the functionality of your documentation:
+
+```svelte
+<!-- src/lib/components/CustomComponent.svelte -->
+<script lang="ts">
+	let { content } = $props<{ content: string }>();
+</script>
+
+<div class="custom-component">
+	{@html content}
+</div>
+
+<style>
+	.custom-component {
+		background: #f8f9fa;
+		border: 1px solid #e9ecef;
+		border-radius: 8px;
+		padding: 1rem;
+		margin: 1rem 0;
+	}
+</style>
+```
+
+## Custom Processors
+
+Create custom content processors for advanced transformations:
+
+```typescript
+const customProcessor = {
+	process(content: string): string {
+		// Replace custom syntax with HTML
+		return content
+			.replace(/:::(.+?):::/g, '<CustomComponent content="$1" />')
+			.replace(/\[\[(.+?)\]\]/g, '<InternalLink href="$1" />');
+	}
+};
+
+await buildDocs('./docs', {
+	appOutput: './src/lib/content',
+	processor: customProcessor
+});
+```
+
+## Custom Styling
+
+### CSS Customization
+
+Override default styles with your own CSS:
+
+```css
+/* Custom documentation styles */
+.docs-content {
+	font-family: 'Inter', sans-serif;
+	line-height: 1.7;
+}
+
+.docs-content h1 {
+	color: #1a202c;
+	border-bottom: 3px solid #3182ce;
+}
+
+.docs-content code {
+	background: #edf2f7;
+	color: #2d3748;
+	font-weight: 500;
+}
+
+.docs-content pre {
+	background: #2d3748;
+	border-radius: 12px;
+	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+```
+
+### Theme System
+
+Create theme variations:
+
+```typescript
+const themes = {
+	light: {
+		background: '#ffffff',
+		text: '#2d3748',
+		primary: '#3182ce',
+		secondary: '#718096'
+	},
+	dark: {
+		background: '#1a202c',
+		text: '#e2e8f0',
+		primary: '#63b3ed',
+		secondary: '#a0aec0'
+	}
+};
+```
+
+## Custom Navigation
+
+### Custom Navigation Components
+
+Create custom navigation components:
+
+```svelte
+<!-- src/lib/components/CustomSidebar.svelte -->
+<script lang="ts">
+	import type { NavigationItem } from 'svelte-markdown-pages';
+	
+	let { items, currentPage } = $props<{
+		items: NavigationItem[];
+		currentPage: string;
+	}>();
+	
+	function renderItem(item: NavigationItem): string {
+		if (item.type === 'section') {
+			return `
+				<div class="nav-section">
+					<h3 class="nav-section-title">${item.label}</h3>
+					${item.items?.map(renderItem).join('') || ''}
+				</div>
+			`;
+		}
+		
+		const isActive = currentPage === item.name + '.md';
+		return `
+			<a href="/docs/${item.name}" class="nav-item ${isActive ? 'active' : ''}">
+				${item.label}
+			</a>
+		`;
+	}
+</script>
+
+<nav class="custom-sidebar">
+	{@html items.map(renderItem).join('')}
+</nav>
+
+<style>
+	.custom-sidebar {
+		background: #f7fafc;
+		padding: 1.5rem;
+		border-right: 1px solid #e2e8f0;
+	}
+	
+	.nav-section-title {
+		font-size: 0.875rem;
+		font-weight: 600;
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+		color: #718096;
+		margin: 1.5rem 0 0.75rem 0;
+	}
+	
+	.nav-item {
+		display: block;
+		padding: 0.5rem 0.75rem;
+		color: #4a5568;
+		text-decoration: none;
+		border-radius: 6px;
+		margin: 0.25rem 0;
+		transition: all 0.2s;
+	}
+	
+	.nav-item:hover {
+		background: #edf2f7;
+		color: #2d3748;
+	}
+	
+	.nav-item.active {
+		background: #3182ce;
+		color: white;
+	}
+</style>
+```
+
+## Custom Layouts
+
+### Page Layouts
+
+Create different layouts for different types of content:
+
+```svelte
+<!-- src/lib/layouts/DocumentationLayout.svelte -->
+<script lang="ts">
+	let { children, title, sidebar } = $props<{
+		children: any;
+		title: string;
+		sidebar: any;
+	}>();
+</script>
+
+<div class="doc-layout">
+	<header class="doc-header">
+		<h1>{title}</h1>
+	</header>
+	
+	<div class="doc-body">
+		<aside class="doc-sidebar">
+			{@render sidebar()}
+		</aside>
+		
+		<main class="doc-content">
+			{@render children()}
+		</main>
+	</div>
+</div>
+
+<style>
+	.doc-layout {
+		min-height: 100vh;
+		display: flex;
+		flex-direction: column;
+	}
+	
+	.doc-header {
+		background: #2d3748;
+		color: white;
+		padding: 1rem 2rem;
+	}
+	
+	.doc-body {
+		display: flex;
+		flex: 1;
+	}
+	
+	.doc-sidebar {
+		width: 280px;
+		background: #f7fafc;
+		border-right: 1px solid #e2e8f0;
+	}
+	
+	.doc-content {
+		flex: 1;
+		padding: 2rem;
+	}
+</style>
+```
+
+## Custom Markdown Extensions
+
+### Syntax Extensions
+
+Extend markdown syntax with custom processors:
+
+```typescript
+const markdownExtensions = {
+	// Custom admonition blocks
+	admonition: {
+		pattern: /^:::(\w+)\n([\s\S]*?)\n:::$/gm,
+		replacement: (match: string, type: string, content: string) => {
+			const icons = {
+				info: 'ℹ️',
+				warning: '⚠️',
+				error: '❌',
+				success: '✅'
+			};
+			
+			return `
+				<div class="admonition admonition-${type}">
+					<div class="admonition-header">
+						${icons[type as keyof typeof icons] || '📝'} ${type.charAt(0).toUpperCase() + type.slice(1)}
+					</div>
+					<div class="admonition-content">
+						${content}
+					</div>
+				</div>
+			`;
+		}
+	},
+	
+	// Custom callout blocks
+	callout: {
+		pattern: /^\[\[(.+?)\]\]\n([\s\S]*?)\n\[\[\/\]\]$/gm,
+		replacement: (match: string, title: string, content: string) => {
+			return `
+				<div class="callout">
+					<div class="callout-title">${title}</div>
+					<div class="callout-content">
+						${content}
+					</div>
+				</div>
+			`;
+		}
+	}
+};
+
+const processor = {
+	process(content: string): string {
+		let processed = content;
+		
+		// Apply custom extensions
+		Object.values(markdownExtensions).forEach(extension => {
+			processed = processed.replace(extension.pattern, extension.replacement);
+		});
+		
+		return processed;
+	}
+};
+```
+
+## Custom Build Process
+
+### Build Hooks
+
+Add custom build hooks for advanced processing:
+
+```typescript
+const buildHooks = {
+	beforeBuild: async (contentPath: string) => {
+		console.log('Starting build for:', contentPath);
+		// Pre-processing tasks
+	},
+	
+	afterBuild: async (result: any) => {
+		console.log('Build completed:', result);
+		// Post-processing tasks
+	},
+	
+	onError: (error: Error) => {
+		console.error('Build error:', error);
+		// Error handling
+	}
+};
+
+await buildDocs('./docs', {
+	appOutput: './src/lib/content',
+	hooks: buildHooks
+});
+```
+
+## Performance Optimization
+
+### Lazy Loading
+
+Implement lazy loading for large documentation sites:
+
+```typescript
+const lazyProcessor = {
+	process(content: string): string {
+		// Add lazy loading attributes to images
+		return content.replace(
+			/<img([^>]+)>/g,
+			'<img$1 loading="lazy">'
+		);
+	}
+};
+```
+
+### Code Splitting
+
+Split large content into smaller chunks:
+
+```typescript
+const chunkProcessor = {
+	process(content: string): string {
+		// Split content into sections
+		const sections = content.split(/(?=^#{1,3}\s)/m);
+		
+		return sections.map((section, index) => {
+			if (index === 0) return section;
+			return `<section data-chunk="${index}">${section}</section>`;
+		}).join('');
+	}
+};
+```
+
+## Next Steps
+
+Now that you understand advanced customization, explore:
+
+- [Plugins](./plugins.md) - Extend functionality with plugins
+- [API Reference](../api/builder.md) - Complete API documentation
+- [Examples](../../packages/examples) - Working examples
+---
+
+# From docs/guides/advanced/plugins.md:
+
+# Plugins
+
+Extend svelte-markdown-pages functionality with plugins for custom processing, styling, and features.
+
+## Plugin System
+
+The plugin system allows you to extend the functionality of svelte-markdown-pages with custom processors, transformers, and utilities.
+
+## Creating Plugins
+
+### Basic Plugin Structure
+
+A plugin is an object with specific methods and properties:
+
+```typescript
+interface Plugin {
+	name: string;
+	version: string;
+	process?: (content: string) => string;
+	transform?: (content: string) => string;
+	validate?: (content: string) => boolean;
+	beforeBuild?: () => void;
+	afterBuild?: (result: any) => void;
+}
+```
+
+### Simple Plugin Example
+
+```typescript
+const simplePlugin = {
+	name: 'simple-plugin',
+	version: '1.0.0',
+	
+	process(content: string): string {
+		// Add custom processing
+		return content.replace(/hello/g, 'Hello, World!');
+	}
+};
+
+await buildDocs('./docs', {
+	appOutput: './src/lib/content',
+	plugins: [simplePlugin]
+});
+```
+
+## Built-in Plugins
+
+### Syntax Highlighting Plugin
+
+Add syntax highlighting to code blocks:
+
+```typescript
+import { syntaxHighlightingPlugin } from 'svelte-markdown-pages/plugins';
+
+await buildDocs('./docs', {
+	appOutput: './src/lib/content',
+	plugins: [syntaxHighlightingPlugin]
+});
+```
+
+### Table of Contents Plugin
+
+Automatically generate table of contents:
+
+```typescript
+import { tocPlugin } from 'svelte-markdown-pages/plugins';
+
+await buildDocs('./docs', {
+	appOutput: './src/lib/content',
+	plugins: [tocPlugin]
+});
+```
+
+### Link Validation Plugin
+
+Validate internal and external links:
+
+```typescript
+import { linkValidationPlugin } from 'svelte-markdown-pages/plugins';
+
+await buildDocs('./docs', {
+	appOutput: './src/lib/content',
+	plugins: [linkValidationPlugin]
+});
+```
+
+## Custom Plugin Examples
+
+### Admonition Plugin
+
+Create custom admonition blocks:
+
+```typescript
+const admonitionPlugin = {
+	name: 'admonition-plugin',
+	version: '1.0.0',
+	
+	process(content: string): string {
+		const admonitionTypes = ['info', 'warning', 'error', 'success'];
+		
+		return content.replace(
+			/^:::(\w+)\n([\s\S]*?)\n:::$/gm,
+			(match, type, content) => {
+				if (!admonitionTypes.includes(type)) {
+					return match; // Return original if type not recognized
+				}
+				
+				const icons = {
+					info: 'ℹ️',
+					warning: '⚠️',
+					error: '❌',
+					success: '✅'
+				};
+				
+				return `
+					<div class="admonition admonition-${type}">
+						<div class="admonition-header">
+							${icons[type]} ${type.charAt(0).toUpperCase() + type.slice(1)}
+						</div>
+						<div class="admonition-content">
+							${content}
+						</div>
+					</div>
+				`;
+			}
+		);
+	}
+};
+```
+
+### Code Copy Plugin
+
+Add copy buttons to code blocks:
+
+```typescript
+const codeCopyPlugin = {
+	name: 'code-copy-plugin',
+	version: '1.0.0',
+	
+	process(content: string): string {
+		return content.replace(
+			/<pre><code([^>]*)>([\s\S]*?)<\/code><\/pre>/g,
+			(match, attrs, code) => {
+				return `
+					<div class="code-block-wrapper">
+						<button class="copy-button" onclick="copyCode(this)">
+							Copy
+						</button>
+						<pre><code${attrs}>${code}</code></pre>
+					</div>
+				`;
+			}
+		);
+	}
+};
+```
+
+### Image Optimization Plugin
+
+Optimize images and add lazy loading:
+
+```typescript
+const imageOptimizationPlugin = {
+	name: 'image-optimization-plugin',
+	version: '1.0.0',
+	
+	process(content: string): string {
+		return content.replace(
+			/<img([^>]+)>/g,
+			'<img$1 loading="lazy" decoding="async">'
+		);
+	}
+};
+```
+
+## Advanced Plugin Features
+
+### Plugin Configuration
+
+Plugins can accept configuration options:
+
+```typescript
+const configurablePlugin = {
+	name: 'configurable-plugin',
+	version: '1.0.0',
+	
+	config: {
+		enabled: true,
+		options: {}
+	},
+	
+	init(config: any) {
+		this.config = { ...this.config, ...config };
+	},
+	
+	process(content: string): string {
+		if (!this.config.enabled) {
+			return content;
+		}
+		
+		// Apply processing based on config
+		return content;
+	}
+};
+
+await buildDocs('./docs', {
+	appOutput: './src/lib/content',
+	plugins: [
+		[configurablePlugin, { enabled: true, options: { theme: 'dark' } }]
+	]
+});
+```
+
+### Plugin Dependencies
+
+Plugins can depend on other plugins:
+
+```typescript
+const dependentPlugin = {
+	name: 'dependent-plugin',
+	version: '1.0.0',
+	dependencies: ['syntax-highlighting'],
+	
+	process(content: string): string {
+		// This plugin runs after syntax highlighting
+		return content;
+	}
+};
+```
+
+### Plugin Hooks
+
+Use hooks for different stages of the build process:
+
+```typescript
+const hookPlugin = {
+	name: 'hook-plugin',
+	version: '1.0.0',
+	
+	beforeBuild() {
+		console.log('Starting build...');
+		// Pre-build setup
+	},
+	
+	process(content: string): string {
+		// Content processing
+		return content;
+	},
+	
+	afterBuild(result: any) {
+		console.log('Build completed:', result);
+		// Post-build cleanup
+	}
+};
+```
+
+## Plugin Validation
+
+### Content Validation
+
+Validate content structure and format:
+
+```typescript
+const validationPlugin = {
+	name: 'validation-plugin',
+	version: '1.0.0',
+	
+	validate(content: string): boolean {
+		// Check for required sections
+		const hasTitle = /^#\s+.+$/m.test(content);
+		const hasContent = content.length > 100;
+		
+		if (!hasTitle) {
+			console.warn('Content missing title');
+			return false;
+		}
+		
+		if (!hasContent) {
+			console.warn('Content too short');
+			return false;
+		}
+		
+		return true;
+	},
+	
+	process(content: string): string {
+		if (!this.validate(content)) {
+			throw new Error('Content validation failed');
+		}
+		
+		return content;
+	}
+};
+```
+
+## Plugin Utilities
+
+### Helper Functions
+
+Create utility functions for plugins:
+
+```typescript
+const pluginUtils = {
+	extractHeadings(content: string): string[] {
+		const headingRegex = /^#{1,6}\s+(.+)$/gm;
+		const headings: string[] = [];
+		let match;
+		
+		while ((match = headingRegex.exec(content)) !== null) {
+			headings.push(match[1]);
+		}
+		
+		return headings;
+	},
+	
+	generateId(text: string): string {
+		return text
+			.toLowerCase()
+			.replace(/[^a-z0-9]+/g, '-')
+			.replace(/^-+|-+$/g, '');
+	}
+};
+
+const tocPlugin = {
+	name: 'toc-plugin',
+	version: '1.0.0',
+	
+	process(content: string): string {
+		const headings = pluginUtils.extractHeadings(content);
+		
+		if (headings.length === 0) {
+			return content;
+		}
+		
+		const toc = headings.map(heading => {
+			const id = pluginUtils.generateId(heading);
+			return `- [${heading}](#${id})`;
+		}).join('\n');
+		
+		return `## Table of Contents\n\n${toc}\n\n${content}`;
+	}
+};
+```
+
+## Plugin Testing
+
+### Unit Testing Plugins
+
+Test your plugins with unit tests:
+
+```typescript
+import { describe, it, expect } from 'vitest';
+
+describe('Admonition Plugin', () => {
+	it('should process admonition blocks', () => {
+		const input = `:::info
+This is an info block
+:::`;
+		
+		const expected = `<div class="admonition admonition-info">`;
+		
+		const result = admonitionPlugin.process(input);
+		expect(result).toContain(expected);
+	});
+	
+	it('should handle unknown admonition types', () => {
+		const input = `:::unknown
+This is unknown
+:::`;
+		
+		const result = admonitionPlugin.process(input);
+		expect(result).toBe(input); // Should return original
+	});
+});
+```
+
+## Plugin Distribution
+
+### Publishing Plugins
+
+Create and publish plugins as npm packages:
+
+```json
+{
+	"name": "svelte-markdown-pages-admonition",
+	"version": "1.0.0",
+	"description": "Admonition plugin for svelte-markdown-pages",
+	"main": "dist/index.js",
+	"types": "dist/index.d.ts",
+	"keywords": ["svelte-markdown-pages", "plugin", "admonition"],
+	"peerDependencies": {
+		"svelte-markdown-pages": "^1.0.0"
+	}
+}
+```
+
+### Plugin Registry
+
+Create a plugin registry for easy discovery:
+
+```typescript
+// plugins/index.ts
+export { admonitionPlugin } from './admonition';
+export { codeCopyPlugin } from './code-copy';
+export { imageOptimizationPlugin } from './image-optimization';
+
+// Usage
+import { admonitionPlugin, codeCopyPlugin } from 'svelte-markdown-pages-plugins';
+
+await buildDocs('./docs', {
+	appOutput: './src/lib/content',
+	plugins: [admonitionPlugin, codeCopyPlugin]
+});
+```
+
+## Best Practices
+
+### Plugin Development
+
+1. **Keep plugins focused**: Each plugin should have a single responsibility
+2. **Provide configuration**: Allow users to customize plugin behavior
+3. **Handle errors gracefully**: Don't break the build if plugin fails
+4. **Document your plugin**: Provide clear documentation and examples
+5. **Test thoroughly**: Ensure your plugin works in different scenarios
+
+### Performance Considerations
+
+1. **Optimize processing**: Use efficient algorithms for content processing
+2. **Cache results**: Cache expensive operations when possible
+3. **Lazy loading**: Load heavy dependencies only when needed
+4. **Memory management**: Clean up resources after processing
+
+## Next Steps
+
+Now that you understand plugins, explore:
+
+- [API Reference](../api/builder.md) - Complete API documentation
+- [Examples](../../packages/examples) - Working examples with plugins
+- [Plugin Gallery](../../plugins) - Collection of community plugins
+---
+
+# From docs/guides/configuration.md:
+
+# Configuration
+
+Learn how to configure svelte-markdown-pages for your project with detailed options and examples.
+
+## Basic Configuration
+
+The simplest way to build your documentation:
+
+```typescript
+import { buildDocs } from 'svelte-markdown-pages/builder';
+
+await buildDocs('./docs', {
+  appOutput: './src/lib/content',
+  includeContent: true
+});
+```
+
+## Build Options
+
+### `appOutput`
+Directory where app-specific files will be generated.
+
+```typescript
+await buildDocs('./docs', {
+  appOutput: './src/lib/content'
+});
+```
+
+**Generated files:**
+- `navigation.json` - Navigation structure
+- `content.json` - Content bundle (if `includeContent: true`)
+
+### `websiteOutput`
+Directory where website-specific files will be generated.
+
+```typescript
+await buildDocs('./docs', {
+  websiteOutput: './src/lib/content'
+});
+```
+
+**Generated files:**
+- `navigation.json` - Navigation structure
+- `content.json` - Content bundle (if `includeContent: true`)
+
+### `includeContent`
+Whether to include content in the output bundle.
+
+```typescript
+await buildDocs('./docs', {
+  appOutput: './src/lib/content',
+  includeContent: true  // Default: false
+});
+```
+
+### `staticOutput`
+Directory for static site generation.
+
+```typescript
+await buildDocs('./docs', {
+  staticOutput: './dist'
+});
+```
+
+## Advanced Options
+
+### Custom Processors
+
+You can provide custom content processors for advanced transformations:
+
+```typescript
+const processor = {
+  process(content: string): string {
+    // Add table of contents
+    return addTableOfContents(content);
+  }
+};
+
+const result = await buildDocs('./docs', {
+  appOutput: './src/lib/content',
+  processor
+});
+```
+
+### Plugins
+
+Use plugins to extend functionality:
+
+```typescript
+import { syntaxHighlightingPlugin, tocPlugin } from 'svelte-markdown-pages/plugins';
+
+const result = await buildDocs('./docs', {
+  appOutput: './src/lib/content',
+  plugins: [syntaxHighlightingPlugin, tocPlugin]
+});
+```
+
+## Static Site Generation
+
+Generate a complete static HTML site:
+
+```typescript
+import { generateStaticSite } from 'svelte-markdown-pages/builder';
+
+const result = await generateStaticSite('./docs', './dist', {
+  title: 'My Documentation',
+  baseUrl: 'https://example.com',
+  includeIndex: true
+});
+```
+
+### Static Site Options
+
+#### `title`
+Site title for the generated HTML.
+
+```typescript
+await generateStaticSite('./docs', './dist', {
+  title: 'My Awesome Documentation'
+});
+```
+
+#### `baseUrl`
+Base URL for the site (used for absolute links).
+
+```typescript
+await generateStaticSite('./docs', './dist', {
+  baseUrl: 'https://docs.example.com'
+});
+```
+
+#### `css`
+Custom CSS content to include in the generated HTML.
+
+```typescript
+await generateStaticSite('./docs', './dist', {
+  css: `
+    body { font-family: 'Inter', sans-serif; }
+    .docs-content { max-width: 800px; margin: 0 auto; }
+  `
+});
+```
+
+#### `js`
+Custom JavaScript content to include in the generated HTML.
+
+```typescript
+await generateStaticSite('./docs', './dist', {
+  js: `
+    // Add syntax highlighting
+    hljs.highlightAll();
+  `
+});
+```
+
+#### `includeIndex`
+Whether to generate an index page.
+
+```typescript
+await generateStaticSite('./docs', './dist', {
+  includeIndex: true  // Default: false
+});
+```
+
+#### `indexTitle`
+Title for the generated index page.
+
+```typescript
+await generateStaticSite('./docs', './dist', {
+  includeIndex: true,
+  indexTitle: 'Documentation Home'
+});
+```
+
+## CLI Usage
+
+### Build Command
+
+Build documentation for app integration:
+
+```bash
+npx svelte-markdown-pages build <content-path> [options]
+```
+
+**Options:**
+- `--output, -o`: Output directory
+- `--include-content`: Include content in output
+- `--processor`: Custom processor file
+- `--plugins`: Plugin configuration file
+
+**Examples:**
+```bash
+# Basic build
+npx svelte-markdown-pages build ./docs --output ./src/lib/content
+
+# With content included
+npx svelte-markdown-pages build ./docs --output ./src/lib/content --include-content
+
+# With custom processor
+npx svelte-markdown-pages build ./docs --output ./src/lib/content --processor ./my-processor.js
+```
+
+### Static Command
+
+Generate a complete static HTML site:
+
+```bash
+npx svelte-markdown-pages static <content-path> <output-path> [options]
+```
+
+**Options:**
+- `--title`: Site title
+- `--base-url`: Base URL for the site
+- `--css`: Custom CSS file
+- `--js`: Custom JavaScript file
+- `--include-index`: Generate index page
+
+**Examples:**
+```bash
+# Basic static site
+npx svelte-markdown-pages static ./docs ./dist
+
+# With custom title and base URL
+npx svelte-markdown-pages static ./docs ./dist --title "My Docs" --base-url "https://docs.example.com"
+
+# With custom styling
+npx svelte-markdown-pages static ./docs ./dist --css ./custom.css --js ./custom.js
+```
+
+## Environment Variables
+
+Configure behavior using environment variables:
+
+### `SMP_DEBUG`
+Enable debug logging.
+
+```bash
+SMP_DEBUG=1 npx svelte-markdown-pages build ./docs
+```
+
+### `SMP_VERBOSE`
+Enable verbose output.
+
+```bash
+SMP_VERBOSE=1 npx svelte-markdown-pages build ./docs
+```
+
+## Configuration Files
+
+### Package.json Scripts
+
+Add build scripts to your `package.json`:
+
+```json
+{
+  "scripts": {
+    "build:docs": "svelte-markdown-pages build ./docs --output ./src/lib/content --include-content",
+    "build:static": "svelte-markdown-pages static ./docs ./dist --title \"My Documentation\" --include-index",
+    "dev:docs": "npm run build:docs && npm run dev"
+  }
+}
+```
+
+### Build Scripts
+
+Create dedicated build scripts for complex configurations:
+
+```typescript
+// scripts/build-docs.js
+import { buildDocs } from 'svelte-markdown-pages/builder';
+import { syntaxHighlightingPlugin } from 'svelte-markdown-pages/plugins';
+
+const processor = {
+  process(content: string): string {
+    // Custom processing logic
+    return content.replace(/:::(.+?):::/g, '<CustomComponent>$1</CustomComponent>');
+  }
+};
+
+await buildDocs('./docs', {
+  appOutput: './src/lib/content',
+  websiteOutput: './src/lib/content',
+  includeContent: true,
+  processor,
+  plugins: [syntaxHighlightingPlugin]
+});
+```
+
+## Error Handling
+
+The builder functions throw errors for common issues:
+
+```typescript
+try {
+  const result = await buildDocs('./docs');
+} catch (error) {
+  if (error.code === 'ENOENT') {
+    console.error('Content directory not found');
+  } else if (error.code === 'INVALID_INDEX') {
+    console.error('Invalid .index.json file');
+  } else {
+    console.error('Build failed:', error.message);
+  }
+}
+```
+
+## Performance Optimization
+
+### Large Documentation Sites
+
+For large documentation sites, consider:
+
+```typescript
+// Build only what you need
+await buildDocs('./docs', {
+  appOutput: './src/lib/content',
+  includeContent: false,  // Don't include content if not needed
+  processor: {
+    process(content: string): string {
+      // Optimize content processing
+      return content;
+    }
+  }
+});
+```
+
+### Caching
+
+Implement caching for faster rebuilds:
+
+```typescript
+import { buildDocs } from 'svelte-markdown-pages/builder';
+import { existsSync, readFileSync } from 'fs';
+
+const cacheFile = './.docs-cache.json';
+
+// Check if cache exists and is valid
+if (existsSync(cacheFile)) {
+  const cache = JSON.parse(readFileSync(cacheFile, 'utf8'));
+  // Use cache if valid
+}
+
+const result = await buildDocs('./docs', {
+  appOutput: './src/lib/content',
+  includeContent: true
+});
+
+// Save cache
+// ...
+```
+
+## Next Steps
+
+Now that you understand configuration, explore:
+
+- [Advanced Customization](./advanced/customization.md) - Learn about custom components and styling
+- [Plugins](./advanced/plugins.md) - Extend functionality with plugins
+- [API Reference](../api/builder.md) - Complete API documentation
+---
+
+# From docs/guides/installation.md:
+
+# Installation
+
+Follow this guide to install and set up svelte-markdown-pages in your project.
+
+## Prerequisites
+
+Before installing svelte-markdown-pages, make sure you have:
+
+- **Node.js 18+** - Required for modern JavaScript features
+- **npm or yarn** - Package manager for installing dependencies
+- **Svelte 5+** - The package is designed for Svelte 5 and later
+
+## Quick Install
+
+Install the package using npm:
+
+```bash
+npm install svelte-markdown-pages
+```
+
+Or using yarn:
+
+```bash
+yarn add svelte-markdown-pages
+```
+
+## Manual Setup
+
+### 1. Create a New SvelteKit Project (Optional)
+
+If you're starting from scratch, create a new SvelteKit project:
+
+```bash
+npm create svelte@latest my-docs-site
+cd my-docs-site
+npm install
+```
+
+### 2. Install svelte-markdown-pages
+
+```bash
+npm install svelte-markdown-pages
+```
+
+### 3. Set Up Your Content Structure
+
+Create a directory for your documentation content:
+
+```bash
+mkdir docs
+```
+
+### 4. Create Your First Content
+
+Create a basic documentation structure:
+
+```bash
+# Create the main index file
+echo '{
+  "items": [
+    { "name": "getting-started", "type": "page", "label": "Getting Started" }
+  ]
+}' > docs/.index.json
+
+# Create your first markdown file
+echo '# Getting Started
+
+Welcome to your documentation site!
+
+This is your first page created with svelte-markdown-pages.' > docs/getting-started.md
+```
+
+### 5. Build Your Documentation
+
+Create a build script in your `package.json`:
+
+```json
+{
+  "scripts": {
+    "build:docs": "node -e \"import('svelte-markdown-pages/builder').then(({buildDocs}) => buildDocs('./docs', {appOutput: './src/lib/content', includeContent: true}))\""
+  }
+}
+```
+
+Or create a build script file:
+
+```typescript
+// scripts/build-docs.js
+import { buildDocs } from 'svelte-markdown-pages/builder';
+
+await buildDocs('./docs', {
+  appOutput: './src/lib/content',
+  websiteOutput: './src/lib/content',
+  includeContent: true
+});
+```
+
+### 6. Use in Your SvelteKit App
+
+Create a documentation page in your SvelteKit app:
+
+```svelte
+<!-- src/routes/docs/+page.svelte -->
+<script lang="ts">
+  import { NavigationTree, loadContent } from 'svelte-markdown-pages/renderer';
+  import navigationData from '$lib/content/navigation.json';
+  import contentBundle from '$lib/content/content.json';
+  
+  let navigation = $state(new NavigationTree(navigationData));
+  let currentPage = $state("getting-started.md");
+  let pageContent = $state<string | null>(null);
+  
+  $effect(() => {
+    if (currentPage && contentBundle) {
+      loadContent(currentPage, contentBundle).then(content => {
+        pageContent = content;
+      });
+    }
+  });
+</script>
+
+<div class="docs-layout">
+  <nav class="sidebar">
+    <!-- Navigation will go here -->
+  </nav>
+  <main class="content">
+    {@html pageContent || 'Loading...'}
+  </main>
+</div>
+```
+
+## Content Structure
+
+### Basic Structure
+
+Your documentation should follow this structure:
+
+```
+docs/
+├── .index.json              # Root navigation
+├── getting-started.md        # Getting started page
+├── guides/
+│   ├── .index.json          # Guides section navigation
+│   ├── installation.md      # Installation guide
+│   └── configuration.md     # Configuration guide
+└── api/
+    ├── .index.json          # API section navigation
+    └── reference.md         # API reference
+```
+
+### Index.json Format
+
+Each `.index.json` file defines the navigation structure for that directory:
+
+```json
+{
+  "items": [
+    {
+      "name": "page-name",
+      "type": "page",
+      "label": "Page Display Name"
+    },
+    {
+      "name": "section-name",
+      "type": "section",
+      "label": "Section Display Name"
+    }
+  ]
+}
+```
+
+### Item Properties
+
+- `name`: File/directory name (without extension)
+- `type`: Either `"page"` or `"section"`
+- `label`: Display label for navigation
+- `collapsed`: Optional boolean to collapse sections by default
+- `url`: Optional external URL
+
+## Build Configuration
+
+### Basic Build
+
+```typescript
+import { buildDocs } from 'svelte-markdown-pages/builder';
+
+await buildDocs('./docs', {
+  appOutput: './src/lib/content',
+  includeContent: true
+});
+```
+
+### Advanced Build Options
+
+```typescript
+await buildDocs('./docs', {
+  appOutput: './src/lib/content',
+  websiteOutput: './src/lib/content',
+  staticOutput: './dist',
+  includeContent: true,
+  processor: customProcessor,
+  plugins: [myPlugin]
+});
+```
+
+## CLI Usage
+
+You can also use the CLI for quick builds:
+
+```bash
+# Build for app integration
+npx svelte-markdown-pages build ./docs --output ./src/lib/content
+
+# Generate static site
+npx svelte-markdown-pages static ./docs --output ./dist
+```
+
+## Next Steps
+
+Now that you have svelte-markdown-pages installed, check out:
+
+- [Configuration](./configuration.md) - Learn about build options and customization
+- [API Reference](../api/builder.md) - Complete API documentation
+- [Examples](../../packages/examples) - Working examples in the examples package
+
+## Troubleshooting
+
+### Common Issues
+
+**Module not found errors**: Make sure you're using Node.js 18+ and have installed the package correctly.
+
+**Build errors**: Check that your `.index.json` files are valid JSON and follow the correct format.
+
+**Content not loading**: Verify that your markdown files exist and are referenced correctly in the navigation.
+
+### Getting Help
+
+- Check the [API Reference](../api/builder.md) for detailed documentation
+- Look at the [examples](../../packages/examples) for working implementations
+- Review the [test suite](../../packages/tests) for usage patterns

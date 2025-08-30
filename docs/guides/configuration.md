@@ -82,18 +82,7 @@ const result = await buildDocs('./docs', {
 });
 ```
 
-### Plugins
-
-Use plugins to extend functionality:
-
-```typescript
-import { syntaxHighlightingPlugin, tocPlugin } from 'svelte-markdown-pages/plugins';
-
-const result = await buildDocs('./docs', {
-  appOutput: './src/lib/content',
-  plugins: [syntaxHighlightingPlugin, tocPlugin]
-});
-```
+ 
 
 ## Static Site Generation
 
@@ -179,25 +168,16 @@ await generateStaticSite('./docs', './dist', {
 Build documentation for app integration:
 
 ```bash
-npx svelte-markdown-pages build <content-path> [options]
+npx svelte-markdown-pages build <content-path> --output <output-path>
 ```
 
 **Options:**
-- `--output, -o`: Output directory
-- `--include-content`: Include content in output
-- `--processor`: Custom processor file
-- `--plugins`: Plugin configuration file
+- `--output`: Output directory (required)
 
 **Examples:**
 ```bash
 # Basic build
 npx svelte-markdown-pages build ./docs --output ./src/lib/content
-
-# With content included
-npx svelte-markdown-pages build ./docs --output ./src/lib/content --include-content
-
-# With custom processor
-npx svelte-markdown-pages build ./docs --output ./src/lib/content --processor ./my-processor.js
 ```
 
 ### Static Command
@@ -205,26 +185,16 @@ npx svelte-markdown-pages build ./docs --output ./src/lib/content --processor ./
 Generate a complete static HTML site:
 
 ```bash
-npx svelte-markdown-pages static <content-path> <output-path> [options]
+npx svelte-markdown-pages static <content-path> --output <output-path>
 ```
 
 **Options:**
-- `--title`: Site title
-- `--base-url`: Base URL for the site
-- `--css`: Custom CSS file
-- `--js`: Custom JavaScript file
-- `--include-index`: Generate index page
+- `--output`: Output directory (required)
 
 **Examples:**
 ```bash
 # Basic static site
-npx svelte-markdown-pages static ./docs ./dist
-
-# With custom title and base URL
-npx svelte-markdown-pages static ./docs ./dist --title "My Docs" --base-url "https://docs.example.com"
-
-# With custom styling
-npx svelte-markdown-pages static ./docs ./dist --css ./custom.css --js ./custom.js
+npx svelte-markdown-pages static ./docs --output ./dist
 ```
 
 ## Environment Variables
@@ -354,5 +324,5 @@ const result = await buildDocs('./docs', {
 Now that you understand configuration, explore:
 
 - [Advanced Customization](./advanced/customization.md) - Learn about custom components and styling
-- [Plugins](./advanced/plugins.md) - Extend functionality with plugins
+
 - [API Reference](../api/builder.md) - Complete API documentation

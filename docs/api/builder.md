@@ -59,9 +59,6 @@ interface BuildOptions {
   websiteOutput?: string;
   staticOutput?: string;
   includeContent?: boolean;
-  processor?: ContentProcessor;
-  plugins?: Plugin[];
-  hooks?: BuildHooks;
 }
 ```
 
@@ -70,9 +67,6 @@ interface BuildOptions {
 - `websiteOutput` (string, optional): Directory for website-specific output files
 - `staticOutput` (string, optional): Directory for static site output
 - `includeContent` (boolean, optional): Whether to include content in output bundles (default: false)
-- `processor` (ContentProcessor, optional): Custom content processor
-- `plugins` (Plugin[], optional): Array of plugins to apply
-- `hooks` (BuildHooks, optional): Build lifecycle hooks
 
 ### StaticSiteOptions
 
@@ -84,10 +78,9 @@ interface StaticSiteOptions {
   baseUrl?: string;
   css?: string;
   js?: string;
+  processor?: ContentProcessor;
   includeIndex?: boolean;
   indexTitle?: string;
-  processor?: ContentProcessor;
-  plugins?: Plugin[];
 }
 ```
 
@@ -96,10 +89,9 @@ interface StaticSiteOptions {
 - `baseUrl` (string, optional): Base URL for the site
 - `css` (string, optional): Custom CSS content to include
 - `js` (string, optional): Custom JavaScript content to include
+- `processor` (ContentProcessor, optional): Custom content processor
 - `includeIndex` (boolean, optional): Whether to generate an index page (default: false)
 - `indexTitle` (string, optional): Title for the generated index page
-- `processor` (ContentProcessor, optional): Custom content processor
-- `plugins` (Plugin[], optional): Array of plugins to apply
 
 ### BuildResult
 
@@ -107,18 +99,20 @@ Result object returned by `buildDocs`.
 
 ```typescript
 interface BuildResult {
-  navigation: NavigationData;
-  content?: ContentBundle;
-  files: string[];
-  stats: BuildStats;
+  navigation: NavigationTree;
+  content?: Record<string, string>;
+  pages?: Array<{
+    path: string;
+    content: string;
+    html: string;
+  }>;
 }
 ```
 
 **Properties:**
-- `navigation` (NavigationData): Generated navigation structure
-- `content` (ContentBundle, optional): Content bundle (if includeContent is true)
-- `files` (string[]): List of generated files
-- `stats` (BuildStats): Build statistics
+- `navigation` (NavigationTree): Generated navigation structure
+- `content` (Record<string, string>, optional): Content bundle (if includeContent is true)
+- `pages` (Array, optional): Array of generated pages with path, content, and HTML
 
 ### StaticSiteResult
 
@@ -192,28 +186,7 @@ interface BuildHooks {
 - `afterBuild` (function, optional): Called after build completes
 - `onError` (function, optional): Called when build errors occur
 
-### BuildStats
 
-Statistics about the build process.
-
-```typescript
-interface BuildStats {
-  pages: number;
-  sections: number;
-  totalFiles: number;
-  buildTime: number;
-  errors: string[];
-  warnings: string[];
-}
-```
-
-**Properties:**
-- `pages` (number): Number of pages processed
-- `sections` (number): Number of sections processed
-- `totalFiles` (number): Total number of files processed
-- `buildTime` (number): Build time in milliseconds
-- `errors` (string[]): List of build errors
-- `warnings` (string[]): List of build warnings
 
 ## Examples
 
@@ -227,10 +200,10 @@ const result = await buildDocs('./docs', {
   includeContent: true
 });
 
-console.log(`Built ${result.stats.pages} pages in ${result.stats.buildTime}ms`);
+console.log(`Built navigation with ${result.navigation.items.length} root items`);
 ```
 
-### Advanced Build with Plugins
+### Advanced Build with Custom Processor
 
 ```typescript
 import { buildDocs } from 'svelte-markdown-pages/builder';
@@ -241,31 +214,11 @@ const customProcessor = {
   }
 };
 
-const customPlugin = {
-  name: 'custom-plugin',
-  version: '1.0.0',
-  process(content: string): string {
-    return content.replace(/\[\[(.+?)\]\]/g, '<InternalLink>$1</InternalLink>');
-  }
-};
-
 const result = await buildDocs('./docs', {
   appOutput: './src/lib/content',
   websiteOutput: './src/lib/content',
   includeContent: true,
-  processor: customProcessor,
-  plugins: [customPlugin],
-  hooks: {
-    beforeBuild: (contentPath) => {
-      console.log(`Starting build for: ${contentPath}`);
-    },
-    afterBuild: (result) => {
-      console.log(`Build completed: ${result.files.length} files generated`);
-    },
-    onError: (error) => {
-      console.error('Build error:', error.message);
-    }
-  }
+  processor: customProcessor
 });
 ```
 
@@ -289,7 +242,7 @@ const result = await generateStaticSite('./docs', './dist', {
   indexTitle: 'Documentation Home'
 });
 
-console.log(`Generated ${result.files.length} files`);
+console.log(`Generated ${result.pages?.length || 0} pages`);
 console.log(`Available URLs: ${result.urls.join(', ')}`);
 ```
 

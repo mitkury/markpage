@@ -371,6 +371,6 @@ const chunkProcessor = {
 
 Now that you understand advanced customization, explore:
 
-- [Plugins](./plugins.md) - Extend functionality with plugins
+
 - [API Reference](../api/builder.md) - Complete API documentation
 - [Examples](../../packages/examples) - Working examples

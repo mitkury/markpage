@@ -199,7 +199,7 @@ await buildDocs('./docs', {
   staticOutput: './dist',
   includeContent: true,
   processor: customProcessor,
-  plugins: [myPlugin]
+  
 });
 ```
 

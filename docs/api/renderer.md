@@ -21,14 +21,14 @@ const navigation = new NavigationTree(navigationData);
 
 #### Methods
 
-##### `findItemByPath(path: string): NavigationItem | null`
+##### `findItemByPath(path: string): NavigationItem | undefined`
 
 Finds a navigation item by its file path.
 
 **Parameters:**
 - `path` (string): File path to search for
 
-**Returns:** NavigationItem | null
+**Returns:** NavigationItem | undefined
 
 **Example:**
 ```typescript
@@ -68,14 +68,14 @@ const siblings = navigation.getSiblings('guides/installation.md');
 // Returns: [installation, configuration, advanced]
 ```
 
-##### `getNextSibling(path: string): NavigationItem | null`
+##### `getNextSibling(path: string): NavigationItem | undefined`
 
 Gets the next sibling item.
 
 **Parameters:**
 - `path` (string): Current file path
 
-**Returns:** NavigationItem | null
+**Returns:** NavigationItem | undefined
 
 **Example:**
 ```typescript
@@ -85,14 +85,14 @@ if (next) {
 }
 ```
 
-##### `getPreviousSibling(path: string): NavigationItem | null`
+##### `getPreviousSibling(path: string): NavigationItem | undefined`
 
 Gets the previous sibling item.
 
 **Parameters:**
 - `path` (string): Current file path
 
-**Returns:** NavigationItem | null
+**Returns:** NavigationItem | undefined
 
 **Example:**
 ```typescript
@@ -100,6 +100,65 @@ const prev = navigation.getPreviousSibling('guides/configuration.md');
 if (prev) {
   console.log('Previous page:', prev.label);
 }
+```
+
+##### `getChildren(path: string): NavigationItem[]`
+
+Gets child items for a given path.
+
+**Parameters:**
+- `path` (string): Parent path to get children for
+
+**Returns:** NavigationItem[]
+
+**Example:**
+```typescript
+const children = navigation.getChildren('guides');
+// Returns: [installation, configuration, advanced]
+```
+
+##### `findItemByName(name: string): NavigationItem | undefined`
+
+Finds a navigation item by its name.
+
+**Parameters:**
+- `path` (string): Item name to search for
+
+**Returns:** NavigationItem | undefined
+
+**Example:**
+```typescript
+const item = navigation.findItemByName('installation');
+if (item) {
+  console.log('Found item:', item.label);
+}
+```
+
+##### `isExpanded(path: string): boolean`
+
+Checks if a section is expanded.
+
+**Parameters:**
+- `path` (string): Path to check
+
+**Returns:** boolean
+
+**Example:**
+```typescript
+const expanded = navigation.isExpanded('guides');
+console.log('Guides section expanded:', expanded);
+```
+
+##### `toggleExpanded(path: string): void`
+
+Toggles the expanded state of a section.
+
+**Parameters:**
+- `path` (string): Path to toggle
+
+**Example:**
+```typescript
+navigation.toggleExpanded('guides');
 ```
 
 ##### `getChildren(path: string): NavigationItem[]`
@@ -224,7 +283,7 @@ Loads and processes content for a specific path.
 - `contentBundle` (ContentBundle): Content bundle data
 - `processor` (ContentProcessor, optional): Custom content processor
 
-**Returns:** Promise<string>
+**Returns:** Promise<string | undefined>
 
 **Example:**
 ```typescript

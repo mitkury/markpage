@@ -31,7 +31,7 @@ Built with TypeScript and Zod validation, providing excellent developer experien
 Svelte 5 components that work seamlessly in any Svelte project, including SvelteKit applications.
 
 ### ⚡ Flexible & Extensible
-Point to any directory with markdown content and `.index.json` files. Customize everything from styling to content processing with plugins.
+Point to any directory with markdown content and `.index.json` files. Customize everything from styling to content processing with custom processors.
 
 ## Quick Start
 
@@ -82,7 +82,6 @@ import { buildDocs } from 'svelte-markdown-pages/builder';
 
 await buildDocs('./my-docs', {
   appOutput: './src/lib/content',
-  websiteOutput: './src/lib/content',
   includeContent: true
 });
 ```

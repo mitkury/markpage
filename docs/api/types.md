@@ -166,22 +166,7 @@ interface BuildStats {
 - `errors` (string[]): List of build errors
 - `warnings` (string[]): List of build warnings
 
-### BuildHooks
 
-Lifecycle hooks for the build process.
-
-```typescript
-interface BuildHooks {
-  beforeBuild?: (contentPath: string) => void | Promise<void>;
-  afterBuild?: (result: BuildResult) => void | Promise<void>;
-  onError?: (error: Error) => void;
-}
-```
-
-**Properties:**
-- `beforeBuild` (function, optional): Called before build starts
-- `afterBuild` (function, optional): Called after build completes
-- `onError` (function, optional): Called when build errors occur
 
 ## Renderer Types
 
@@ -246,45 +231,7 @@ interface TableOfContentsItem {
 
 ## Plugin Types
 
-### Plugin
 
-Interface for plugins.
-
-```typescript
-interface Plugin {
-  name: string;
-  version: string;
-  process?: (content: string) => string;
-  transform?: (content: string) => string;
-  validate?: (content: string) => boolean;
-  beforeBuild?: () => void;
-  afterBuild?: (result: any) => void;
-}
-```
-
-**Properties:**
-- `name` (string): Plugin name
-- `version` (string): Plugin version
-- `process` (function, optional): Content processing function
-- `transform` (function, optional): Content transformation function
-- `validate` (function, optional): Content validation function
-- `beforeBuild` (function, optional): Pre-build hook
-- `afterBuild` (function, optional): Post-build hook
-
-### PluginConfig
-
-Configuration for a plugin.
-
-```typescript
-interface PluginConfig {
-  enabled?: boolean;
-  options?: Record<string, any>;
-}
-```
-
-**Properties:**
-- `enabled` (boolean, optional): Whether plugin is enabled
-- `options` (Record<string, any>, optional): Plugin-specific options
 
 ## Processor Types
 
