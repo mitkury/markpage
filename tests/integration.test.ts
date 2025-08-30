@@ -10,7 +10,7 @@ describe('Integration', () => {
   let outputDir: string;
 
   beforeEach(() => {
-    tempDir = join(process.cwd(), 'temp-test');
+    tempDir = join(process.cwd(), `temp-test-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`);
     contentDir = join(tempDir, 'content');
     outputDir = join(tempDir, 'output');
     

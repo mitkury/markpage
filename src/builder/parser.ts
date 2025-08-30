@@ -53,14 +53,28 @@ export function buildNavigationTree(
 ): NavigationTree {
   const { basePath = contentPath, validateFiles = true } = options;
   
-  if (!statSync(contentPath).isDirectory()) {
-    throw new ParserError(`Content path is not a directory: ${contentPath}`);
+  try {
+    if (!statSync(contentPath).isDirectory()) {
+      throw new ParserError(`Content path is not a directory: ${contentPath}`);
+    }
+  } catch (error) {
+    if (error instanceof ParserError) {
+      throw error;
+    }
+    throw new ParserError(`Content path does not exist: ${contentPath}`, contentPath);
   }
   
   const rootIndexPath = join(contentPath, '.index.json');
   
-  if (!statSync(rootIndexPath).isFile()) {
-    throw new ParserError(`Root .index.json not found: ${rootIndexPath}`);
+  try {
+    if (!statSync(rootIndexPath).isFile()) {
+      throw new ParserError(`Root .index.json not found: ${rootIndexPath}`);
+    }
+  } catch (error) {
+    if (error instanceof ParserError) {
+      throw error;
+    }
+    throw new ParserError(`Root .index.json not found: ${rootIndexPath}`, rootIndexPath);
   }
   
   const rootItems = parseIndexFile(rootIndexPath);
@@ -91,11 +105,23 @@ function processNavigationItem(
     const sectionPath = join(currentPath, item.name);
     const sectionIndexPath = join(sectionPath, '.index.json');
     
-    if (validateFiles && !statSync(sectionIndexPath).isFile()) {
-      throw new ParserError(
-        `Section .index.json not found: ${sectionIndexPath}`,
-        sectionIndexPath
-      );
+    if (validateFiles) {
+      try {
+        if (!statSync(sectionIndexPath).isFile()) {
+          throw new ParserError(
+            `Section .index.json not found: ${sectionIndexPath}`,
+            sectionIndexPath
+          );
+        }
+      } catch (error) {
+        if (error instanceof ParserError) {
+          throw error;
+        }
+        throw new ParserError(
+          `Section .index.json not found: ${sectionIndexPath}`,
+          sectionIndexPath
+        );
+      }
     }
     
     try {
@@ -116,11 +142,23 @@ function processNavigationItem(
     const pagePath = join(currentPath, `${item.name}.md`);
     const relativePath = relative(basePath, pagePath);
     
-    if (validateFiles && !statSync(pagePath).isFile()) {
-      throw new ParserError(
-        `Page markdown file not found: ${pagePath}`,
-        pagePath
-      );
+    if (validateFiles) {
+      try {
+        if (!statSync(pagePath).isFile()) {
+          throw new ParserError(
+            `Page markdown file not found: ${pagePath}`,
+            pagePath
+          );
+        }
+      } catch (error) {
+        if (error instanceof ParserError) {
+          throw error;
+        }
+        throw new ParserError(
+          `Page markdown file not found: ${pagePath}`,
+          pagePath
+        );
+      }
     }
     
     navigationItem.path = relativePath;
@@ -140,7 +178,12 @@ export function validateContentStructure(contentPath: string): void {
     
     const indexPath = join(dirPath, '.index.json');
     
-    if (!statSync(indexPath).isFile()) {
+    try {
+      if (!statSync(indexPath).isFile()) {
+        errors.push(`Missing .index.json: ${indexPath}`);
+        return;
+      }
+    } catch (error) {
       errors.push(`Missing .index.json: ${indexPath}`);
       return;
     }
@@ -152,7 +195,12 @@ export function validateContentStructure(contentPath: string): void {
         if (item.type === 'section') {
           const sectionPath = join(dirPath, item.name);
           
-          if (!statSync(sectionPath).isDirectory()) {
+          try {
+            if (!statSync(sectionPath).isDirectory()) {
+              errors.push(`Section directory not found: ${sectionPath}`);
+              continue;
+            }
+          } catch (error) {
             errors.push(`Section directory not found: ${sectionPath}`);
             continue;
           }
@@ -161,7 +209,11 @@ export function validateContentStructure(contentPath: string): void {
         } else if (item.type === 'page') {
           const pagePath = join(dirPath, `${item.name}.md`);
           
-          if (!statSync(pagePath).isFile()) {
+          try {
+            if (!statSync(pagePath).isFile()) {
+              errors.push(`Page markdown file not found: ${pagePath}`);
+            }
+          } catch (error) {
             errors.push(`Page markdown file not found: ${pagePath}`);
           }
         }

@@ -13,13 +13,7 @@ describe('Parser', () => {
   let tempDir: string;
 
   beforeEach(() => {
-    tempDir = join(process.cwd(), 'temp-test');
-    // Clean up any existing temp directory
-    if (existsSync(tempDir)) {
-      // In a real implementation, you'd want to recursively delete the directory
-      // For now, we'll use a unique name
-      tempDir = join(process.cwd(), `temp-test-${Date.now()}`);
-    }
+    tempDir = join(process.cwd(), `temp-test-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`);
     mkdirSync(tempDir, { recursive: true });
   });
 

@@ -83,7 +83,7 @@ export function extractHeadings(content: string): Array<{
     if (match && match[1] && match[2]) {
       const level = match[1].length;
       const text = match[2].trim();
-      const id = text.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+      const id = text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
       
       headings.push({ level, text, id });
     }
@@ -122,6 +122,6 @@ export function addTableOfContents(content: string): string {
     return content;
   }
 
-  lines.splice(firstHeadingIndex, 0, toc, '');
+  lines.splice(firstHeadingIndex + 1, 0, toc, '');
   return lines.join('\n');
 }

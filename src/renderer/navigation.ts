@@ -46,7 +46,8 @@ export class NavigationTree {
   getSiblings(path: string): NavigationItem[] {
     const item = this.findItemByPath(path);
     if (!item || !item.parent) {
-      return [];
+      // If no parent, return all root items
+      return this._items;
     }
 
     return item.parent.items || [];
@@ -75,17 +76,31 @@ export class NavigationTree {
   }
 
   getChildren(path: string): NavigationItem[] {
-    const item = this.findItemByPath(path);
+    // First try to find by name (for sections)
+    let item = this.findItemByName(path);
+    
+    // If not found by name, try to find by path
+    if (!item) {
+      item = this.findItemByPath(path);
+    }
+    
+    // If still not found, try to find nested items by path
+    if (!item && path.includes('/')) {
+      const pathParts = path.split('/');
+      const sectionName = pathParts[pathParts.length - 1];
+      item = this.findItemByName(sectionName);
+    }
+    
     return item?.items || [];
   }
 
   isExpanded(path: string): boolean {
-    const item = this.findItemByPath(path);
+    const item = this.findItemByName(path) || this.findItemByPath(path);
     return item ? !item.collapsed : false;
   }
 
   toggleExpanded(path: string): void {
-    const item = this.findItemByPath(path);
+    const item = this.findItemByName(path) || this.findItemByPath(path);
     if (item) {
       item.collapsed = !item.collapsed;
     }
