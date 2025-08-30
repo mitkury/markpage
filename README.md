@@ -2,6 +2,14 @@
 
 A standalone npm package for building and rendering markdown-based content with distributed navigation structure for Svelte projects.
 
+## Project Structure
+
+This is a monorepo with the following packages:
+
+- **`packages/svelte-markdown-pages`** - The main package that gets published to npm
+- **`packages/tests`** - Comprehensive test suite for the package
+- **`packages/examples`** - Example SvelteKit project demonstrating usage
+
 ## Features
 
 - **Distributed Navigation**: Each folder defines its own structure with `.index.json` files
@@ -10,6 +18,42 @@ A standalone npm package for building and rendering markdown-based content with 
 - **Framework Agnostic**: Svelte 5 components that work in any Svelte project
 - **Flexible**: Point to any directory with markdown and `.index.json` files
 - **Comprehensive Testing**: >90% test coverage with comprehensive test suite
+
+## Development
+
+### Prerequisites
+
+- Node.js 18+
+- npm
+
+### Setup
+
+```bash
+# Install dependencies for all packages
+npm install
+
+# Build the main package
+npm run build
+
+# Run tests
+npm test
+
+# Build examples
+npm run build:examples
+
+# Start examples in development mode
+npm run dev:examples
+```
+
+### Package Scripts
+
+- `npm run build` - Build the main svelte-markdown-pages package
+- `npm run dev` - Watch mode for the main package
+- `npm test` - Run all tests
+- `npm run test:watch` - Run tests in watch mode
+- `npm run test:coverage` - Run tests with coverage report
+- `npm run build:examples` - Build the example SvelteKit project
+- `npm run dev:examples` - Start the example project in development mode
 
 ## Installation
 
@@ -312,27 +356,6 @@ npx svelte-markdown-pages static ./content --output ./dist
   <DocsSidebar {navigation} bind:currentPage />
   <DocsContent {pageContent} />
 </div>
-```
-
-## Development
-
-### Building
-
-```bash
-npm run build
-```
-
-### Testing
-
-```bash
-npm test
-npm run test:coverage
-```
-
-### Development Mode
-
-```bash
-npm run dev
 ```
 
 ## Contributing

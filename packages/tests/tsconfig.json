@@ -23,12 +23,11 @@
     "resolveJsonModule": true
   },
   "include": [
-    "*.ts",
-    "*.js"
+    "**/*.test.ts",
+    "**/*.test.js"
   ],
   "exclude": [
     "node_modules",
-    "dist",
-    "packages"
+    "dist"
   ]
 }
