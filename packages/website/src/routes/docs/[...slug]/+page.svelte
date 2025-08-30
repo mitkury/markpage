@@ -20,13 +20,14 @@
 		
 		// Use the navigation data to find the correct path
 		if (navigation) {
-			const findPath = (items: any[], targetPath: string): string | null => {
+			const findPath = (items: any[], targetPath: string, parentPath: string = ''): string | null => {
 				for (const item of items) {
-					if (item.path && targetPath === item.name) {
+					const currentPath = parentPath ? `${parentPath}/${item.name}` : item.name;
+					if (item.path && targetPath === currentPath) {
 						return item.path;
 					}
 					if (item.items) {
-						const found = findPath(item.items, targetPath);
+						const found = findPath(item.items, targetPath, currentPath);
 						if (found) return found;
 					}
 				}
@@ -98,13 +99,15 @@
 	function handlePageSelect(path: string) {
 		// Find the URL path from navigation data
 		if (navigation) {
-			const findUrlPath = (items: any[], targetPath: string): string | null => {
+			const findUrlPath = (items: any[], targetPath: string, parentPath: string = ''): string | null => {
 				for (const item of items) {
 					if (item.path === targetPath) {
-						return `/docs/${item.name}`;
+						const fullPath = parentPath ? `${parentPath}/${item.name}` : item.name;
+						return `/docs/${fullPath}`;
 					}
 					if (item.items) {
-						const found = findUrlPath(item.items, targetPath);
+						const currentPath = parentPath ? `${parentPath}/${item.name}` : item.name;
+						const found = findUrlPath(item.items, targetPath, currentPath);
 						if (found) return found;
 					}
 				}
