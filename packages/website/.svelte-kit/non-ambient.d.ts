@@ -27,18 +27,15 @@ export {};
 
 declare module "$app/types" {
 	export interface AppTypes {
-		RouteId(): "/" | "/docs" | "/docs/[...slug]" | "/[...slug]";
+		RouteId(): "/" | "/[...slug]";
 		RouteParams(): {
-			"/docs/[...slug]": { slug: string };
 			"/[...slug]": { slug: string }
 		};
 		LayoutParams(): {
 			"/": { slug?: string };
-			"/docs": { slug?: string };
-			"/docs/[...slug]": { slug: string };
 			"/[...slug]": { slug: string }
 		};
-		Pathname(): "/" | "/docs" | "/docs/" | `/docs/${string}` & {} | `/docs/${string}/` & {} | `/${string}` & {} | `/${string}/` & {};
+		Pathname(): "/" | `/${string}` & {} | `/${string}/` & {};
 		ResolvedPathname(): `${"" | `/${string}`}${ReturnType<AppTypes['Pathname']>}`;
 		Asset(): "/favicon.png" | string & {};
 	}
