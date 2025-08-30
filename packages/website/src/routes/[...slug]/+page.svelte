@@ -14,7 +14,7 @@
 	
 	// Map URL path to content path
 	function getContentPathFromUrl(urlPath: string): string | null {
-		const cleanPath = urlPath.replace(/^\/docs\/?/, '').replace(/^\/+/, '');
+		const cleanPath = urlPath.replace(/^\/+/, '').replace(/\.md$/, '');
 		if (!cleanPath || cleanPath === 'getting-started') {
 			return 'getting-started.md';
 		}
@@ -105,59 +105,13 @@
 		}
 	});
 	
-	function handlePageSelect(path: string) {
-		console.log('handlePageSelect called with path:', path);
-		
-		// Find the URL path from navigation data
-		if (navigation) {
-			const findUrlPath = (items: any[], targetPath: string, parentPath: string = ''): string | null => {
-				for (const item of items) {
-					console.log('Checking item:', item.name, 'path:', item.path, 'target:', targetPath);
-					if (item.path === targetPath) {
-						const fullPath = parentPath ? `${parentPath}/${item.name}` : item.name;
-						const urlPath = `/docs/${fullPath}`;
-						console.log('Found URL path:', urlPath);
-						return urlPath;
-					}
-					if (item.items) {
-						const currentPath = parentPath ? `${parentPath}/${item.name}` : item.name;
-						const found = findUrlPath(item.items, targetPath, currentPath);
-						if (found) return found;
-					}
-				}
-				return null;
-			};
-			
-			const urlPath = findUrlPath(navigation.items, path);
-			if (urlPath) {
-				console.log('Using navigation URL path:', urlPath);
-				window.history.pushState({}, '', urlPath);
-				currentPage = path;
-				return;
-			}
-		}
-		
-		// Fallback mapping
-		const urlPathMap: Record<string, string> = {
-			'getting-started.md': '/docs/getting-started',
-			'guides/installation.md': '/docs/guides/installation',
-			'guides/configuration.md': '/docs/guides/configuration',
-			'guides/advanced/customization.md': '/docs/guides/advanced/customization',
-			'guides/advanced/plugins.md': '/docs/guides/advanced/plugins',
-			'api/builder.md': '/docs/api/builder',
-			'api/renderer.md': '/docs/api/renderer',
-			'api/types.md': '/docs/api/types'
-		};
-		const urlPath = urlPathMap[path] || '/docs/getting-started';
-		console.log('Using fallback URL path:', urlPath);
-		window.history.pushState({}, '', urlPath);
-		currentPage = path;
-	}
+
 	
-	function renderNavigationItems(items: any[]): string {
+	function renderNavigationItems(items: any[], parentPath: string = ''): string {
 		return items.map(item => {
 			if (item.type === 'section') {
-				const sectionItems = renderNavigationItems(item.items || []);
+				const currentPath = parentPath ? `${parentPath}/${item.name}` : item.name;
+				const sectionItems = renderNavigationItems(item.items || [], currentPath);
 				return `
 					<div class="nav-section">
 						<div class="nav-section-header">${item.label}</div>
@@ -166,25 +120,20 @@
 				`;
 			} else {
 				const isActive = currentPage === item.path;
+				const href = parentPath ? `/${parentPath}/${item.name}` : `/${item.name}`;
 				return `
-					<button 
+					<a 
+						href="${href}"
 						class="nav-link ${isActive ? 'active' : ''}"
-						onclick="window.dispatchEvent(new CustomEvent('pageSelect', { detail: '${item.path}' }))"
 					>
 						${item.label}
-					</button>
+					</a>
 				`;
 			}
 		}).join('');
 	}
 	
-	// Set up event listener for navigation
-	if (typeof window !== 'undefined') {
-		window.addEventListener('pageSelect', (event: any) => {
-			console.log('pageSelect event received:', event.detail);
-			handlePageSelect(event.detail);
-		});
-	}
+
 </script>
 
 <div class="docs-layout">
@@ -207,10 +156,10 @@
 					<p>The page you're looking for doesn't exist.</p>
 					<p>Try one of these pages:</p>
 					<ul>
-						<li><a href="/docs/getting-started">Getting Started</a></li>
-						<li><a href="/docs/guides/installation">Installation Guide</a></li>
-						<li><a href="/docs/guides/configuration">Configuration</a></li>
-						<li><a href="/docs/api/builder">API Reference</a></li>
+						<li><a href="/getting-started">Getting Started</a></li>
+						<li><a href="/guides/installation">Installation Guide</a></li>
+						<li><a href="/guides/configuration">Configuration</a></li>
+						<li><a href="/api/builder">API Reference</a></li>
 					</ul>
 				</div>
 			{:else}
