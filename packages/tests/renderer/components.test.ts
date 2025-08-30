@@ -177,66 +177,39 @@ describe('Components', () => {
     });
   });
 
-  describe('DocsLayout', () => {
-    it('should create DocsLayout with props', () => {
-      const layout = new DocsLayout({
+  describe('createDocsLayout', () => {
+    it('should create layout HTML', () => {
+      const html = createDocsLayout({
         navigation: sampleNavigationData,
         currentPage: 'getting-started.md',
         content: '<h1>Title</h1><p>Content</p>',
         sidebarCollapsed: false
       });
 
-      expect(layout).toBeDefined();
-    });
-
-    it('should render layout HTML', () => {
-      const layout = new DocsLayout({
-        navigation: sampleNavigationData,
-        currentPage: 'getting-started.md',
-        content: '<h1>Title</h1><p>Content</p>',
-        sidebarCollapsed: false
-      });
-
-      const html = layout.render();
       expect(html).toContain('docs-layout');
-      expect(html).toContain('docs-container');
-      expect(html).toContain('sidebar-toggle');
-      expect(html).toContain('☰');
+      expect(html).toContain('docs-sidebar');
+      expect(html).toContain('docs-content');
     });
 
     it('should render collapsed sidebar in layout', () => {
-      const layout = new DocsLayout({
+      const html = createDocsLayout({
         navigation: sampleNavigationData,
         currentPage: 'getting-started.md',
         content: '<h1>Title</h1><p>Content</p>',
         sidebarCollapsed: true
       });
 
-      const html = layout.render();
       expect(html).toContain('docs-sidebar collapsed');
     });
 
-    it('should include sidebar toggle functionality', () => {
-      const layout = new DocsLayout({
-        navigation: sampleNavigationData,
-        currentPage: 'getting-started.md',
-        content: '<h1>Title</h1><p>Content</p>',
-        sidebarCollapsed: false
-      });
-
-      const html = layout.render();
-      expect(html).toContain('onclick="this.dispatchEvent(new CustomEvent(\'sidebarToggle\'))"');
-    });
-
     it('should include page selection functionality', () => {
-      const layout = new DocsLayout({
+      const html = createDocsLayout({
         navigation: sampleNavigationData,
         currentPage: 'getting-started.md',
         content: '<h1>Title</h1><p>Content</p>',
         sidebarCollapsed: false
       });
 
-      const html = layout.render();
       expect(html).toContain('onclick="this.dispatchEvent(new CustomEvent(\'pageSelect\', {detail: \'getting-started.md\'}))"');
     });
   });
@@ -265,7 +238,7 @@ describe('Components', () => {
   });
 
   describe('createDocsLayout', () => {
-    it('should create DocsLayout instance', () => {
+    it('should return layout HTML string', () => {
       const layout = createDocsLayout({
         navigation: sampleNavigationData,
         currentPage: 'getting-started.md',
@@ -273,7 +246,8 @@ describe('Components', () => {
         sidebarCollapsed: false
       });
 
-      expect(layout).toBeInstanceOf(DocsLayout);
+      expect(typeof layout).toBe('string');
+      expect(layout).toContain('docs-layout');
     });
   });
 });

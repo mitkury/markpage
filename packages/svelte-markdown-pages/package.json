@@ -18,8 +18,8 @@
       "require": "./dist/renderer/index.js"
     },
     "./components": {
-      "import": "./dist/renderer/components/index.js",
-      "require": "./dist/renderer/components/index.js"
+      "import": "./dist/renderer/components.js",
+      "require": "./dist/renderer/components.js"
     }
   },
   "scripts": {
