@@ -1,140 +1,22 @@
 <script lang="ts">
-	import { NavigationTree, loadContent } from 'svelte-markdown-pages/renderer';
-	import type { NavigationItem } from 'svelte-markdown-pages';
+	import { goto } from '$app/navigation';
+	import { onMount } from 'svelte';
 	
-	// Simple navigation structure
-	const navigationData = {
-		items: [
-			{ name: "getting-started", type: "page", label: "Getting Started", path: "getting-started.md" },
-			{ name: "guides", type: "section", label: "Guides", items: [
-				{ name: "installation", type: "page", label: "Installation", path: "guides/installation.md" },
-				{ name: "configuration", type: "page", label: "Configuration", path: "guides/configuration.md" }
-			]},
-			{ name: "api", type: "section", label: "API Reference", items: [
-				{ name: "builder", type: "page", label: "Builder", path: "api/builder.md" },
-				{ name: "renderer", type: "page", label: "Renderer", path: "api/renderer.md" }
-			]}
-		]
-	};
-	
-	// Simple content bundle
-	const contentBundle = {
-		"getting-started.md": "# Getting Started\n\nWelcome to the svelte-markdown-pages example!\n\nThis is a comprehensive example showing how to use the svelte-markdown-pages package to build documentation sites with distributed navigation.\n\n## What is svelte-markdown-pages?\n\nsvelte-markdown-pages is a standalone npm package for building and rendering markdown-based content with distributed navigation structure for Svelte projects.\n\n## Key Features\n\n- **Distributed Navigation**: Each folder defines its own structure with `.index.json` files\n- **Multiple Output Formats**: App bundles, website navigation, and static HTML sites\n- **Type-Safe**: Full TypeScript support with Zod validation\n- **Framework Agnostic**: Svelte 5 components that work in any Svelte project\n- **Flexible**: Point to any directory with markdown and `.index.json` files\n\n## Quick Start\n\n1. Install the package\n2. Create your content structure\n3. Build your documentation\n4. Use in your Svelte app\n\nReady to get started? Check out the [Installation](./guides/installation.md) guide!",
-		"guides/installation.md": "# Installation\n\nFollow these steps to install the package.\n\n## Prerequisites\n\n- Node.js 18+\n- npm or yarn\n\n## Quick Install\n\n```bash\nnpm install svelte-markdown-pages\n```\n\n## Manual Setup\n\n1. Create a new SvelteKit project\n2. Install the package\n3. Set up your content structure\n4. Build your documentation\n\n## Content Structure\n\nCreate a directory with your markdown content and `.index.json` files:\n\n```\nmy-content/\n├── .index.json\n├── getting-started.md\n└── guides/\n    ├── .index.json\n    └── installation.md\n```\n\n## Define Navigation\n\n**Root level** (`my-content/.index.json`):\n```json\n{\n  \"items\": [\n    { \"name\": \"getting-started\", \"type\": \"page\", \"label\": \"Getting Started\" },\n    { \"name\": \"guides\", \"type\": \"section\", \"label\": \"Guides\" }\n  ]\n}\n```\n\n**Section level** (`my-content/guides/.index.json`):\n```json\n{\n  \"items\": [\n    { \"name\": \"installation\", \"type\": \"page\", \"label\": \"Installation\" }\n  ]\n}\n```\n\n## Build Documentation\n\n```typescript\nimport { buildDocs } from 'svelte-markdown-pages/builder';\n\nawait buildDocs('./my-content', {\n  appOutput: './src/lib/content',\n  websiteOutput: './src/lib/content',\n  includeContent: true\n});\n```\n\n## Use in Your App\n\n```typescript\nimport { NavigationTree, loadContent } from 'svelte-markdown-pages/renderer';\nimport navigationData from './src/lib/content/navigation.json';\nimport contentBundle from './src/lib/content/content.json';\n\nconst navigation = new NavigationTree(navigationData);\nconst content = await loadContent('getting-started.md', contentBundle);\n```\n\nNext: Learn about [Configuration](./configuration.md) options.",
-		"guides/configuration.md": "# Configuration\n\nLearn how to configure svelte-markdown-pages for your project.\n\n## Basic Configuration\n\n```typescript\nimport { buildDocs } from 'svelte-markdown-pages/builder';\n\nawait buildDocs('./content', {\n  appOutput: './src/lib/content',\n  websiteOutput: './src/lib/content',\n  includeContent: true\n});\n```\n\n## Build Options\n\n### `appOutput`\nDirectory where app-specific files will be generated.\n\n### `websiteOutput`\nDirectory where website-specific files will be generated.\n\n### `includeContent`\nWhether to include content in the output bundle.\n\n### `staticOutput`\nDirectory for static site generation.\n\n## Advanced Options\n\n### Custom Processors\n\nYou can provide custom content processors for advanced transformations:\n\n```typescript\nconst processor = {\n  process(content: string): string {\n    // Add table of contents\n    return addTableOfContents(content);\n  }\n};\n\nconst result = await buildDocs('./content', {\n  appOutput: './src/lib/content',\n  processor\n});\n```\n\n### Static Site Generation\n\nGenerate a complete static HTML site:\n\n```typescript\nimport { generateStaticSite } from 'svelte-markdown-pages/builder';\n\nconst result = await generateStaticSite('./content', './dist', {\n  title: 'My Documentation',\n  baseUrl: 'https://example.com',\n  includeIndex: true\n});\n```\n\n## CLI Usage\n\n### Build for App/Website\n\n```bash\nnpx svelte-markdown-pages build ./content --output ./src/lib/content\n```\n\n### Generate Static Site\n\n```bash\nnpx svelte-markdown-pages static ./content --output ./dist\n```\n\n## Environment Variables\n\n- `SMP_DEBUG`: Enable debug logging\n- `SMP_VERBOSE`: Enable verbose output\n\nNext: Explore [Advanced](./advanced/customization.md) customization options.",
-		"api/builder.md": "# Builder API\n\nComplete API reference for the builder module.\n\n## Functions\n\n### buildDocs\n\nBuilds documentation from a content directory.\n\n```typescript\nfunction buildDocs(\n  contentPath: string,\n  options?: BuildOptions\n): Promise<BuildResult>\n```\n\n**Parameters:**\n- `contentPath`: Path to the content directory\n- `options`: Optional build configuration\n\n**Returns:** Promise that resolves to a BuildResult\n\n**Example:**\n```typescript\nimport { buildDocs } from 'svelte-markdown-pages/builder';\n\nconst result = await buildDocs('./content', {\n  appOutput: './src/lib/content',\n  websiteOutput: './src/lib/content',\n  includeContent: true\n});\n\nconsole.log(result.navigation);\nconsole.log(result.content);\n```\n\n### generateStaticSite\n\nGenerates a complete static HTML site.\n\n```typescript\nfunction generateStaticSite(\n  contentPath: string,\n  outputPath: string,\n  options?: StaticSiteOptions\n): Promise<StaticSiteResult>\n```\n\n**Parameters:**\n- `contentPath`: Path to the content directory\n- `outputPath`: Directory where static files will be generated\n- `options`: Optional static site configuration\n\n**Returns:** Promise that resolves to a StaticSiteResult\n\n**Example:**\n```typescript\nimport { generateStaticSite } from 'svelte-markdown-pages/builder';\n\nconst result = await generateStaticSite('./content', './dist', {\n  title: 'My Documentation',\n  baseUrl: 'https://example.com',\n  includeIndex: true\n});\n\nconsole.log(`Generated ${result.pages.length} pages`);\n```\n\n## Types\n\n### BuildOptions\n\n```typescript\ninterface BuildOptions {\n  appOutput?: string;\n  websiteOutput?: string;\n  staticOutput?: string;\n  includeContent?: boolean;\n  processor?: ContentProcessor;\n  plugins?: Plugin[];\n}\n```\n\n### BuildResult\n\n```typescript\ninterface BuildResult {\n  navigation: NavigationTree;\n  content?: Record<string, string>;\n  pages?: Array<{\n    path: string;\n    content: string;\n    html: string;\n  }>;\n}\n```\n\n### StaticSiteOptions\n\n```typescript\ninterface StaticSiteOptions {\n  title?: string;\n  baseUrl?: string;\n  css?: string;\n  js?: string;\n  processor?: ContentProcessor;\n  includeIndex?: boolean;\n  indexTitle?: string;\n}\n```\n\n### StaticSiteResult\n\n```typescript\ninterface StaticSiteResult {\n  pages: Array<{\n    path: string;\n    content: string;\n    html: string;\n  }>;\n  index?: {\n    path: string;\n    html: string;\n  };\n}\n```\n\n## CLI Commands\n\n### Build Command\n\n```bash\nnpx svelte-markdown-pages build <content-path> [options]\n```\n\n**Options:**\n- `--output, -o`: Output directory\n- `--include-content`: Include content in output\n- `--processor`: Custom processor file\n- `--plugins`: Plugin configuration file\n\n### Static Command\n\n```bash\nnpx svelte-markdown-pages static <content-path> <output-path> [options]\n```\n\n**Options:**\n- `--title`: Site title\n- `--base-url`: Base URL for the site\n- `--css`: Custom CSS file\n- `--js`: Custom JavaScript file\n- `--include-index`: Generate index page\n\n## Error Handling\n\nThe builder functions throw errors for common issues:\n\n```typescript\ntry {\n  const result = await buildDocs('./content');\n} catch (error) {\n  if (error.code === 'ENOENT') {\n    console.error('Content directory not found');\n  } else if (error.code === 'INVALID_INDEX') {\n    console.error('Invalid .index.json file');\n  } else {\n    console.error('Build failed:', error.message);\n  }\n}\n```\n\nNext: Learn about the [Renderer API](./renderer.md).",
-		"api/renderer.md": "# Renderer API\n\nComplete API reference for the renderer module.\n\n## Classes\n\n### NavigationTree\n\nManages navigation structure and provides navigation utilities.\n\n```typescript\nclass NavigationTree {\n  constructor(data: NavigationTree);\n  findItemByPath(path: string): NavigationItem | null;\n  getBreadcrumbs(path: string): NavigationItem[];\n  getSiblings(path: string): NavigationItem[];\n  getNextSibling(path: string): NavigationItem | null;\n  getPreviousSibling(path: string): NavigationItem | null;\n}\n```\n\n**Constructor:**\n```typescript\nconst navigation = new NavigationTree(navigationData);\n```\n\n**Methods:**\n\n#### findItemByPath\n```typescript\nfindItemByPath(path: string): NavigationItem | null\n```\nFinds a navigation item by its path.\n\n#### getBreadcrumbs\n```typescript\ngetBreadcrumbs(path: string): NavigationItem[]\n```\nGets the breadcrumb trail for a given path.\n\n#### getSiblings\n```typescript\ngetSiblings(path: string): NavigationItem[]\n```\nGets all siblings of the item at the given path.\n\n#### getNextSibling\n```typescript\ngetNextSibling(path: string): NavigationItem | null\n```\nGets the next sibling of the item at the given path.\n\n#### getPreviousSibling\n```typescript\ngetPreviousSibling(path: string): NavigationItem | null\n```\nGets the previous sibling of the item at the given path.\n\n**Example:**\n```typescript\nimport { NavigationTree } from 'svelte-markdown-pages/renderer';\n\nconst navigation = new NavigationTree(navigationData);\n\n// Find a specific page\nconst item = navigation.findItemByPath('guides/installation.md');\n\n// Get breadcrumbs\nconst breadcrumbs = navigation.getBreadcrumbs('guides/installation.md');\n\n// Get siblings\nconst siblings = navigation.getSiblings('guides/installation.md');\nconst nextSibling = navigation.getNextSibling('guides/installation.md');\nconst prevSibling = navigation.getPreviousSibling('guides/installation.md');\n```\n\n### ContentLoader\n\nManages content loading and processing.\n\n```typescript\nclass ContentLoader {\n  constructor(contentBundle: Record<string, string>);\n  loadAndProcess(path: string): string;\n  hasContent(path: string): boolean;\n  getAvailablePaths(): string[];\n}\n```\n\n**Constructor:**\n```typescript\nconst loader = new ContentLoader(contentBundle);\n```\n\n**Methods:**\n\n#### loadAndProcess\n```typescript\nloadAndProcess(path: string): string\n```\nLoads and processes content for a specific path.\n\n#### hasContent\n```typescript\nhasContent(path: string): boolean\n```\nChecks if content exists for a given path.\n\n#### getAvailablePaths\n```typescript\ngetAvailablePaths(): string[]\n```\nGets all available content paths.\n\n**Example:**\n```typescript\nimport { ContentLoader } from 'svelte-markdown-pages/renderer';\n\nconst loader = new ContentLoader(contentBundle);\n\n// Load content\nconst content = loader.loadAndProcess('getting-started.md');\n\n// Check availability\nconst hasContent = loader.hasContent('guides/installation.md');\nconst paths = loader.getAvailablePaths();\n```\n\n## Functions\n\n### loadContent\n\nLoads and processes content for a specific path.\n\n```typescript\nfunction loadContent(\n  path: string,\n  contentBundle: Record<string, string>,\n  processor?: ContentProcessor\n): Promise<string>\n```\n\n**Parameters:**\n- `path`: Path to the content file\n- `contentBundle`: Bundle containing all content\n- `processor`: Optional content processor\n\n**Returns:** Promise that resolves to processed content\n\n**Example:**\n```typescript\nimport { loadContent } from 'svelte-markdown-pages/renderer';\n\nconst content = await loadContent('getting-started.md', contentBundle);\n\n// With custom processor\nconst processor = {\n  process(content: string): string {\n    return addTableOfContents(content);\n  }\n};\n\nconst processedContent = await loadContent('page.md', contentBundle, processor);\n```\n\n## Utility Functions\n\n### extractHeadings\n\nExtracts headings from markdown content.\n\n```typescript\nfunction extractHeadings(content: string): Array<{\n  level: number;\n  text: string;\n  id: string;\n}>\n```\n\n### extractTableOfContents\n\nGenerates a table of contents from markdown content.\n\n```typescript\nfunction extractTableOfContents(content: string): Array<{\n  level: number;\n  text: string;\n  id: string;\n  children?: Array<{ level: number; text: string; id: string }>;\n}>\n```\n\n### addTableOfContents\n\nAdds a table of contents to markdown content.\n\n```typescript\nfunction addTableOfContents(content: string): string\n```\n\n**Example:**\n```typescript\nimport { \n  extractHeadings, \n  extractTableOfContents, \n  addTableOfContents \n} from 'svelte-markdown-pages/renderer';\n\n// Extract headings from markdown\nconst headings = extractHeadings(content);\n\n// Generate table of contents\nconst toc = extractTableOfContents(content);\n\n// Add table of contents to content\nconst contentWithToc = addTableOfContents(content);\n```\n\n## Types\n\n### NavigationItem\n\n```typescript\ninterface NavigationItem {\n  name: string;\n  type: 'page' | 'section';\n  label: string;\n  path?: string;\n  items?: NavigationItem[];\n  parent?: NavigationItem;\n  collapsed?: boolean;\n  url?: string;\n}\n```\n\n### NavigationTree\n\n```typescript\ninterface NavigationTree {\n  items: NavigationItem[];\n}\n```\n\n### ContentProcessor\n\n```typescript\ninterface ContentProcessor {\n  process(content: string): string;\n}\n```\n\nNext: Learn about [Type Definitions](./types.md)."
-	};
-	
-	let navigation = $state(new NavigationTree(navigationData));
-	let currentPage = $state("getting-started.md");
-	let pageContent = $state<string | null>(null);
-	
-	$effect(() => {
-		if (currentPage && contentBundle) {
-			loadContent(currentPage, contentBundle).then(content => {
-				pageContent = content;
-			}).catch(err => {
-				console.error('Failed to load content:', err);
-				pageContent = 'Failed to load content';
-			});
-		}
+	onMount(() => {
+		// Redirect to the dynamic route
+		goto('/getting-started');
 	});
-	
-	function handlePageSelect(path: string) {
-		currentPage = path;
-	}
-	
-	function renderNavigationItems(items: NavigationItem[]): string {
-		return items.map(item => {
-			if (item.type === 'section') {
-				return `
-					<div class="nav-section">
-						<div class="nav-section-header">${item.label}</div>
-						${item.items ? renderNavigationItems(item.items) : ''}
-					</div>
-				`;
-			} else {
-				const isActive = currentPage === item.path;
-				return `
-					<button 
-						class="nav-link ${isActive ? 'active' : ''}"
-						onclick="window.dispatchEvent(new CustomEvent('pageSelect', { detail: '${item.path}' }))">
-						${item.label}
-					</button>
-				`;
-			}
-		}).join('');
-	}
-	
-	// Set up event listener when component mounts
-	if (typeof window !== 'undefined') {
-		window.addEventListener('pageSelect', (event: any) => {
-			handlePageSelect(event.detail);
-		});
-	}
 </script>
 
-<div class="docs-layout">
-	<nav class="docs-sidebar">
-		{@html renderNavigationItems(navigation.items)}
-	</nav>
-	
-	<div class="docs-content">
-		{@html pageContent || 'No content selected'}
-	</div>
-</div>
+<div class="loading">Redirecting...</div>
 
 <style>
-	.docs-layout {
+	.loading {
 		display: flex;
+		align-items: center;
+		justify-content: center;
 		min-height: 100vh;
-	}
-	
-	.docs-sidebar {
-		width: 250px;
-		background: #f5f5f5;
-		border-right: 1px solid #ddd;
-		padding: 1rem;
-		overflow-y: auto;
-	}
-	
-	.docs-content {
-		flex: 1;
-		padding: 2rem;
-		overflow-y: auto;
-	}
-	
-	:global(.nav-link) {
-		display: block;
-		width: 100%;
-		padding: 0.5rem;
-		color: #333;
-		text-decoration: none;
-		border: none;
-		background: none;
-		text-align: left;
-		border-radius: 4px;
-		margin-bottom: 0.25rem;
-		cursor: pointer;
-		font-size: inherit;
-		font-family: inherit;
-	}
-	
-	:global(.nav-link:hover) {
-		background: #e0e0e0;
-	}
-	
-	:global(.nav-link.active) {
-		background: #007acc;
-		color: white;
-	}
-	
-	:global(.nav-section-header) {
-		font-weight: bold;
+		font-size: 1.2rem;
 		color: #666;
-		margin-bottom: 0.5rem;
-		font-size: 0.9rem;
-		text-transform: uppercase;
 	}
 </style>
