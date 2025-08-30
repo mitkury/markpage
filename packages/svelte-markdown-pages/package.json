@@ -34,7 +34,7 @@
     "README.md"
   ],
   "scripts": {
-    "prebuild": "rm -rf dist",
+    "prebuild": "rm -rf dist && cp ../../README.md .",
     "build": "tsup",
     "dev": "tsup --watch",
     "pretest": "npm run build",
