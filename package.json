@@ -1,6 +1,6 @@
 {
   "name": "svelte-markdown-pages",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "Build and render markdown-based content with distributed navigation for Svelte projects",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -58,6 +58,6 @@
     "content-management",
     "svelte"
   ],
-  "repository": "https://github.com/your-username/svelte-markdown-pages",
+  "repository": "https://github.com/mitkury/svelte-markdown-pages",
   "license": "MIT"
 }
