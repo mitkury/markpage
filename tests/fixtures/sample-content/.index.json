@@ -1,0 +1,7 @@
+{
+  "items": [
+    { "name": "getting-started", "type": "page", "label": "Getting Started" },
+    { "name": "guides", "type": "section", "label": "Guides" },
+    { "name": "api", "type": "section", "label": "API Reference" }
+  ]
+}
