@@ -57,7 +57,7 @@
     "svelte": "^5.0.0"
   },
   "bin": {
-    "svelte-markdown-pages": "./bin/svelte-markdown-pages.js"
+    "svelte-markdown-pages": "bin/svelte-markdown-pages.js"
   },
   "keywords": [
     "markdown",
