@@ -14,8 +14,8 @@
     "test:coverage": "npm run test:coverage --workspace=@svelte-markdown-pages/tests",
     "build:examples": "npm run build --workspace=@svelte-markdown-pages/examples",
     "dev:examples": "npm run dev --workspace=@svelte-markdown-pages/examples",
-    "build:website": "npm run build:docs --workspace=@svelte-markdown-pages/website && npm run build --workspace=@svelte-markdown-pages/website",
-    "dev:website": "npm run dev:docs --workspace=@svelte-markdown-pages/website",
+    "build:website": "npm run build --workspace=@svelte-markdown-pages/website",
+    "dev:website": "npm run dev --workspace=@svelte-markdown-pages/website",
     "prepublishOnly": "npm run build && npm run test"
   },
   "devDependencies": {

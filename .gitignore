@@ -95,3 +95,6 @@ pids
 # Temporary folders
 tmp/
 temp/
+
+# SvelteKit
+.svelte-kit/
