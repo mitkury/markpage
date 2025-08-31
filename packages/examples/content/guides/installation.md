@@ -57,9 +57,9 @@ my-content/
 ## Build Documentation
 
 ```typescript
-import { buildDocs } from 'svelte-markdown-pages/builder';
+import { buildPages } from 'svelte-markdown-pages/builder';
 
-await buildDocs('./my-content', {
+await buildPages('./my-content', {
   appOutput: './src/lib/content',
   websiteOutput: './src/lib/content',
   includeContent: true

@@ -1,14 +1,23 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
+	import navigationData from '$lib/content/navigation.json';
 	
 	onMount(() => {
-		// Redirect to the dynamic route
-		goto('/getting-started');
+		// Redirect to the first page in navigation
+		const firstPage = navigationData.items?.[0];
+		if (firstPage?.path) {
+			// Extract the name without .md extension for the URL
+			const urlPath = firstPage.path.replace('.md', '');
+			goto(`/${urlPath}`);
+		} else {
+			// Fallback to root which will handle the default
+			goto('/');
+		}
 	});
 </script>
 
-<div class="loading">Redirecting...</div>
+<div class="loading">Redirecting to documentation...</div>
 
 <style>
 	.loading {

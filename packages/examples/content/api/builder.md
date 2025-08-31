@@ -4,12 +4,12 @@ Complete API reference for the builder module.
 
 ## Functions
 
-### buildDocs
+### buildPages
 
 Builds documentation from a content directory.
 
 ```typescript
-function buildDocs(
+function buildPages(
   contentPath: string,
   options?: BuildOptions
 ): Promise<BuildResult>
@@ -23,9 +23,9 @@ function buildDocs(
 
 **Example:**
 ```typescript
-import { buildDocs } from 'svelte-markdown-pages/builder';
+import { buildPages } from 'svelte-markdown-pages/builder';
 
-const result = await buildDocs('./content', {
+const result = await buildPages('./content', {
   appOutput: './src/lib/content',
   websiteOutput: './src/lib/content',
   includeContent: true
@@ -159,7 +159,7 @@ The builder functions throw errors for common issues:
 
 ```typescript
 try {
-  const result = await buildDocs('./content');
+  const result = await buildPages('./content');
 } catch (error) {
   if (error.code === 'ENOENT') {
     console.error('Content directory not found');

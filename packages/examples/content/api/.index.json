@@ -1,7 +1,6 @@
 {
   "items": [
     { "name": "builder", "type": "page", "label": "Builder" },
-    { "name": "renderer", "type": "page", "label": "Renderer" },
-    { "name": "types", "type": "page", "label": "Types" }
+    { "name": "renderer", "type": "page", "label": "Renderer" }
   ]
 }

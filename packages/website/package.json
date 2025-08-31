@@ -7,8 +7,7 @@
     "dev": "vite dev",
     "build": "vite build",
     "preview": "vite preview",
-    "build:docs": "node -e \"import('svelte-markdown-pages/builder').then(({buildDocs}) => buildDocs('../../docs', {appOutput: './src/lib/content', includeContent: true}))\"",
-    "dev:docs": "npm run build:docs && npm run dev"
+    "build:docs": "node -e \"import('svelte-markdown-pages/builder').then(({buildPages}) => buildPages('../../docs', {appOutput: './src/lib/content', includeContent: true}))\""
   },
   "devDependencies": {
     "@sveltejs/adapter-auto": "^3.0.0",

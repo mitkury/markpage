@@ -22,19 +22,6 @@
           "type": "page",
           "label": "Configuration",
           "path": "guides/configuration.md"
-        },
-        {
-          "name": "advanced",
-          "type": "section",
-          "label": "Advanced",
-          "items": [
-            {
-              "name": "customization",
-              "type": "page",
-              "label": "Customization",
-              "path": "guides/advanced/customization.md"
-            }
-          ]
         }
       ]
     },
@@ -54,12 +41,6 @@
           "type": "page",
           "label": "Renderer",
           "path": "api/renderer.md"
-        },
-        {
-          "name": "types",
-          "type": "page",
-          "label": "Types",
-          "path": "api/types.md"
         }
       ]
     }

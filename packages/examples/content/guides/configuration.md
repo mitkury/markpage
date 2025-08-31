@@ -5,9 +5,9 @@ Learn how to configure svelte-markdown-pages for your project.
 ## Basic Configuration
 
 ```typescript
-import { buildDocs } from 'svelte-markdown-pages/builder';
+import { buildPages } from 'svelte-markdown-pages/builder';
 
-await buildDocs('./content', {
+await buildPages('./content', {
   appOutput: './src/lib/content',
   websiteOutput: './src/lib/content',
   includeContent: true
@@ -42,7 +42,7 @@ const processor = {
   }
 };
 
-const result = await buildDocs('./content', {
+const result = await buildPages('./content', {
   appOutput: './src/lib/content',
   processor
 });
@@ -81,4 +81,4 @@ npx svelte-markdown-pages static ./content --output ./dist
 - `SMP_DEBUG`: Enable debug logging
 - `SMP_VERBOSE`: Enable verbose output
 
-Next: Explore [Advanced](./advanced/customization.md) customization options.
+Next: Explore the [Builder API](./api/builder.md).
