@@ -473,7 +473,7 @@ export class FuseSearch {
 
 ```typescript
 // scripts/build-search-index.ts
-import { buildDocs } from 'svelte-markdown-pages/builder';
+import { buildPages } from 'svelte-markdown-pages/builder';
 import { writeFileSync } from 'fs';
 import { join } from 'path';
 
@@ -514,7 +514,7 @@ function cleanContent(content: string): string {
 }
 
 export async function buildSearchIndex(contentPath: string): Promise<SearchDocument[]> {
-  const result = await buildDocs(contentPath, {
+  const result = await buildPages(contentPath, {
     includeContent: true
   });
   

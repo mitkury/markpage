@@ -82,7 +82,7 @@ describe('Integration', () => {
       '# Plugins\n\nExtend the package functionality with plugins.\n\n## Plugin System\n\nThe package supports a plugin system for extending functionality.');
     
     writeFileSync(join(apiDir, 'builder.md'), 
-      '# Builder API\n\nThe builder module provides functionality for processing markdown content.\n\n## Functions\n\n### buildDocs\n\nBuilds documentation from a content directory.');
+      '# Builder API\n\nThe builder module provides functionality for processing markdown content.\n\n## Functions\n\n### buildPages\n\nBuilds documentation from a content directory.');
     
     writeFileSync(join(apiDir, 'renderer.md'), 
       '# Renderer API\n\nThe renderer module provides runtime functionality for navigation and content rendering.\n\n## Classes\n\n### NavigationTree\n\nManages navigation structure and provides navigation utilities.');

@@ -16,7 +16,7 @@ interface ContentProcessor {
 }
 ```
 
-This is used in the `buildDocs` and `generateStaticSite` functions to transform markdown content before it's converted to HTML.
+This is used in the `buildPages` and `generateStaticSite` functions to transform markdown content before it's converted to HTML.
 
 ## Proposed Plugin System
 
@@ -174,7 +174,7 @@ const linkValidatorPlugin: Plugin = {
 ### Phase 1: Basic Plugin Support
 
 1. **Extend BuildOptions interface** to include plugins array
-2. **Modify buildDocs function** to accept and process plugins
+2. **Modify buildPages function** to accept and process plugins
 3. **Add plugin context** to provide metadata during processing
 4. **Implement basic plugin lifecycle** (beforeBuild, process, afterBuild)
 
@@ -246,7 +246,7 @@ const tocPlugin: Plugin = {
 ### Global Configuration
 
 ```typescript
-await buildDocs('./docs', {
+await buildPages('./docs', {
   appOutput: './src/lib/content',
   plugins: [admonitionPlugin, tocPlugin],
   pluginOptions: {
@@ -354,13 +354,13 @@ The plugin system would be backward compatible:
 
 ```typescript
 // Current usage continues to work
-await buildDocs('./docs', {
+await buildPages('./docs', {
   appOutput: './src/lib/content',
   includeContent: true
 });
 
 // New plugin usage
-await buildDocs('./docs', {
+await buildPages('./docs', {
   appOutput: './src/lib/content',
   includeContent: true,
   plugins: [myPlugin]

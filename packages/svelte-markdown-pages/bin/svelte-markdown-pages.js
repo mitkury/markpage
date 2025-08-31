@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { buildDocs, generateStaticSite } from '../dist/builder/index.js';
+import { buildPages, generateStaticSite } from '../dist/builder/index.js';
 import { writeFileSync, mkdirSync } from 'fs';
 import { join } from 'path';
 
@@ -42,7 +42,7 @@ async function handleBuild() {
   
   console.log(`Building documentation from ${contentPath}...`);
   
-  const result = await buildDocs(contentPath, {
+  const result = await buildPages(contentPath, {
     appOutput: outputPath,
     websiteOutput: outputPath,
     includeContent: true

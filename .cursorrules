@@ -1,4 +1,4 @@
-This is a context for AI editor/agent about the project. It's generated with a tool Airul (https://github.com/mitkury/airul) out of 15 sources. Feel free to edit .airul.json to change the sources and configure editors. Run `airul gen` to update the context after making changes to .airul.json or the sources. Remember to update TODO-AI.md after major changes in the project, keeping track of completed tasks and new developments.
+This is a context for AI editor/agent about the project. It's generated with a tool Airul (https://github.com/mitkury/airul) out of 20 sources. Feel free to edit .airul.json to change the sources and configure editors. Run `airul gen` to update the context after making changes to .airul.json or the sources. Remember to update TODO-AI.md after major changes in the project, keeping track of completed tasks and new developments.
 
 # From README.md:
 
@@ -104,9 +104,9 @@ my-content/
 ### 3. Build Documentation
 
 ```typescript
-import { buildDocs } from 'svelte-markdown-pages/builder';
+import { buildPages } from 'svelte-markdown-pages/builder';
 
-await buildDocs('./my-content', {
+await buildPages('./my-content', {
   appOutput: './src/lib/content',
   websiteOutput: './src/lib/content',
   includeContent: true
@@ -142,14 +142,14 @@ npx svelte-markdown-pages static ./my-content --output ./dist
 
 ### Builder Module
 
-#### `buildDocs(contentPath, options?)`
+#### `buildPages(contentPath, options?)`
 
 Builds documentation from a content directory.
 
 ```typescript
-import { buildDocs } from 'svelte-markdown-pages/builder';
+import { buildPages } from 'svelte-markdown-pages/builder';
 
-const result = await buildDocs('./content', {
+const result = await buildPages('./content', {
   appOutput: './src/lib/content',
   websiteOutput: './src/lib/content',
   includeContent: true
@@ -406,7 +406,7 @@ The builder module provides functions for building documentation from markdown c
 
 ## Functions
 
-### `buildDocs(contentPath, options?)`
+### `buildPages(contentPath, options?)`
 
 Builds documentation from a content directory.
 
@@ -418,9 +418,9 @@ Builds documentation from a content directory.
 
 **Example:**
 ```typescript
-import { buildDocs } from 'svelte-markdown-pages/builder';
+import { buildPages } from 'svelte-markdown-pages/builder';
 
-const result = await buildDocs('./docs', {
+const result = await buildPages('./docs', {
   appOutput: './src/lib/content',
   websiteOutput: './src/lib/content',
   includeContent: true
@@ -453,7 +453,7 @@ const result = await generateStaticSite('./docs', './dist', {
 
 ### BuildOptions
 
-Configuration options for the `buildDocs` function.
+Configuration options for the `buildPages` function.
 
 ```typescript
 interface BuildOptions {
@@ -461,9 +461,6 @@ interface BuildOptions {
   websiteOutput?: string;
   staticOutput?: string;
   includeContent?: boolean;
-  processor?: ContentProcessor;
-  plugins?: Plugin[];
-  hooks?: BuildHooks;
 }
 ```
 
@@ -472,9 +469,6 @@ interface BuildOptions {
 - `websiteOutput` (string, optional): Directory for website-specific output files
 - `staticOutput` (string, optional): Directory for static site output
 - `includeContent` (boolean, optional): Whether to include content in output bundles (default: false)
-- `processor` (ContentProcessor, optional): Custom content processor
-- `plugins` (Plugin[], optional): Array of plugins to apply
-- `hooks` (BuildHooks, optional): Build lifecycle hooks
 
 ### StaticSiteOptions
 
@@ -486,10 +480,9 @@ interface StaticSiteOptions {
   baseUrl?: string;
   css?: string;
   js?: string;
+  processor?: ContentProcessor;
   includeIndex?: boolean;
   indexTitle?: string;
-  processor?: ContentProcessor;
-  plugins?: Plugin[];
 }
 ```
 
@@ -498,29 +491,30 @@ interface StaticSiteOptions {
 - `baseUrl` (string, optional): Base URL for the site
 - `css` (string, optional): Custom CSS content to include
 - `js` (string, optional): Custom JavaScript content to include
+- `processor` (ContentProcessor, optional): Custom content processor
 - `includeIndex` (boolean, optional): Whether to generate an index page (default: false)
 - `indexTitle` (string, optional): Title for the generated index page
-- `processor` (ContentProcessor, optional): Custom content processor
-- `plugins` (Plugin[], optional): Array of plugins to apply
 
 ### BuildResult
 
-Result object returned by `buildDocs`.
+Result object returned by `buildPages`.
 
 ```typescript
 interface BuildResult {
-  navigation: NavigationData;
-  content?: ContentBundle;
-  files: string[];
-  stats: BuildStats;
+  navigation: NavigationTree;
+  content?: Record<string, string>;
+  pages?: Array<{
+    path: string;
+    content: string;
+    html: string;
+  }>;
 }
 ```
 
 **Properties:**
-- `navigation` (NavigationData): Generated navigation structure
-- `content` (ContentBundle, optional): Content bundle (if includeContent is true)
-- `files` (string[]): List of generated files
-- `stats` (BuildStats): Build statistics
+- `navigation` (NavigationTree): Generated navigation structure
+- `content` (Record<string, string>, optional): Content bundle (if includeContent is true)
+- `pages` (Array, optional): Array of generated pages with path, content, and HTML
 
 ### StaticSiteResult
 
@@ -594,48 +588,27 @@ interface BuildHooks {
 - `afterBuild` (function, optional): Called after build completes
 - `onError` (function, optional): Called when build errors occur
 
-### BuildStats
 
-Statistics about the build process.
-
-```typescript
-interface BuildStats {
-  pages: number;
-  sections: number;
-  totalFiles: number;
-  buildTime: number;
-  errors: string[];
-  warnings: string[];
-}
-```
-
-**Properties:**
-- `pages` (number): Number of pages processed
-- `sections` (number): Number of sections processed
-- `totalFiles` (number): Total number of files processed
-- `buildTime` (number): Build time in milliseconds
-- `errors` (string[]): List of build errors
-- `warnings` (string[]): List of build warnings
 
 ## Examples
 
 ### Basic Build
 
 ```typescript
-import { buildDocs } from 'svelte-markdown-pages/builder';
+import { buildPages } from 'svelte-markdown-pages/builder';
 
-const result = await buildDocs('./docs', {
+const result = await buildPages('./docs', {
   appOutput: './src/lib/content',
   includeContent: true
 });
 
-console.log(`Built ${result.stats.pages} pages in ${result.stats.buildTime}ms`);
+console.log(`Built navigation with ${result.navigation.items.length} root items`);
 ```
 
-### Advanced Build with Plugins
+### Advanced Build with Custom Processor
 
 ```typescript
-import { buildDocs } from 'svelte-markdown-pages/builder';
+import { buildPages } from 'svelte-markdown-pages/builder';
 
 const customProcessor = {
   process(content: string): string {
@@ -643,31 +616,11 @@ const customProcessor = {
   }
 };
 
-const customPlugin = {
-  name: 'custom-plugin',
-  version: '1.0.0',
-  process(content: string): string {
-    return content.replace(/\[\[(.+?)\]\]/g, '<InternalLink>$1</InternalLink>');
-  }
-};
-
-const result = await buildDocs('./docs', {
+const result = await buildPages('./docs', {
   appOutput: './src/lib/content',
   websiteOutput: './src/lib/content',
   includeContent: true,
-  processor: customProcessor,
-  plugins: [customPlugin],
-  hooks: {
-    beforeBuild: (contentPath) => {
-      console.log(`Starting build for: ${contentPath}`);
-    },
-    afterBuild: (result) => {
-      console.log(`Build completed: ${result.files.length} files generated`);
-    },
-    onError: (error) => {
-      console.error('Build error:', error.message);
-    }
-  }
+  processor: customProcessor
 });
 ```
 
@@ -691,17 +644,17 @@ const result = await generateStaticSite('./docs', './dist', {
   indexTitle: 'Documentation Home'
 });
 
-console.log(`Generated ${result.files.length} files`);
+console.log(`Generated ${result.pages?.length || 0} pages`);
 console.log(`Available URLs: ${result.urls.join(', ')}`);
 ```
 
 ### Error Handling
 
 ```typescript
-import { buildDocs } from 'svelte-markdown-pages/builder';
+import { buildPages } from 'svelte-markdown-pages/builder';
 
 try {
-  const result = await buildDocs('./docs', {
+  const result = await buildPages('./docs', {
     appOutput: './src/lib/content',
     includeContent: true
   });
@@ -737,7 +690,7 @@ For large documentation sites, consider:
 
 1. **Disable content inclusion** if not needed:
    ```typescript
-   await buildDocs('./docs', {
+   await buildPages('./docs', {
      appOutput: './src/lib/content',
      includeContent: false
    });
@@ -802,14 +755,14 @@ const navigation = new NavigationTree(navigationData);
 
 #### Methods
 
-##### `findItemByPath(path: string): NavigationItem | null`
+##### `findItemByPath(path: string): NavigationItem | undefined`
 
 Finds a navigation item by its file path.
 
 **Parameters:**
 - `path` (string): File path to search for
 
-**Returns:** NavigationItem | null
+**Returns:** NavigationItem | undefined
 
 **Example:**
 ```typescript
@@ -849,14 +802,14 @@ const siblings = navigation.getSiblings('guides/installation.md');
 // Returns: [installation, configuration, advanced]
 ```
 
-##### `getNextSibling(path: string): NavigationItem | null`
+##### `getNextSibling(path: string): NavigationItem | undefined`
 
 Gets the next sibling item.
 
 **Parameters:**
 - `path` (string): Current file path
 
-**Returns:** NavigationItem | null
+**Returns:** NavigationItem | undefined
 
 **Example:**
 ```typescript
@@ -866,14 +819,14 @@ if (next) {
 }
 ```
 
-##### `getPreviousSibling(path: string): NavigationItem | null`
+##### `getPreviousSibling(path: string): NavigationItem | undefined`
 
 Gets the previous sibling item.
 
 **Parameters:**
 - `path` (string): Current file path
 
-**Returns:** NavigationItem | null
+**Returns:** NavigationItem | undefined
 
 **Example:**
 ```typescript
@@ -881,6 +834,65 @@ const prev = navigation.getPreviousSibling('guides/configuration.md');
 if (prev) {
   console.log('Previous page:', prev.label);
 }
+```
+
+##### `getChildren(path: string): NavigationItem[]`
+
+Gets child items for a given path.
+
+**Parameters:**
+- `path` (string): Parent path to get children for
+
+**Returns:** NavigationItem[]
+
+**Example:**
+```typescript
+const children = navigation.getChildren('guides');
+// Returns: [installation, configuration, advanced]
+```
+
+##### `findItemByName(name: string): NavigationItem | undefined`
+
+Finds a navigation item by its name.
+
+**Parameters:**
+- `path` (string): Item name to search for
+
+**Returns:** NavigationItem | undefined
+
+**Example:**
+```typescript
+const item = navigation.findItemByName('installation');
+if (item) {
+  console.log('Found item:', item.label);
+}
+```
+
+##### `isExpanded(path: string): boolean`
+
+Checks if a section is expanded.
+
+**Parameters:**
+- `path` (string): Path to check
+
+**Returns:** boolean
+
+**Example:**
+```typescript
+const expanded = navigation.isExpanded('guides');
+console.log('Guides section expanded:', expanded);
+```
+
+##### `toggleExpanded(path: string): void`
+
+Toggles the expanded state of a section.
+
+**Parameters:**
+- `path` (string): Path to toggle
+
+**Example:**
+```typescript
+navigation.toggleExpanded('guides');
 ```
 
 ##### `getChildren(path: string): NavigationItem[]`
@@ -1005,7 +1017,7 @@ Loads and processes content for a specific path.
 - `contentBundle` (ContentBundle): Content bundle data
 - `processor` (ContentProcessor, optional): Custom content processor
 
-**Returns:** Promise<string>
+**Returns:** Promise<string | undefined>
 
 **Example:**
 ```typescript
@@ -1454,7 +1466,7 @@ interface ContentBundle {
 
 ### BuildOptions
 
-Configuration options for the `buildDocs` function.
+Configuration options for the `buildPages` function.
 
 ```typescript
 interface BuildOptions {
@@ -1506,7 +1518,7 @@ interface StaticSiteOptions {
 
 ### BuildResult
 
-Result object returned by `buildDocs`.
+Result object returned by `buildPages`.
 
 ```typescript
 interface BuildResult {
@@ -1563,22 +1575,7 @@ interface BuildStats {
 - `errors` (string[]): List of build errors
 - `warnings` (string[]): List of build warnings
 
-### BuildHooks
 
-Lifecycle hooks for the build process.
-
-```typescript
-interface BuildHooks {
-  beforeBuild?: (contentPath: string) => void | Promise<void>;
-  afterBuild?: (result: BuildResult) => void | Promise<void>;
-  onError?: (error: Error) => void;
-}
-```
-
-**Properties:**
-- `beforeBuild` (function, optional): Called before build starts
-- `afterBuild` (function, optional): Called after build completes
-- `onError` (function, optional): Called when build errors occur
 
 ## Renderer Types
 
@@ -1643,45 +1640,7 @@ interface TableOfContentsItem {
 
 ## Plugin Types
 
-### Plugin
 
-Interface for plugins.
-
-```typescript
-interface Plugin {
-  name: string;
-  version: string;
-  process?: (content: string) => string;
-  transform?: (content: string) => string;
-  validate?: (content: string) => boolean;
-  beforeBuild?: () => void;
-  afterBuild?: (result: any) => void;
-}
-```
-
-**Properties:**
-- `name` (string): Plugin name
-- `version` (string): Plugin version
-- `process` (function, optional): Content processing function
-- `transform` (function, optional): Content transformation function
-- `validate` (function, optional): Content validation function
-- `beforeBuild` (function, optional): Pre-build hook
-- `afterBuild` (function, optional): Post-build hook
-
-### PluginConfig
-
-Configuration for a plugin.
-
-```typescript
-interface PluginConfig {
-  enabled?: boolean;
-  options?: Record<string, any>;
-}
-```
-
-**Properties:**
-- `enabled` (boolean, optional): Whether plugin is enabled
-- `options` (Record<string, any>, optional): Plugin-specific options
 
 ## Processor Types
 
@@ -2180,7 +2139,7 @@ Built with TypeScript and Zod validation, providing excellent developer experien
 Svelte 5 components that work seamlessly in any Svelte project, including SvelteKit applications.
 
 ### ⚡ Flexible & Extensible
-Point to any directory with markdown content and `.index.json` files. Customize everything from styling to content processing with plugins.
+Point to any directory with markdown content and `.index.json` files. Customize everything from styling to content processing with custom processors.
 
 ## Quick Start
 
@@ -2227,11 +2186,10 @@ my-docs/
 ### 4. Build Your Documentation
 
 ```typescript
-import { buildDocs } from 'svelte-markdown-pages/builder';
+import { buildPages } from 'svelte-markdown-pages/builder';
 
-await buildDocs('./my-docs', {
+await buildPages('./my-docs', {
   appOutput: './src/lib/content',
-  websiteOutput: './src/lib/content',
   includeContent: true
 });
 ```
@@ -2287,8 +2245,7 @@ Ready to get started? Check out the [Installation](./guides/installation.md) gui
 
 {
   "items": [
-    { "name": "customization", "type": "page", "label": "Customization" },
-    { "name": "plugins", "type": "page", "label": "Plugins" }
+    { "name": "customization", "type": "page", "label": "Customization" }
   ]
 }
 ---
@@ -2668,452 +2625,9 @@ const chunkProcessor = {
 
 Now that you understand advanced customization, explore:
 
-- [Plugins](./plugins.md) - Extend functionality with plugins
+
 - [API Reference](../api/builder.md) - Complete API documentation
 - [Examples](../../packages/examples) - Working examples
----
-
-# From docs/guides/advanced/plugins.md:
-
-# Plugins
-
-Extend svelte-markdown-pages functionality with plugins for custom processing, styling, and features.
-
-## Plugin System
-
-The plugin system allows you to extend the functionality of svelte-markdown-pages with custom processors, transformers, and utilities.
-
-## Creating Plugins
-
-### Basic Plugin Structure
-
-A plugin is an object with specific methods and properties:
-
-```typescript
-interface Plugin {
-	name: string;
-	version: string;
-	process?: (content: string) => string;
-	transform?: (content: string) => string;
-	validate?: (content: string) => boolean;
-	beforeBuild?: () => void;
-	afterBuild?: (result: any) => void;
-}
-```
-
-### Simple Plugin Example
-
-```typescript
-const simplePlugin = {
-	name: 'simple-plugin',
-	version: '1.0.0',
-	
-	process(content: string): string {
-		// Add custom processing
-		return content.replace(/hello/g, 'Hello, World!');
-	}
-};
-
-await buildDocs('./docs', {
-	appOutput: './src/lib/content',
-	plugins: [simplePlugin]
-});
-```
-
-## Built-in Plugins
-
-### Syntax Highlighting Plugin
-
-Add syntax highlighting to code blocks:
-
-```typescript
-import { syntaxHighlightingPlugin } from 'svelte-markdown-pages/plugins';
-
-await buildDocs('./docs', {
-	appOutput: './src/lib/content',
-	plugins: [syntaxHighlightingPlugin]
-});
-```
-
-### Table of Contents Plugin
-
-Automatically generate table of contents:
-
-```typescript
-import { tocPlugin } from 'svelte-markdown-pages/plugins';
-
-await buildDocs('./docs', {
-	appOutput: './src/lib/content',
-	plugins: [tocPlugin]
-});
-```
-
-### Link Validation Plugin
-
-Validate internal and external links:
-
-```typescript
-import { linkValidationPlugin } from 'svelte-markdown-pages/plugins';
-
-await buildDocs('./docs', {
-	appOutput: './src/lib/content',
-	plugins: [linkValidationPlugin]
-});
-```
-
-## Custom Plugin Examples
-
-### Admonition Plugin
-
-Create custom admonition blocks:
-
-```typescript
-const admonitionPlugin = {
-	name: 'admonition-plugin',
-	version: '1.0.0',
-	
-	process(content: string): string {
-		const admonitionTypes = ['info', 'warning', 'error', 'success'];
-		
-		return content.replace(
-			/^:::(\w+)\n([\s\S]*?)\n:::$/gm,
-			(match, type, content) => {
-				if (!admonitionTypes.includes(type)) {
-					return match; // Return original if type not recognized
-				}
-				
-				const icons = {
-					info: 'ℹ️',
-					warning: '⚠️',
-					error: '❌',
-					success: '✅'
-				};
-				
-				return `
-					<div class="admonition admonition-${type}">
-						<div class="admonition-header">
-							${icons[type]} ${type.charAt(0).toUpperCase() + type.slice(1)}
-						</div>
-						<div class="admonition-content">
-							${content}
-						</div>
-					</div>
-				`;
-			}
-		);
-	}
-};
-```
-
-### Code Copy Plugin
-
-Add copy buttons to code blocks:
-
-```typescript
-const codeCopyPlugin = {
-	name: 'code-copy-plugin',
-	version: '1.0.0',
-	
-	process(content: string): string {
-		return content.replace(
-			/<pre><code([^>]*)>([\s\S]*?)<\/code><\/pre>/g,
-			(match, attrs, code) => {
-				return `
-					<div class="code-block-wrapper">
-						<button class="copy-button" onclick="copyCode(this)">
-							Copy
-						</button>
-						<pre><code${attrs}>${code}</code></pre>
-					</div>
-				`;
-			}
-		);
-	}
-};
-```
-
-### Image Optimization Plugin
-
-Optimize images and add lazy loading:
-
-```typescript
-const imageOptimizationPlugin = {
-	name: 'image-optimization-plugin',
-	version: '1.0.0',
-	
-	process(content: string): string {
-		return content.replace(
-			/<img([^>]+)>/g,
-			'<img$1 loading="lazy" decoding="async">'
-		);
-	}
-};
-```
-
-## Advanced Plugin Features
-
-### Plugin Configuration
-
-Plugins can accept configuration options:
-
-```typescript
-const configurablePlugin = {
-	name: 'configurable-plugin',
-	version: '1.0.0',
-	
-	config: {
-		enabled: true,
-		options: {}
-	},
-	
-	init(config: any) {
-		this.config = { ...this.config, ...config };
-	},
-	
-	process(content: string): string {
-		if (!this.config.enabled) {
-			return content;
-		}
-		
-		// Apply processing based on config
-		return content;
-	}
-};
-
-await buildDocs('./docs', {
-	appOutput: './src/lib/content',
-	plugins: [
-		[configurablePlugin, { enabled: true, options: { theme: 'dark' } }]
-	]
-});
-```
-
-### Plugin Dependencies
-
-Plugins can depend on other plugins:
-
-```typescript
-const dependentPlugin = {
-	name: 'dependent-plugin',
-	version: '1.0.0',
-	dependencies: ['syntax-highlighting'],
-	
-	process(content: string): string {
-		// This plugin runs after syntax highlighting
-		return content;
-	}
-};
-```
-
-### Plugin Hooks
-
-Use hooks for different stages of the build process:
-
-```typescript
-const hookPlugin = {
-	name: 'hook-plugin',
-	version: '1.0.0',
-	
-	beforeBuild() {
-		console.log('Starting build...');
-		// Pre-build setup
-	},
-	
-	process(content: string): string {
-		// Content processing
-		return content;
-	},
-	
-	afterBuild(result: any) {
-		console.log('Build completed:', result);
-		// Post-build cleanup
-	}
-};
-```
-
-## Plugin Validation
-
-### Content Validation
-
-Validate content structure and format:
-
-```typescript
-const validationPlugin = {
-	name: 'validation-plugin',
-	version: '1.0.0',
-	
-	validate(content: string): boolean {
-		// Check for required sections
-		const hasTitle = /^#\s+.+$/m.test(content);
-		const hasContent = content.length > 100;
-		
-		if (!hasTitle) {
-			console.warn('Content missing title');
-			return false;
-		}
-		
-		if (!hasContent) {
-			console.warn('Content too short');
-			return false;
-		}
-		
-		return true;
-	},
-	
-	process(content: string): string {
-		if (!this.validate(content)) {
-			throw new Error('Content validation failed');
-		}
-		
-		return content;
-	}
-};
-```
-
-## Plugin Utilities
-
-### Helper Functions
-
-Create utility functions for plugins:
-
-```typescript
-const pluginUtils = {
-	extractHeadings(content: string): string[] {
-		const headingRegex = /^#{1,6}\s+(.+)$/gm;
-		const headings: string[] = [];
-		let match;
-		
-		while ((match = headingRegex.exec(content)) !== null) {
-			headings.push(match[1]);
-		}
-		
-		return headings;
-	},
-	
-	generateId(text: string): string {
-		return text
-			.toLowerCase()
-			.replace(/[^a-z0-9]+/g, '-')
-			.replace(/^-+|-+$/g, '');
-	}
-};
-
-const tocPlugin = {
-	name: 'toc-plugin',
-	version: '1.0.0',
-	
-	process(content: string): string {
-		const headings = pluginUtils.extractHeadings(content);
-		
-		if (headings.length === 0) {
-			return content;
-		}
-		
-		const toc = headings.map(heading => {
-			const id = pluginUtils.generateId(heading);
-			return `- [${heading}](#${id})`;
-		}).join('\n');
-		
-		return `## Table of Contents\n\n${toc}\n\n${content}`;
-	}
-};
-```
-
-## Plugin Testing
-
-### Unit Testing Plugins
-
-Test your plugins with unit tests:
-
-```typescript
-import { describe, it, expect } from 'vitest';
-
-describe('Admonition Plugin', () => {
-	it('should process admonition blocks', () => {
-		const input = `:::info
-This is an info block
-:::`;
-		
-		const expected = `<div class="admonition admonition-info">`;
-		
-		const result = admonitionPlugin.process(input);
-		expect(result).toContain(expected);
-	});
-	
-	it('should handle unknown admonition types', () => {
-		const input = `:::unknown
-This is unknown
-:::`;
-		
-		const result = admonitionPlugin.process(input);
-		expect(result).toBe(input); // Should return original
-	});
-});
-```
-
-## Plugin Distribution
-
-### Publishing Plugins
-
-Create and publish plugins as npm packages:
-
-```json
-{
-	"name": "svelte-markdown-pages-admonition",
-	"version": "1.0.0",
-	"description": "Admonition plugin for svelte-markdown-pages",
-	"main": "dist/index.js",
-	"types": "dist/index.d.ts",
-	"keywords": ["svelte-markdown-pages", "plugin", "admonition"],
-	"peerDependencies": {
-		"svelte-markdown-pages": "^1.0.0"
-	}
-}
-```
-
-### Plugin Registry
-
-Create a plugin registry for easy discovery:
-
-```typescript
-// plugins/index.ts
-export { admonitionPlugin } from './admonition';
-export { codeCopyPlugin } from './code-copy';
-export { imageOptimizationPlugin } from './image-optimization';
-
-// Usage
-import { admonitionPlugin, codeCopyPlugin } from 'svelte-markdown-pages-plugins';
-
-await buildDocs('./docs', {
-	appOutput: './src/lib/content',
-	plugins: [admonitionPlugin, codeCopyPlugin]
-});
-```
-
-## Best Practices
-
-### Plugin Development
-
-1. **Keep plugins focused**: Each plugin should have a single responsibility
-2. **Provide configuration**: Allow users to customize plugin behavior
-3. **Handle errors gracefully**: Don't break the build if plugin fails
-4. **Document your plugin**: Provide clear documentation and examples
-5. **Test thoroughly**: Ensure your plugin works in different scenarios
-
-### Performance Considerations
-
-1. **Optimize processing**: Use efficient algorithms for content processing
-2. **Cache results**: Cache expensive operations when possible
-3. **Lazy loading**: Load heavy dependencies only when needed
-4. **Memory management**: Clean up resources after processing
-
-## Next Steps
-
-Now that you understand plugins, explore:
-
-- [API Reference](../api/builder.md) - Complete API documentation
-- [Examples](../../packages/examples) - Working examples with plugins
-- [Plugin Gallery](../../plugins) - Collection of community plugins
 ---
 
 # From docs/guides/configuration.md:
@@ -3202,18 +2716,7 @@ const result = await buildDocs('./docs', {
 });
 ```
 
-### Plugins
-
-Use plugins to extend functionality:
-
-```typescript
-import { syntaxHighlightingPlugin, tocPlugin } from 'svelte-markdown-pages/plugins';
-
-const result = await buildDocs('./docs', {
-  appOutput: './src/lib/content',
-  plugins: [syntaxHighlightingPlugin, tocPlugin]
-});
-```
+ 
 
 ## Static Site Generation
 
@@ -3299,25 +2802,16 @@ await generateStaticSite('./docs', './dist', {
 Build documentation for app integration:
 
 ```bash
-npx svelte-markdown-pages build <content-path> [options]
+npx svelte-markdown-pages build <content-path> --output <output-path>
 ```
 
 **Options:**
-- `--output, -o`: Output directory
-- `--include-content`: Include content in output
-- `--processor`: Custom processor file
-- `--plugins`: Plugin configuration file
+- `--output`: Output directory (required)
 
 **Examples:**
 ```bash
 # Basic build
 npx svelte-markdown-pages build ./docs --output ./src/lib/content
-
-# With content included
-npx svelte-markdown-pages build ./docs --output ./src/lib/content --include-content
-
-# With custom processor
-npx svelte-markdown-pages build ./docs --output ./src/lib/content --processor ./my-processor.js
 ```
 
 ### Static Command
@@ -3325,26 +2819,16 @@ npx svelte-markdown-pages build ./docs --output ./src/lib/content --processor ./
 Generate a complete static HTML site:
 
 ```bash
-npx svelte-markdown-pages static <content-path> <output-path> [options]
+npx svelte-markdown-pages static <content-path> --output <output-path>
 ```
 
 **Options:**
-- `--title`: Site title
-- `--base-url`: Base URL for the site
-- `--css`: Custom CSS file
-- `--js`: Custom JavaScript file
-- `--include-index`: Generate index page
+- `--output`: Output directory (required)
 
 **Examples:**
 ```bash
 # Basic static site
-npx svelte-markdown-pages static ./docs ./dist
-
-# With custom title and base URL
-npx svelte-markdown-pages static ./docs ./dist --title "My Docs" --base-url "https://docs.example.com"
-
-# With custom styling
-npx svelte-markdown-pages static ./docs ./dist --css ./custom.css --js ./custom.js
+npx svelte-markdown-pages static ./docs --output ./dist
 ```
 
 ## Environment Variables
@@ -3474,7 +2958,7 @@ const result = await buildDocs('./docs', {
 Now that you understand configuration, explore:
 
 - [Advanced Customization](./advanced/customization.md) - Learn about custom components and styling
-- [Plugins](./advanced/plugins.md) - Extend functionality with plugins
+
 - [API Reference](../api/builder.md) - Complete API documentation
 ---
 
@@ -3681,7 +3165,7 @@ await buildDocs('./docs', {
   staticOutput: './dist',
   includeContent: true,
   processor: customProcessor,
-  plugins: [myPlugin]
+  
 });
 ```
 
@@ -3720,3 +3204,2817 @@ Now that you have svelte-markdown-pages installed, check out:
 - Check the [API Reference](../api/builder.md) for detailed documentation
 - Look at the [examples](../../packages/examples) for working implementations
 - Review the [test suite](../../packages/tests) for usage patterns
+---
+
+# From docs/proposals/.index.json:
+
+{
+  "items": [
+    { "name": "plugins", "type": "page", "label": "Plugin System" },
+    { "name": "search", "type": "page", "label": "Semantic Search" },
+    { "name": "search-quick-reference", "type": "page", "label": "Search Quick Reference" },
+    { "name": "client-side-search", "type": "page", "label": "Client-Side Search" },
+    { "name": "hybrid-search", "type": "page", "label": "Hybrid Search" }
+  ]
+}
+---
+
+# From docs/proposals/client-side-search.md:
+
+# Client-Side Search for Static Websites
+
+A comprehensive guide for implementing search functionality in svelte-markdown-pages websites using client-side JavaScript solutions that work entirely in the browser.
+
+## Overview
+
+This guide focuses on search solutions that:
+- ✅ Work entirely in the browser (no server required)
+- ✅ Are open source and free
+- ✅ Can be embedded in static websites
+- ✅ Don't require external services or APIs
+- ✅ Index content at build time
+
+## Search Solutions
+
+### 1. **Lunr.js** (Most Popular)
+
+**Best for**: Small to medium documentation sites
+**Bundle Size**: ~40KB gzipped
+**Performance**: Excellent for < 1000 documents
+
+#### Installation
+```bash
+npm install lunr
+```
+
+#### Basic Implementation
+```typescript
+// src/lib/search.ts
+import lunr from 'lunr';
+
+export interface SearchDocument {
+  id: string;
+  title: string;
+  content: string;
+  url: string;
+  section?: string;
+  tags?: string[];
+}
+
+export class LunrSearch {
+  private index: lunr.Index;
+  private documents: SearchDocument[];
+
+  constructor(documents: SearchDocument[]) {
+    this.documents = documents;
+    this.index = lunr(function() {
+      this.ref('id');
+      this.field('title', { boost: 10 });
+      this.field('content', { boost: 5 });
+      this.field('section', { boost: 3 });
+      this.field('tags', { boost: 2 });
+
+      documents.forEach(doc => {
+        this.add(doc);
+      });
+    });
+  }
+
+  search(query: string, limit = 10): SearchDocument[] {
+    if (!query.trim()) return [];
+    
+    const results = this.index.search(query);
+    return results
+      .slice(0, limit)
+      .map(result => this.documents.find(doc => doc.id === result.ref)!)
+      .filter(Boolean);
+  }
+
+  getDocument(id: string): SearchDocument | undefined {
+    return this.documents.find(doc => doc.id === id);
+  }
+}
+```
+
+#### Svelte Component
+```svelte
+<!-- src/lib/components/LunrSearch.svelte -->
+<script lang="ts">
+  import { createEventDispatcher } from 'svelte';
+  import { LunrSearch, type SearchDocument } from '$lib/search';
+  
+  export let documents: SearchDocument[] = [];
+  export let placeholder = 'Search documentation...';
+  export let maxResults = 10;
+  
+  let searchQuery = '';
+  let searchResults: SearchDocument[] = [];
+  let searchInstance: LunrSearch;
+  let isSearching = false;
+  let showResults = false;
+  
+  const dispatch = createEventDispatcher();
+  
+  // Initialize search index
+  $: {
+    if (documents.length > 0 && !searchInstance) {
+      searchInstance = new LunrSearch(documents);
+    }
+  }
+  
+  // Perform search with debouncing
+  let searchTimeout: number;
+  $: {
+    if (searchInstance && searchQuery.trim()) {
+      clearTimeout(searchTimeout);
+      isSearching = true;
+      showResults = true;
+      
+      searchTimeout = setTimeout(() => {
+        searchResults = searchInstance.search(searchQuery, maxResults);
+        isSearching = false;
+      }, 300);
+    } else {
+      searchResults = [];
+      showResults = false;
+    }
+  }
+  
+  function handleResultClick(result: SearchDocument) {
+    dispatch('resultClick', result);
+    showResults = false;
+    searchQuery = '';
+  }
+  
+  function handleInputFocus() {
+    if (searchResults.length > 0) {
+      showResults = true;
+    }
+  }
+  
+  function handleClickOutside(event: MouseEvent) {
+    const target = event.target as HTMLElement;
+    if (!target.closest('.search-container')) {
+      showResults = false;
+    }
+  }
+</script>
+
+<svelte:window on:click={handleClickOutside} />
+
+<div class="search-container">
+  <div class="search-input-wrapper">
+    <input
+      type="text"
+      bind:value={searchQuery}
+      {placeholder}
+      on:focus={handleInputFocus}
+      class="search-input"
+      aria-label="Search documentation"
+    />
+    {#if isSearching}
+      <div class="search-spinner">🔍</div>
+    {/if}
+  </div>
+  
+  {#if showResults && searchResults.length > 0}
+    <div class="search-results" role="listbox">
+      {#each searchResults as result (result.id)}
+        <div 
+          class="search-result"
+          on:click={() => handleResultClick(result)}
+          role="option"
+          tabindex="0"
+          on:keydown={(e) => e.key === 'Enter' && handleResultClick(result)}
+        >
+          <div class="result-header">
+            <h4 class="result-title">{result.title}</h4>
+            {#if result.section}
+              <span class="result-section">{result.section}</span>
+            {/if}
+          </div>
+          <p class="result-excerpt">
+            {result.content.substring(0, 150)}
+            {result.content.length > 150 ? '...' : ''}
+          </p>
+          {#if result.tags && result.tags.length > 0}
+            <div class="result-tags">
+              {#each result.tags as tag}
+                <span class="tag">{tag}</span>
+              {/each}
+            </div>
+          {/if}
+        </div>
+      {/each}
+    </div>
+  {:else if showResults && searchQuery.trim() && !isSearching}
+    <div class="no-results">
+      <p>No results found for "{searchQuery}"</p>
+      <p class="no-results-suggestions">
+        Try different keywords or check your spelling
+      </p>
+    </div>
+  {/if}
+</div>
+
+<style>
+  .search-container {
+    position: relative;
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+  
+  .search-input-wrapper {
+    position: relative;
+  }
+  
+  .search-input {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 16px;
+    transition: border-color 0.2s;
+  }
+  
+  .search-input:focus {
+    outline: none;
+    border-color: #3b82f6;
+  }
+  
+  .search-spinner {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    animation: spin 1s linear infinite;
+  }
+  
+  @keyframes spin {
+    from { transform: translateY(-50%) rotate(0deg); }
+    to { transform: translateY(-50%) rotate(360deg); }
+  }
+  
+  .search-results {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    max-height: 500px;
+    overflow-y: auto;
+    z-index: 1000;
+    margin-top: 4px;
+  }
+  
+  .search-result {
+    padding: 16px;
+    border-bottom: 1px solid #f1f5f9;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+  
+  .search-result:hover,
+  .search-result:focus {
+    background: #f8fafc;
+    outline: none;
+  }
+  
+  .search-result:last-child {
+    border-bottom: none;
+  }
+  
+  .result-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+  
+  .result-title {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #1e293b;
+  }
+  
+  .result-section {
+    font-size: 12px;
+    color: #64748b;
+    background: #f1f5f9;
+    padding: 2px 8px;
+    border-radius: 12px;
+    white-space: nowrap;
+  }
+  
+  .result-excerpt {
+    margin: 0 0 8px 0;
+    font-size: 14px;
+    color: #475569;
+    line-height: 1.5;
+  }
+  
+  .result-tags {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+  }
+  
+  .tag {
+    font-size: 11px;
+    color: #3b82f6;
+    background: #eff6ff;
+    padding: 2px 6px;
+    border-radius: 4px;
+  }
+  
+  .no-results {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 24px;
+    text-align: center;
+    margin-top: 4px;
+    z-index: 1000;
+  }
+  
+  .no-results p {
+    margin: 0 0 8px 0;
+    color: #64748b;
+  }
+  
+  .no-results-suggestions {
+    font-size: 14px;
+    color: #94a3b8;
+  }
+</style>
+```
+
+### 2. **FlexSearch** (Fastest)
+
+**Best for**: Large datasets, performance-critical applications
+**Bundle Size**: ~15KB gzipped
+**Performance**: Excellent for > 1000 documents
+
+#### Installation
+```bash
+npm install flexsearch
+```
+
+#### Implementation
+```typescript
+// src/lib/flexsearch.ts
+import FlexSearch from 'flexsearch';
+
+export class FlexSearchEngine {
+  private index: FlexSearch.Index;
+  private documents: SearchDocument[];
+
+  constructor(documents: SearchDocument[]) {
+    this.documents = documents;
+    this.index = new FlexSearch.Index({
+      tokenize: 'forward',
+      resolution: 9,
+      cache: true
+    });
+
+    // Index documents
+    documents.forEach((doc, id) => {
+      this.index.add(id, `${doc.title} ${doc.content} ${doc.section || ''}`);
+    });
+  }
+
+  async search(query: string, limit = 10): Promise<SearchDocument[]> {
+    if (!query.trim()) return [];
+    
+    const results = await this.index.search(query, {
+      limit,
+      suggest: true
+    });
+    
+    return results.map(id => this.documents[id as number]);
+  }
+}
+```
+
+### 3. **MiniSearch** (Lightweight)
+
+**Best for**: Small sites, minimal bundle size
+**Bundle Size**: ~20KB gzipped
+**Performance**: Good for < 500 documents
+
+#### Installation
+```bash
+npm install minisearch
+```
+
+#### Implementation
+```typescript
+// src/lib/minisearch.ts
+import MiniSearch from 'minisearch';
+
+export class MiniSearchEngine {
+  private search: MiniSearch;
+
+  constructor(documents: SearchDocument[]) {
+    this.search = new MiniSearch({
+      fields: ['title', 'content', 'section', 'tags'],
+      storeFields: ['id', 'url'],
+      searchOptions: {
+        boost: { title: 10, section: 3, tags: 2 },
+        fuzzy: 0.2,
+        prefix: true
+      }
+    });
+
+    this.search.addAll(documents);
+  }
+
+  search(query: string, limit = 10): SearchDocument[] {
+    if (!query.trim()) return [];
+    
+    return this.search.search(query, {
+      limit,
+      fuzzy: 0.2
+    });
+  }
+}
+```
+
+### 4. **Fuse.js** (Fuzzy Search)
+
+**Best for**: Fuzzy matching, typo tolerance
+**Bundle Size**: ~25KB gzipped
+**Performance**: Good for < 1000 documents
+
+#### Installation
+```bash
+npm install fuse.js
+```
+
+#### Implementation
+```typescript
+// src/lib/fuse-search.ts
+import Fuse from 'fuse.js';
+
+export class FuseSearch {
+  private fuse: Fuse<SearchDocument>;
+
+  constructor(documents: SearchDocument[]) {
+    this.fuse = new Fuse(documents, {
+      keys: [
+        { name: 'title', weight: 0.7 },
+        { name: 'content', weight: 0.3 },
+        { name: 'section', weight: 0.5 }
+      ],
+      threshold: 0.3,
+      includeScore: true,
+      minMatchCharLength: 2
+    });
+  }
+
+  search(query: string, limit = 10): SearchDocument[] {
+    if (!query.trim()) return [];
+    
+    return this.fuse.search(query, { limit })
+      .map(result => result.item);
+  }
+}
+```
+
+## Content Indexing with svelte-markdown-pages
+
+### Build-Time Index Generation
+
+```typescript
+// scripts/build-search-index.ts
+import { buildDocs } from 'svelte-markdown-pages/builder';
+import { writeFileSync } from 'fs';
+import { join } from 'path';
+
+export interface SearchDocument {
+  id: string;
+  title: string;
+  content: string;
+  url: string;
+  section?: string;
+  tags?: string[];
+  lastModified?: string;
+}
+
+function extractTitle(content: string): string {
+  const titleMatch = content.match(/^#\s+(.+)$/m);
+  return titleMatch ? titleMatch[1].trim() : 'Untitled';
+}
+
+function extractTags(content: string): string[] {
+  const tagMatch = content.match(/^tags?:\s*(.+)$/mi);
+  if (tagMatch) {
+    return tagMatch[1].split(',').map(tag => tag.trim());
+  }
+  return [];
+}
+
+function cleanContent(content: string): string {
+  return content
+    .replace(/^#+\s+/gm, '') // Remove headings
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1') // Remove links
+    .replace(/`([^`]+)`/g, '$1') // Remove inline code
+    .replace(/```[\s\S]*?```/g, '') // Remove code blocks
+    .replace(/!\[([^\]]*)\]\([^)]+\)/g, '$1') // Remove images
+    .replace(/^\s*[-*+]\s+/gm, '') // Remove list markers
+    .replace(/^\s*\d+\.\s+/gm, '') // Remove numbered lists
+    .replace(/\n{3,}/g, '\n\n') // Normalize line breaks
+    .trim();
+}
+
+export async function buildSearchIndex(contentPath: string): Promise<SearchDocument[]> {
+  const result = await buildDocs(contentPath, {
+    includeContent: true
+  });
+  
+  const documents: SearchDocument[] = [];
+  
+  function processItems(items: any[], parentPath = '') {
+    for (const item of items) {
+      if (item.type === 'page' && item.path) {
+        const content = result.content?.[item.path];
+        if (content) {
+          const title = extractTitle(content);
+          const tags = extractTags(content);
+          const cleanContent = cleanContent(content);
+          
+          documents.push({
+            id: item.path,
+            title,
+            content: cleanContent,
+            url: `/${item.path.replace(/\.md$/, '')}`,
+            section: parentPath || undefined,
+            tags: tags.length > 0 ? tags : undefined,
+            lastModified: new Date().toISOString()
+          });
+        }
+      } else if (item.items) {
+        const sectionPath = parentPath ? `${parentPath} > ${item.label}` : item.label;
+        processItems(item.items, sectionPath);
+      }
+    }
+  }
+  
+  processItems(result.navigation.items);
+  return documents;
+}
+
+// Build script
+async function main() {
+  const documents = await buildSearchIndex('./docs');
+  
+  // Write search index
+  writeFileSync(
+    join(process.cwd(), 'src/lib/search-index.json'),
+    JSON.stringify(documents, null, 2)
+  );
+  
+  console.log(`✅ Generated search index with ${documents.length} documents`);
+}
+
+main().catch(console.error);
+```
+
+### Package.json Integration
+
+```json
+{
+  "scripts": {
+    "build:search": "node scripts/build-search-index.js",
+    "build": "npm run build:docs && npm run build:search"
+  }
+}
+```
+
+## SvelteKit Integration
+
+### Layout Integration
+
+```svelte
+<!-- src/routes/+layout.svelte -->
+<script lang="ts">
+  import Search from '$lib/components/LunrSearch.svelte';
+  import searchIndex from '$lib/search-index.json';
+  import { goto } from '$app/navigation';
+  
+  function handleSearchResult(event: CustomEvent) {
+    const result = event.detail;
+    goto(result.url);
+  }
+</script>
+
+<header>
+  <Search 
+    documents={searchIndex} 
+    on:resultClick={handleSearchResult}
+  />
+</header>
+
+<main>
+  <slot />
+</main>
+```
+
+### Search Page
+
+```svelte
+<!-- src/routes/search/+page.svelte -->
+<script lang="ts">
+  import Search from '$lib/components/LunrSearch.svelte';
+  import searchIndex from '$lib/search-index.json';
+  import { goto } from '$app/navigation';
+  
+  function handleSearchResult(event: CustomEvent) {
+    const result = event.detail;
+    goto(result.url);
+  }
+</script>
+
+<svelte:head>
+  <title>Search Documentation</title>
+</svelte:head>
+
+<div class="search-page">
+  <h1>Search Documentation</h1>
+  <p>Find what you're looking for in our documentation.</p>
+  
+  <Search 
+    documents={searchIndex} 
+    on:resultClick={handleSearchResult}
+    maxResults={20}
+  />
+  
+  <div class="search-stats">
+    <p>Searching through {searchIndex.length} documents</p>
+  </div>
+</div>
+
+<style>
+  .search-page {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+  
+  .search-stats {
+    margin-top: 2rem;
+    text-align: center;
+    color: #64748b;
+  }
+</style>
+```
+
+## Performance Optimization
+
+### 1. **Lazy Loading**
+
+```typescript
+// Lazy load search index
+export async function loadSearchIndex() {
+  if (typeof window !== 'undefined') {
+    const { default: searchIndex } = await import('$lib/search-index.json');
+    return searchIndex;
+  }
+  return [];
+}
+```
+
+### 2. **Search Index Compression**
+
+```typescript
+// Compress search index for smaller bundle
+function compressSearchIndex(documents: SearchDocument[]) {
+  return documents.map(doc => ({
+    i: doc.id,
+    t: doc.title,
+    c: doc.content.substring(0, 500), // Limit content length
+    u: doc.url,
+    s: doc.section
+  }));
+}
+```
+
+### 3. **Caching**
+
+```typescript
+// Cache search results
+const searchCache = new Map<string, SearchDocument[]>();
+
+function cachedSearch(query: string, searchFn: (q: string) => SearchDocument[]) {
+  if (searchCache.has(query)) {
+    return searchCache.get(query)!;
+  }
+  
+  const results = searchFn(query);
+  searchCache.set(query, results);
+  return results;
+}
+```
+
+## Comparison Table
+
+| Solution | Bundle Size | Performance | Features | Best For |
+|----------|-------------|-------------|----------|----------|
+| **Lunr.js** | ~40KB | ⭐⭐⭐⭐ | Full-text, fuzzy, boosting | General use |
+| **FlexSearch** | ~15KB | ⭐⭐⭐⭐⭐ | Fast, memory efficient | Large datasets |
+| **MiniSearch** | ~20KB | ⭐⭐⭐ | Simple, lightweight | Small sites |
+| **Fuse.js** | ~25KB | ⭐⭐⭐ | Fuzzy matching | Typo tolerance |
+
+## Recommendations
+
+### **Choose Lunr.js if:**
+- You want the most mature and feature-rich solution
+- You need advanced search features (boosting, fuzzy search)
+- You have a medium-sized site (100-1000 documents)
+
+### **Choose FlexSearch if:**
+- You have a large site (> 1000 documents)
+- Performance is critical
+- You want the smallest bundle size
+
+### **Choose MiniSearch if:**
+- You have a small site (< 100 documents)
+- You want simplicity
+- Bundle size is important
+
+### **Choose Fuse.js if:**
+- You need excellent fuzzy matching
+- Typo tolerance is important
+- You want simple configuration
+
+## Implementation Checklist
+
+- [ ] Choose search solution based on requirements
+- [ ] Set up content indexing in build process
+- [ ] Create search component
+- [ ] Integrate with layout/navigation
+- [ ] Add search page (optional)
+- [ ] Test search functionality
+- [ ] Optimize performance
+- [ ] Add keyboard navigation
+- [ ] Test accessibility
+
+This guide provides everything needed to implement client-side search that works entirely in the browser without any external dependencies or services!
+---
+
+# From docs/proposals/hybrid-search.md:
+
+# Hybrid Search: Semantic + Literal Search
+
+A comprehensive guide for implementing hybrid search that combines semantic search with literal/full-text search to provide the best search experience for svelte-markdown-pages websites.
+
+## Overview
+
+Hybrid search combines the strengths of both approaches:
+- **Semantic Search**: Understands meaning and context (AI-powered)
+- **Literal Search**: Exact keyword matching and fuzzy search
+- **Result Fusion**: Intelligently combines results from both approaches
+
+## Why Hybrid Search?
+
+### **Semantic Search Strengths:**
+- ✅ Understands synonyms and related concepts
+- ✅ Handles natural language queries
+- ✅ Finds relevant content even without exact keywords
+- ✅ Better for complex, conceptual searches
+
+### **Literal Search Strengths:**
+- ✅ Fast and reliable
+- ✅ Exact keyword matching
+- ✅ Handles technical terms and code
+- ✅ Works offline
+- ✅ No external dependencies
+
+### **Hybrid Benefits:**
+- 🎯 **Best of both worlds** - semantic understanding + exact matching
+- 📈 **Higher recall** - finds more relevant results
+- 🎯 **Better precision** - ranks results more accurately
+- 🔄 **Fallback support** - works even if semantic search fails
+- ⚡ **Performance** - can cache semantic embeddings
+
+## Implementation Approaches
+
+### 1. **Client-Side Hybrid Search**
+
+#### **Lunr.js + Embeddings**
+
+```typescript
+// src/lib/hybrid-search.ts
+import lunr from 'lunr';
+import { embedText } from './embeddings';
+
+export interface SearchDocument {
+  id: string;
+  title: string;
+  content: string;
+  url: string;
+  section?: string;
+  tags?: string[];
+  embedding?: number[];
+}
+
+export interface SearchResult {
+  document: SearchDocument;
+  literalScore: number;
+  semanticScore: number;
+  combinedScore: number;
+  matchType: 'literal' | 'semantic' | 'hybrid';
+}
+
+export class HybridSearch {
+  private literalIndex: lunr.Index;
+  private documents: SearchDocument[];
+  private embeddings: Map<string, number[]>;
+
+  constructor(documents: SearchDocument[]) {
+    this.documents = documents;
+    this.embeddings = new Map();
+    
+    // Build literal search index
+    this.literalIndex = lunr(function() {
+      this.ref('id');
+      this.field('title', { boost: 10 });
+      this.field('content', { boost: 5 });
+      this.field('section', { boost: 3 });
+      this.field('tags', { boost: 2 });
+
+      documents.forEach(doc => {
+        this.add(doc);
+      });
+    });
+  }
+
+  async initializeEmbeddings() {
+    // Generate embeddings for all documents
+    for (const doc of this.documents) {
+      const text = `${doc.title} ${doc.content}`;
+      const embedding = await embedText(text);
+      this.embeddings.set(doc.id, embedding);
+    }
+  }
+
+  async search(query: string, limit = 10): Promise<SearchResult[]> {
+    const results: SearchResult[] = [];
+
+    // 1. Literal search
+    const literalResults = this.literalIndex.search(query);
+    const literalScores = new Map<string, number>();
+    
+    literalResults.forEach(result => {
+      literalScores.set(result.ref, result.score || 0);
+    });
+
+    // 2. Semantic search
+    const queryEmbedding = await embedText(query);
+    const semanticScores = new Map<string, number>();
+    
+    for (const [docId, docEmbedding] of this.embeddings) {
+      const similarity = this.cosineSimilarity(queryEmbedding, docEmbedding);
+      semanticScores.set(docId, similarity);
+    }
+
+    // 3. Combine results
+    const allDocIds = new Set([
+      ...literalScores.keys(),
+      ...semanticScores.keys()
+    ]);
+
+    for (const docId of allDocIds) {
+      const document = this.documents.find(d => d.id === docId);
+      if (!document) continue;
+
+      const literalScore = literalScores.get(docId) || 0;
+      const semanticScore = semanticScores.get(docId) || 0;
+      
+      // Determine match type
+      let matchType: 'literal' | 'semantic' | 'hybrid';
+      if (literalScore > 0 && semanticScore > 0.3) {
+        matchType = 'hybrid';
+      } else if (literalScore > 0) {
+        matchType = 'literal';
+      } else {
+        matchType = 'semantic';
+      }
+
+      // Combine scores (weighted average)
+      const combinedScore = this.combineScores(literalScore, semanticScore);
+
+      results.push({
+        document,
+        literalScore,
+        semanticScore,
+        combinedScore,
+        matchType
+      });
+    }
+
+    // Sort by combined score and limit
+    return results
+      .sort((a, b) => b.combinedScore - a.combinedScore)
+      .slice(0, limit);
+  }
+
+  private cosineSimilarity(a: number[], b: number[]): number {
+    if (a.length !== b.length) return 0;
+    
+    let dotProduct = 0;
+    let normA = 0;
+    let normB = 0;
+    
+    for (let i = 0; i < a.length; i++) {
+      dotProduct += a[i] * b[i];
+      normA += a[i] * a[i];
+      normB += b[i] * b[i];
+    }
+    
+    return dotProduct / (Math.sqrt(normA) * Math.sqrt(normB));
+  }
+
+  private combineScores(literalScore: number, semanticScore: number): number {
+    // Normalize scores to 0-1 range
+    const normalizedLiteral = Math.min(literalScore / 10, 1);
+    const normalizedSemantic = semanticScore;
+    
+    // Weighted combination (adjust weights based on preference)
+    const literalWeight = 0.6;
+    const semanticWeight = 0.4;
+    
+    return (normalizedLiteral * literalWeight) + (normalizedSemantic * semanticWeight);
+  }
+}
+```
+
+#### **Embeddings Implementation**
+
+```typescript
+// src/lib/embeddings.ts
+import { pipeline } from '@xenova/transformers';
+
+let embedder: any = null;
+
+export async function embedText(text: string): Promise<number[]> {
+  if (!embedder) {
+    // Load the embedding model (runs in browser)
+    embedder = await pipeline('feature-extraction', 'Xenova/all-MiniLM-L6-v2');
+  }
+  
+  const result = await embedder(text, { pooling: 'mean', normalize: true });
+  return Array.from(result.data);
+}
+
+// Alternative: Use a smaller model for better performance
+export async function embedTextFast(text: string): Promise<number[]> {
+  if (!embedder) {
+    embedder = await pipeline('feature-extraction', 'Xenova/paraphrase-MiniLM-L3-v2');
+  }
+  
+  const result = await embedder(text, { pooling: 'mean', normalize: true });
+  return Array.from(result.data);
+}
+```
+
+### 2. **Build-Time Hybrid Search**
+
+#### **Pre-computed Embeddings**
+
+```typescript
+// scripts/build-hybrid-search.ts
+import { buildDocs } from 'svelte-markdown-pages/builder';
+import { writeFileSync } from 'fs';
+import { join } from 'path';
+import { embedText } from './embeddings';
+
+export interface HybridSearchDocument {
+  id: string;
+  title: string;
+  content: string;
+  url: string;
+  section?: string;
+  tags?: string[];
+  embedding: number[];
+  keywords: string[];
+}
+
+export async function buildHybridSearchIndex(contentPath: string): Promise<{
+  documents: HybridSearchDocument[];
+  literalIndex: any;
+}> {
+  const result = await buildDocs(contentPath, {
+    includeContent: true
+  });
+  
+  const documents: HybridSearchDocument[] = [];
+  
+  function processItems(items: any[], parentPath = '') {
+    for (const item of items) {
+      if (item.type === 'page' && item.path) {
+        const content = result.content?.[item.path];
+        if (content) {
+          const title = extractTitle(content);
+          const tags = extractTags(content);
+          const cleanContent = cleanContent(content);
+          const keywords = extractKeywords(cleanContent);
+          
+          // Generate embedding
+          const text = `${title} ${cleanContent}`;
+          const embedding = await embedText(text);
+          
+          documents.push({
+            id: item.path,
+            title,
+            content: cleanContent,
+            url: `/${item.path.replace(/\.md$/, '')}`,
+            section: parentPath || undefined,
+            tags: tags.length > 0 ? tags : undefined,
+            embedding,
+            keywords
+          });
+        }
+      } else if (item.items) {
+        const sectionPath = parentPath ? `${parentPath} > ${item.label}` : item.label;
+        processItems(item.items, sectionPath);
+      }
+    }
+  }
+  
+  await processItems(result.navigation.items);
+  
+  // Build literal search index
+  const literalIndex = buildLiteralIndex(documents);
+  
+  return { documents, literalIndex };
+}
+
+function extractKeywords(content: string): string[] {
+  // Extract important keywords from content
+  const words = content.toLowerCase()
+    .replace(/[^\w\s]/g, '')
+    .split(/\s+/)
+    .filter(word => word.length > 3);
+  
+  // Count frequency
+  const frequency: Record<string, number> = {};
+  words.forEach(word => {
+    frequency[word] = (frequency[word] || 0) + 1;
+  });
+  
+  // Return top keywords
+  return Object.entries(frequency)
+    .sort(([,a], [,b]) => b - a)
+    .slice(0, 20)
+    .map(([word]) => word);
+}
+
+function buildLiteralIndex(documents: HybridSearchDocument[]) {
+  // Build a lightweight literal search index
+  const index: Record<string, any> = {};
+  
+  documents.forEach(doc => {
+    const terms = [
+      ...doc.title.toLowerCase().split(/\s+/),
+      ...doc.content.toLowerCase().split(/\s+/),
+      ...(doc.keywords || [])
+    ];
+    
+    terms.forEach(term => {
+      if (!index[term]) {
+        index[term] = [];
+      }
+      if (!index[term].includes(doc.id)) {
+        index[term].push(doc.id);
+      }
+    });
+  });
+  
+  return index;
+}
+```
+
+### 3. **Svelte Component with Hybrid Search**
+
+```svelte
+<!-- src/lib/components/HybridSearch.svelte -->
+<script lang="ts">
+  import { createEventDispatcher } from 'svelte';
+  import { HybridSearch, type SearchResult } from '$lib/hybrid-search';
+  
+  export let documents: any[] = [];
+  export let placeholder = 'Search with semantic understanding...';
+  export let maxResults = 10;
+  export let showMatchType = true;
+  
+  let searchQuery = '';
+  let searchResults: SearchResult[] = [];
+  let searchInstance: HybridSearch;
+  let isSearching = false;
+  let showResults = false;
+  let searchMode: 'hybrid' | 'literal' | 'semantic' = 'hybrid';
+  
+  const dispatch = createEventDispatcher();
+  
+  // Initialize search
+  $: {
+    if (documents.length > 0 && !searchInstance) {
+      searchInstance = new HybridSearch(documents);
+      searchInstance.initializeEmbeddings();
+    }
+  }
+  
+  // Perform search with debouncing
+  let searchTimeout: number;
+  $: {
+    if (searchInstance && searchQuery.trim()) {
+      clearTimeout(searchTimeout);
+      isSearching = true;
+      showResults = true;
+      
+      searchTimeout = setTimeout(async () => {
+        try {
+          searchResults = await searchInstance.search(searchQuery, maxResults);
+        } catch (error) {
+          console.error('Search error:', error);
+          searchResults = [];
+        }
+        isSearching = false;
+      }, 300);
+    } else {
+      searchResults = [];
+      showResults = false;
+    }
+  }
+  
+  function handleResultClick(result: SearchResult) {
+    dispatch('resultClick', result);
+    showResults = false;
+    searchQuery = '';
+  }
+  
+  function getMatchTypeIcon(matchType: string): string {
+    switch (matchType) {
+      case 'hybrid': return '🔗';
+      case 'literal': return '📝';
+      case 'semantic': return '🧠';
+      default: return '🔍';
+    }
+  }
+  
+  function getMatchTypeLabel(matchType: string): string {
+    switch (matchType) {
+      case 'hybrid': return 'Hybrid Match';
+      case 'literal': return 'Exact Match';
+      case 'semantic': return 'Semantic Match';
+      default: return 'Match';
+    }
+  }
+</script>
+
+<div class="hybrid-search-container">
+  <div class="search-controls">
+    <div class="search-input-wrapper">
+      <input
+        type="text"
+        bind:value={searchQuery}
+        {placeholder}
+        class="search-input"
+        aria-label="Search documentation"
+      />
+      {#if isSearching}
+        <div class="search-spinner">🔍</div>
+      {/if}
+    </div>
+    
+    <div class="search-mode-selector">
+      <label>
+        <input 
+          type="radio" 
+          bind:group={searchMode} 
+          value="hybrid"
+        />
+        Hybrid
+      </label>
+      <label>
+        <input 
+          type="radio" 
+          bind:group={searchMode} 
+          value="literal"
+        />
+        Literal
+      </label>
+      <label>
+        <input 
+          type="radio" 
+          bind:group={searchMode} 
+          value="semantic"
+        />
+        Semantic
+      </label>
+    </div>
+  </div>
+  
+  {#if showResults && searchResults.length > 0}
+    <div class="search-results" role="listbox">
+      {#each searchResults as result (result.document.id)}
+        <div 
+          class="search-result"
+          on:click={() => handleResultClick(result)}
+          role="option"
+          tabindex="0"
+          on:keydown={(e) => e.key === 'Enter' && handleResultClick(result)}
+        >
+          <div class="result-header">
+            <h4 class="result-title">{result.document.title}</h4>
+            {#if showMatchType}
+              <span class="match-type" title={getMatchTypeLabel(result.matchType)}>
+                {getMatchTypeIcon(result.matchType)}
+              </span>
+            {/if}
+            {#if result.document.section}
+              <span class="result-section">{result.document.section}</span>
+            {/if}
+          </div>
+          
+          <p class="result-excerpt">
+            {result.document.content.substring(0, 150)}
+            {result.document.content.length > 150 ? '...' : ''}
+          </p>
+          
+          <div class="result-scores">
+            <span class="score literal-score">
+              Literal: {(result.literalScore * 100).toFixed(1)}%
+            </span>
+            <span class="score semantic-score">
+              Semantic: {(result.semanticScore * 100).toFixed(1)}%
+            </span>
+            <span class="score combined-score">
+              Combined: {(result.combinedScore * 100).toFixed(1)}%
+            </span>
+          </div>
+          
+          {#if result.document.tags && result.document.tags.length > 0}
+            <div class="result-tags">
+              {#each result.document.tags as tag}
+                <span class="tag">{tag}</span>
+              {/each}
+            </div>
+          {/if}
+        </div>
+      {/each}
+    </div>
+  {:else if showResults && searchQuery.trim() && !isSearching}
+    <div class="no-results">
+      <p>No results found for "{searchQuery}"</p>
+      <p class="no-results-suggestions">
+        Try different keywords or rephrase your query
+      </p>
+    </div>
+  {/if}
+</div>
+
+<style>
+  .hybrid-search-container {
+    position: relative;
+    width: 100%;
+    max-width: 700px;
+    margin: 0 auto;
+  }
+  
+  .search-controls {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  
+  .search-input-wrapper {
+    position: relative;
+    flex: 1;
+  }
+  
+  .search-input {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 16px;
+    transition: border-color 0.2s;
+  }
+  
+  .search-input:focus {
+    outline: none;
+    border-color: #3b82f6;
+  }
+  
+  .search-mode-selector {
+    display: flex;
+    gap: 12px;
+    font-size: 14px;
+  }
+  
+  .search-mode-selector label {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+  }
+  
+  .search-spinner {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    animation: spin 1s linear infinite;
+  }
+  
+  @keyframes spin {
+    from { transform: translateY(-50%) rotate(0deg); }
+    to { transform: translateY(-50%) rotate(360deg); }
+  }
+  
+  .search-results {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    max-height: 600px;
+    overflow-y: auto;
+    z-index: 1000;
+    margin-top: 4px;
+  }
+  
+  .search-result {
+    padding: 16px;
+    border-bottom: 1px solid #f1f5f9;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+  
+  .search-result:hover,
+  .search-result:focus {
+    background: #f8fafc;
+    outline: none;
+  }
+  
+  .result-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+  
+  .result-title {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #1e293b;
+    flex: 1;
+  }
+  
+  .match-type {
+    font-size: 16px;
+    cursor: help;
+  }
+  
+  .result-section {
+    font-size: 12px;
+    color: #64748b;
+    background: #f1f5f9;
+    padding: 2px 8px;
+    border-radius: 12px;
+    white-space: nowrap;
+  }
+  
+  .result-excerpt {
+    margin: 0 0 12px 0;
+    font-size: 14px;
+    color: #475569;
+    line-height: 1.5;
+  }
+  
+  .result-scores {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 8px;
+    font-size: 12px;
+  }
+  
+  .score {
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: 500;
+  }
+  
+  .literal-score {
+    background: #eff6ff;
+    color: #1d4ed8;
+  }
+  
+  .semantic-score {
+    background: #fef3c7;
+    color: #d97706;
+  }
+  
+  .combined-score {
+    background: #dcfce7;
+    color: #16a34a;
+  }
+  
+  .result-tags {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+  }
+  
+  .tag {
+    font-size: 11px;
+    color: #3b82f6;
+    background: #eff6ff;
+    padding: 2px 6px;
+    border-radius: 4px;
+  }
+  
+  .no-results {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 24px;
+    text-align: center;
+    margin-top: 4px;
+    z-index: 1000;
+  }
+  
+  .no-results p {
+    margin: 0 0 8px 0;
+    color: #64748b;
+  }
+  
+  .no-results-suggestions {
+    font-size: 14px;
+    color: #94a3b8;
+  }
+</style>
+```
+
+## Performance Optimization
+
+### 1. **Embedding Caching**
+
+```typescript
+// Cache embeddings in localStorage or IndexedDB
+export class EmbeddingCache {
+  private cache: Map<string, number[]> = new Map();
+  
+  async getEmbedding(text: string): Promise<number[]> {
+    const hash = this.hashText(text);
+    
+    if (this.cache.has(hash)) {
+      return this.cache.get(hash)!;
+    }
+    
+    const embedding = await embedText(text);
+    this.cache.set(hash, embedding);
+    return embedding;
+  }
+  
+  private hashText(text: string): string {
+    // Simple hash function
+    let hash = 0;
+    for (let i = 0; i < text.length; i++) {
+      const char = text.charCodeAt(i);
+      hash = ((hash << 5) - hash) + char;
+      hash = hash & hash; // Convert to 32-bit integer
+    }
+    return hash.toString();
+  }
+}
+```
+
+### 2. **Progressive Loading**
+
+```typescript
+// Load semantic search progressively
+export class ProgressiveHybridSearch {
+  private literalResults: SearchResult[] = [];
+  private semanticResults: SearchResult[] = [];
+  
+  async search(query: string, limit = 10): Promise<SearchResult[]> {
+    // 1. Show literal results immediately
+    this.literalResults = this.performLiteralSearch(query, limit);
+    
+    // 2. Load semantic results in background
+    setTimeout(async () => {
+      this.semanticResults = await this.performSemanticSearch(query, limit);
+      this.combineResults();
+    }, 100);
+    
+    return this.literalResults;
+  }
+}
+```
+
+### 3. **Web Workers**
+
+```typescript
+// Move heavy computation to web worker
+// search-worker.js
+import { embedText } from './embeddings';
+
+self.onmessage = async function(e) {
+  const { type, query, documents } = e.data;
+  
+  if (type === 'semantic-search') {
+    const queryEmbedding = await embedText(query);
+    const results = [];
+    
+    for (const doc of documents) {
+      const similarity = cosineSimilarity(queryEmbedding, doc.embedding);
+      results.push({ id: doc.id, score: similarity });
+    }
+    
+    self.postMessage({ type: 'semantic-results', results });
+  }
+};
+```
+
+## Comparison with Pure Solutions
+
+| Aspect | Pure Literal | Pure Semantic | Hybrid |
+|--------|--------------|---------------|---------|
+| **Accuracy** | ⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ |
+| **Speed** | ⭐⭐⭐⭐⭐ | ⭐⭐ | ⭐⭐⭐⭐ |
+| **Offline** | ✅ | ❌ | ✅ |
+| **Bundle Size** | Small | Large | Medium |
+| **Complexity** | Low | High | Medium |
+| **Fallback** | N/A | N/A | ✅ |
+
+## Implementation Checklist
+
+- [ ] Choose embedding model (client-side vs build-time)
+- [ ] Implement literal search index
+- [ ] Set up semantic search with embeddings
+- [ ] Create result fusion algorithm
+- [ ] Build hybrid search component
+- [ ] Add performance optimizations
+- [ ] Test with various query types
+- [ ] Optimize bundle size
+- [ ] Add fallback mechanisms
+
+## Recommendations
+
+### **Use Hybrid Search When:**
+- You want the best possible search accuracy
+- You have diverse content types
+- Users expect both exact and conceptual matches
+- You can afford the additional complexity
+
+### **Stick with Literal Search When:**
+- Performance is critical
+- Bundle size is a concern
+- Content is mostly technical/structured
+- You need offline functionality
+
+### **Use Pure Semantic Search When:**
+- Content is highly conceptual
+- Users write natural language queries
+- You have server-side processing available
+
+Hybrid search provides the best user experience by combining the strengths of both approaches while maintaining reasonable performance and bundle size!
+---
+
+# From docs/proposals/plugins.md:
+
+# Plugin System Proposal
+
+A proposal for extending svelte-markdown-pages functionality with a plugin system for custom processing, styling, and features.
+
+## Overview
+
+This proposal outlines a plugin system that would allow users to extend the functionality of svelte-markdown-pages with custom processors, transformers, and utilities. The system would be designed to integrate seamlessly with the existing architecture while providing flexibility for advanced use cases.
+
+## Current Architecture
+
+The current implementation already supports basic content processing through the `ContentProcessor` interface:
+
+```typescript
+interface ContentProcessor {
+  process(content: string): string;
+}
+```
+
+This is used in the `buildDocs` and `generateStaticSite` functions to transform markdown content before it's converted to HTML.
+
+## Proposed Plugin System
+
+### Plugin Interface
+
+```typescript
+interface Plugin {
+  name: string;
+  version: string;
+  description?: string;
+  
+  // Content processing
+  process?: (content: string, context: PluginContext) => string;
+  
+  // Build lifecycle hooks
+  beforeBuild?: (context: BuildContext) => void | Promise<void>;
+  afterBuild?: (result: BuildResult, context: BuildContext) => void | Promise<void>;
+  
+  // Validation
+  validate?: (content: string, context: PluginContext) => boolean | ValidationResult;
+  
+  // Configuration
+  configure?: (options: Record<string, any>) => void;
+}
+
+interface PluginContext {
+  filePath: string;
+  fileName: string;
+  navigation: NavigationTree;
+  options: BuildOptions;
+}
+
+interface BuildContext {
+  contentPath: string;
+  options: BuildOptions;
+  navigation: NavigationTree;
+}
+
+interface ValidationResult {
+  valid: boolean;
+  errors?: string[];
+  warnings?: string[];
+}
+```
+
+### Enhanced BuildOptions
+
+```typescript
+interface BuildOptions {
+  appOutput?: string;
+  websiteOutput?: string;
+  staticOutput?: string;
+  includeContent?: boolean;
+  
+  // Plugin system
+  plugins?: Plugin[];
+  pluginOptions?: Record<string, any>;
+}
+```
+
+## Plugin Categories
+
+### 1. Content Processors
+
+Plugins that transform markdown content before HTML conversion:
+
+```typescript
+const admonitionPlugin: Plugin = {
+  name: 'admonition',
+  version: '1.0.0',
+  description: 'Adds support for admonition blocks',
+  
+  process(content: string, context: PluginContext): string {
+    return content.replace(
+      /^:::(\w+)\n([\s\S]*?)\n:::$/gm,
+      (match, type, content) => {
+        const icons = {
+          info: 'ℹ️',
+          warning: '⚠️',
+          error: '❌',
+          success: '✅'
+        };
+        
+        return `
+          <div class="admonition admonition-${type}">
+            <div class="admonition-header">
+              ${icons[type] || '📝'} ${type.charAt(0).toUpperCase() + type.slice(1)}
+            </div>
+            <div class="admonition-content">
+              ${content}
+            </div>
+          </div>
+        `;
+      }
+    );
+  }
+};
+```
+
+### 2. Build Hooks
+
+Plugins that run at specific points in the build process:
+
+```typescript
+const analyticsPlugin: Plugin = {
+  name: 'analytics',
+  version: '1.0.0',
+  description: 'Adds analytics tracking to generated pages',
+  
+  beforeBuild(context: BuildContext): void {
+    console.log(`Starting build for ${context.contentPath} with ${context.navigation.items.length} root items`);
+  },
+  
+  afterBuild(result: BuildResult, context: BuildContext): void {
+    console.log(`Build completed: ${result.content ? Object.keys(result.content).length : 0} pages processed`);
+  }
+};
+```
+
+### 3. Validators
+
+Plugins that validate content structure and quality:
+
+```typescript
+const linkValidatorPlugin: Plugin = {
+  name: 'link-validator',
+  version: '1.0.0',
+  description: 'Validates internal and external links',
+  
+  validate(content: string, context: PluginContext): ValidationResult {
+    const errors: string[] = [];
+    const warnings: string[] = [];
+    
+    // Check for broken internal links
+    const internalLinks = content.match(/\[([^\]]+)\]\(([^)]+)\)/g) || [];
+    for (const link of internalLinks) {
+      const match = link.match(/\[([^\]]+)\]\(([^)]+)\)/);
+      if (match && match[2].startsWith('./') && !match[2].includes('#')) {
+        // Validate internal link exists
+        // Implementation would check against navigation tree
+      }
+    }
+    
+    return {
+      valid: errors.length === 0,
+      errors,
+      warnings
+    };
+  }
+};
+```
+
+## Implementation Strategy
+
+### Phase 1: Basic Plugin Support
+
+1. **Extend BuildOptions interface** to include plugins array
+2. **Modify buildDocs function** to accept and process plugins
+3. **Add plugin context** to provide metadata during processing
+4. **Implement basic plugin lifecycle** (beforeBuild, process, afterBuild)
+
+### Phase 2: Advanced Features
+
+1. **Plugin configuration system** for options and settings
+2. **Plugin validation** and error handling
+3. **Plugin dependencies** and ordering
+4. **Plugin registry** for discovery and installation
+
+### Phase 3: Ecosystem
+
+1. **Built-in plugins** for common use cases
+2. **Plugin documentation** and examples
+3. **Plugin testing utilities**
+4. **Plugin marketplace** or registry
+
+## Built-in Plugins
+
+### Syntax Highlighting
+
+```typescript
+const syntaxHighlightingPlugin: Plugin = {
+  name: 'syntax-highlighting',
+  version: '1.0.0',
+  description: 'Adds syntax highlighting to code blocks',
+  
+  process(content: string): string {
+    return content.replace(
+      /```(\w+)\n([\s\S]*?)```/g,
+      (match, lang, code) => {
+        return `<pre><code class="language-${lang}">${code}</code></pre>`;
+      }
+    );
+  }
+};
+```
+
+### Table of Contents
+
+```typescript
+const tocPlugin: Plugin = {
+  name: 'table-of-contents',
+  version: '1.0.0',
+  description: 'Automatically generates table of contents',
+  
+  process(content: string): string {
+    const headings = content.match(/^(#{1,6})\s+(.+)$/gm) || [];
+    if (headings.length === 0) return content;
+    
+    const toc = headings.map(heading => {
+      const match = heading.match(/^(#{1,6})\s+(.+)$/);
+      if (!match) return '';
+      
+      const level = match[1].length;
+      const text = match[2];
+      const id = text.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+      
+      return `${'  '.repeat(level - 1)}- [${text}](#${id})`;
+    }).join('\n');
+    
+    return `## Table of Contents\n\n${toc}\n\n${content}`;
+  }
+};
+```
+
+## Plugin Configuration
+
+### Global Configuration
+
+```typescript
+await buildDocs('./docs', {
+  appOutput: './src/lib/content',
+  plugins: [admonitionPlugin, tocPlugin],
+  pluginOptions: {
+    'admonition': {
+      icons: { custom: '🎯' },
+      styles: { theme: 'dark' }
+    },
+    'toc': {
+      minDepth: 2,
+      maxDepth: 4
+    }
+  }
+});
+```
+
+### Plugin-Specific Configuration
+
+```typescript
+const configurablePlugin: Plugin = {
+  name: 'configurable',
+  version: '1.0.0',
+  
+  private config: Record<string, any> = {};
+  
+  configure(options: Record<string, any>): void {
+    this.config = { ...this.config, ...options };
+  },
+  
+  process(content: string): string {
+    if (this.config.enabled === false) {
+      return content;
+    }
+    
+    // Use configuration in processing
+    return content;
+  }
+};
+```
+
+## Plugin Development
+
+### Plugin Structure
+
+```
+my-plugin/
+├── package.json
+├── src/
+│   ├── index.ts
+│   └── plugin.ts
+├── tests/
+│   └── plugin.test.ts
+└── README.md
+```
+
+### Plugin Package.json
+
+```json
+{
+  "name": "svelte-markdown-pages-my-plugin",
+  "version": "1.0.0",
+  "description": "My custom plugin for svelte-markdown-pages",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "keywords": ["svelte-markdown-pages", "plugin"],
+  "peerDependencies": {
+    "svelte-markdown-pages": "^1.0.0"
+  },
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  }
+}
+```
+
+### Plugin Testing
+
+```typescript
+import { describe, it, expect } from 'vitest';
+import { myPlugin } from './plugin';
+
+describe('My Plugin', () => {
+  it('should process content correctly', () => {
+    const input = 'Test content';
+    const expected = 'Processed test content';
+    
+    const result = myPlugin.process?.(input, {
+      filePath: 'test.md',
+      fileName: 'test.md',
+      navigation: { items: [] },
+      options: {}
+    });
+    
+    expect(result).toBe(expected);
+  });
+});
+```
+
+## Migration Path
+
+### For Existing Users
+
+The plugin system would be backward compatible:
+
+```typescript
+// Current usage continues to work
+await buildDocs('./docs', {
+  appOutput: './src/lib/content',
+  includeContent: true
+});
+
+// New plugin usage
+await buildDocs('./docs', {
+  appOutput: './src/lib/content',
+  includeContent: true,
+  plugins: [myPlugin]
+});
+```
+
+### For ContentProcessor Users
+
+Existing `ContentProcessor` implementations could be wrapped as plugins:
+
+```typescript
+const legacyProcessor: ContentProcessor = {
+  process(content: string): string {
+    return content.replace(/pattern/g, 'replacement');
+  }
+};
+
+const legacyPlugin: Plugin = {
+  name: 'legacy-processor',
+  version: '1.0.0',
+  process: legacyProcessor.process
+};
+```
+
+## Benefits
+
+1. **Extensibility**: Users can add custom functionality without modifying core code
+2. **Modularity**: Features can be developed and distributed independently
+3. **Ecosystem**: Enables community contributions and plugin marketplace
+4. **Flexibility**: Supports various use cases from simple processors to complex build tools
+5. **Maintainability**: Keeps core functionality focused while allowing extensions
+
+## Considerations
+
+1. **Performance**: Plugin processing adds overhead to build time
+2. **Complexity**: Plugin system increases API surface area
+3. **Compatibility**: Need to maintain backward compatibility
+4. **Security**: Plugins run with full access to build context
+5. **Testing**: Plugin system needs comprehensive testing
+
+## Next Steps
+
+1. **Gather feedback** on the proposed interface and features
+2. **Implement Phase 1** with basic plugin support
+3. **Create example plugins** to validate the design
+4. **Document plugin development** guidelines
+5. **Establish plugin ecosystem** and distribution mechanisms
+
+This proposal provides a foundation for a flexible and powerful plugin system while maintaining the simplicity and reliability of the current implementation.
+---
+
+# From docs/proposals/search-quick-reference.md:
+
+# Search Solutions Quick Reference
+
+Quick comparison and setup guide for the most popular search solutions for svelte-markdown-pages.
+
+## Quick Comparison
+
+| Solution | Setup Time | Cost | Performance | Features | Best For |
+|----------|------------|------|-------------|----------|----------|
+| **Algolia DocSearch** | ⭐⭐⭐ | Free (OSS) | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | Production sites |
+| **Lunr.js** | ⭐⭐⭐⭐⭐ | Free | ⭐⭐⭐ | ⭐⭐ | Small sites |
+| **Meilisearch** | ⭐⭐⭐ | Free | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐ | Self-hosted |
+| **Typesense** | ⭐⭐⭐ | Free | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐ | Modern apps |
+
+## 1. Algolia DocSearch (Recommended)
+
+### Quick Setup
+```bash
+npm install @docsearch/react @docsearch/js
+```
+
+### Basic Implementation
+```svelte
+<script>
+  import { onMount } from 'svelte';
+  import '@docsearch/css';
+  
+  let searchContainer;
+  
+  onMount(() => {
+    import('@docsearch/js').then(({ default: docsearch }) => {
+      docsearch({
+        appId: 'YOUR_APP_ID',
+        apiKey: 'YOUR_API_KEY',
+        indexName: 'your-index',
+        container: searchContainer
+      });
+    });
+  });
+</script>
+
+<div bind:this={searchContainer}></div>
+```
+
+### Pros
+- ✅ Free for open source
+- ✅ Excellent relevance
+- ✅ Built-in analytics
+- ✅ Typo tolerance
+
+### Cons
+- ❌ Application process required
+- ❌ Limited customization (free tier)
+
+## 2. Lunr.js (Client-Side)
+
+### Quick Setup
+```bash
+npm install lunr
+```
+
+### Basic Implementation
+```typescript
+import lunr from 'lunr';
+
+const idx = lunr(function() {
+  this.ref('id');
+  this.field('title', { boost: 10 });
+  this.field('content');
+  
+  documents.forEach(doc => this.add(doc));
+});
+
+const results = idx.search('query');
+```
+
+### Pros
+- ✅ No server required
+- ✅ Full control
+- ✅ Fast for small datasets
+- ✅ Zero cost
+
+### Cons
+- ❌ Limited to client-side
+- ❌ Not suitable for large datasets
+- ❌ Basic semantic capabilities
+
+## 3. Meilisearch (Self-Hosted)
+
+### Quick Setup
+```bash
+# Install Meilisearch
+curl -L https://install.meilisearch.com | sh
+
+# Start server
+./meilisearch --master-key=your-master-key
+
+# Install client
+npm install meilisearch-instant-meilisearch
+```
+
+### Basic Implementation
+```svelte
+<script>
+  import { onMount } from 'svelte';
+  import { instantMeiliSearch } from 'meilisearch-instant-meilisearch';
+  
+  let searchContainer;
+  
+  onMount(() => {
+    const { instantSearch } = instantMeiliSearch(
+      'http://localhost:7700',
+      'your-search-key'
+    );
+    instantSearch.mount(searchContainer);
+  });
+</script>
+
+<div bind:this={searchContainer}></div>
+```
+
+### Pros
+- ✅ Open source
+- ✅ Excellent performance
+- ✅ Full control
+- ✅ Typo tolerance
+
+### Cons
+- ❌ Requires server setup
+- ❌ More maintenance
+
+## 4. Typesense (Modern Alternative)
+
+### Quick Setup
+```bash
+# Install Typesense
+docker run -p 8108:8108 typesense/typesense:latest
+
+# Install client
+npm install typesense-instantsearch-adapter
+```
+
+### Basic Implementation
+```svelte
+<script>
+  import { onMount } from 'svelte';
+  import TypesenseInstantSearchAdapter from 'typesense-instantsearch-adapter';
+  
+  let searchContainer;
+  
+  onMount(() => {
+    const adapter = new TypesenseInstantSearchAdapter({
+      server: {
+        apiKey: 'your-api-key',
+        nodes: [{ host: 'localhost', port: '8108', protocol: 'http' }]
+      }
+    });
+    
+    const search = instantsearch({
+      searchClient: adapter.searchClient,
+      indexName: 'docs'
+    });
+    
+    search.addWidgets([
+      instantsearch.widgets.searchBox({ container: searchContainer })
+    ]);
+    
+    search.start();
+  });
+</script>
+
+<div bind:this={searchContainer}></div>
+```
+
+### Pros
+- ✅ Open source
+- ✅ Excellent performance
+- ✅ Real-time updates
+- ✅ Built-in analytics
+
+### Cons
+- ❌ Requires server setup
+- ❌ Smaller community
+
+## Integration with svelte-markdown-pages
+
+### Content Extraction
+```typescript
+import { buildDocs } from 'svelte-markdown-pages/builder';
+
+async function extractSearchContent(contentPath: string) {
+  const result = await buildDocs(contentPath, { includeContent: true });
+  
+  return Object.entries(result.content || {}).map(([path, content]) => ({
+    id: path,
+    title: extractTitle(content),
+    content: cleanContent(content),
+    url: `/${path.replace(/\.md$/, '')}`
+  }));
+}
+```
+
+### Build Integration
+```json
+{
+  "scripts": {
+    "build:search": "node scripts/build-search-index.js",
+    "build": "npm run build:docs && npm run build:search"
+  }
+}
+```
+
+## Quick Decision Guide
+
+### Choose Algolia DocSearch if:
+- You have a production site
+- You want the best search experience
+- You're okay with the application process
+- You want analytics and insights
+
+### Choose Lunr.js if:
+- You have a small site (< 100 pages)
+- You want zero external dependencies
+- You want full control over search
+- You want to keep everything client-side
+
+### Choose Meilisearch if:
+- You want self-hosted control
+- You have technical expertise
+- You want excellent performance
+- You want to avoid vendor lock-in
+
+### Choose Typesense if:
+- You want modern features
+- You need real-time updates
+- You want built-in analytics
+- You're comfortable with server setup
+
+## Getting Started Checklist
+
+1. **Choose your solution** based on requirements
+2. **Install dependencies** for your chosen solution
+3. **Set up search service** (if required)
+4. **Extract content** from your markdown files
+5. **Create search index** with your content
+6. **Implement search UI** component
+7. **Integrate with layout** and navigation
+8. **Test and optimize** search functionality
+
+## Resources
+
+- [Algolia DocSearch](https://docsearch.algolia.com/)
+- [Lunr.js Documentation](https://lunrjs.com/)
+- [Meilisearch Documentation](https://docs.meilisearch.com/)
+- [Typesense Documentation](https://typesense.org/docs/)
+- [svelte-markdown-pages Documentation](../README.md)
+---
+
+# From docs/proposals/search.md:
+
+# Semantic Search Implementation Guide
+
+A guide for adding semantic search functionality to svelte-markdown-pages websites using various solutions.
+
+## Overview
+
+Semantic search allows users to find content using natural language queries, understanding context and meaning rather than just keyword matching. This guide covers several approaches to implement search in svelte-markdown-pages websites.
+
+## Search Solutions
+
+### 1. **Algolia DocSearch** (Recommended for Production)
+
+**Best for**: Large documentation sites, production applications
+**Pros**: 
+- Free for open source projects
+- Excellent relevance and typo tolerance
+- Built-in analytics and insights
+- Easy integration with SvelteKit
+- Handles large datasets efficiently
+
+**Cons**: 
+- Requires application process for free tier
+- Limited customization on free plan
+
+#### Implementation
+
+```bash
+npm install @docsearch/react @docsearch/js
+```
+
+```svelte
+<!-- src/lib/components/Search.svelte -->
+<script lang="ts">
+  import { onMount } from 'svelte';
+  import '@docsearch/css';
+
+  let searchContainer: HTMLElement;
+
+  onMount(() => {
+    import('@docsearch/js').then(({ default: docsearch }) => {
+      docsearch({
+        appId: 'YOUR_APP_ID',
+        apiKey: 'YOUR_API_KEY',
+        indexName: 'your-index-name',
+        container: searchContainer,
+        placeholder: 'Search documentation...',
+        searchParameters: {
+          facetFilters: ['type:content']
+        }
+      });
+    });
+  });
+</script>
+
+<div class="search-wrapper">
+  <div bind:this={searchContainer}></div>
+</div>
+
+<style>
+  .search-wrapper {
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+</style>
+```
+
+#### Setup Process
+1. Apply for DocSearch at https://docsearch.algolia.com/
+2. Configure your site structure
+3. Algolia will crawl your site and create search index
+4. Receive API credentials and integrate
+
+### 2. **Meilisearch** (Self-Hosted Alternative)
+
+**Best for**: Self-hosted solutions, full control
+**Pros**: 
+- Open source and self-hosted
+- Excellent performance
+- Full control over data and configuration
+- Typo tolerance and relevance
+- RESTful API
+
+**Cons**: 
+- Requires server infrastructure
+- More setup and maintenance
+
+#### Implementation
+
+```bash
+npm install meilisearch-instant-meilisearch
+```
+
+```svelte
+<!-- src/lib/components/MeiliSearch.svelte -->
+<script lang="ts">
+  import { onMount } from 'svelte';
+  import { instantMeiliSearch } from 'meilisearch-instant-meilisearch';
+
+  let searchContainer: HTMLElement;
+  let searchClient: any;
+
+  onMount(() => {
+    const { searchClient: client, instantSearch } = instantMeiliSearch(
+      'http://localhost:7700',
+      'your-search-key'
+    );
+    
+    searchClient = client;
+    instantSearch.mount(searchContainer);
+  });
+</script>
+
+<div class="search-wrapper">
+  <div bind:this={searchContainer}></div>
+</div>
+```
+
+#### Setup Process
+1. Install Meilisearch server
+2. Create search index
+3. Index your content
+4. Configure search parameters
+
+### 3. **Typesense** (Modern Alternative)
+
+**Best for**: Modern applications, real-time search
+**Pros**: 
+- Open source
+- Excellent performance
+- Built-in analytics
+- Real-time updates
+- Good documentation
+
+**Cons**: 
+- Requires server setup
+- Smaller community than Algolia
+
+#### Implementation
+
+```bash
+npm install typesense-instantsearch-adapter
+```
+
+```svelte
+<!-- src/lib/components/TypesenseSearch.svelte -->
+<script lang="ts">
+  import { onMount } from 'svelte';
+  import TypesenseInstantSearchAdapter from 'typesense-instantsearch-adapter';
+
+  let searchContainer: HTMLElement;
+
+  onMount(() => {
+    const typesenseInstantsearchAdapter = new TypesenseInstantSearchAdapter({
+      server: {
+        apiKey: 'your-api-key',
+        nodes: [{
+          host: 'localhost',
+          port: '8108',
+          protocol: 'http'
+        }]
+      },
+      additionalSearchParameters: {
+        queryBy: 'title,content',
+        sortBy: 'relevance_score:desc'
+      }
+    });
+
+    const search = instantsearch({
+      searchClient: typesenseInstantsearchAdapter.searchClient,
+      indexName: 'docs'
+    });
+
+    search.addWidgets([
+      instantsearch.widgets.searchBox({
+        container: searchContainer,
+        placeholder: 'Search documentation...'
+      })
+    ]);
+
+    search.start();
+  });
+</script>
+
+<div class="search-wrapper">
+  <div bind:this={searchContainer}></div>
+</div>
+```
+
+### 4. **Local Search with Lunr.js** (Client-Side)
+
+**Best for**: Small to medium sites, no server required
+**Pros**: 
+- No server required
+- Works entirely in browser
+- Fast for small datasets
+- Full control over search logic
+
+**Cons**: 
+- Limited to client-side processing
+- Not suitable for large datasets
+- Basic semantic capabilities
+
+#### Implementation
+
+```bash
+npm install lunr
+```
+
+```typescript
+// src/lib/search.ts
+import lunr from 'lunr';
+
+export interface SearchDocument {
+  id: string;
+  title: string;
+  content: string;
+  url: string;
+  section?: string;
+}
+
+export class LocalSearch {
+  private index: lunr.Index;
+  private documents: SearchDocument[];
+
+  constructor(documents: SearchDocument[]) {
+    this.documents = documents;
+    this.index = lunr(function() {
+      this.ref('id');
+      this.field('title', { boost: 10 });
+      this.field('content');
+      this.field('section');
+
+      documents.forEach(doc => {
+        this.add(doc);
+      });
+    });
+  }
+
+  search(query: string): SearchDocument[] {
+    const results = this.index.search(query);
+    return results.map(result => 
+      this.documents.find(doc => doc.id === result.ref)!
+    );
+  }
+}
+```
+
+```svelte
+<!-- src/lib/components/LocalSearch.svelte -->
+<script lang="ts">
+  import { createEventDispatcher } from 'svelte';
+  import { LocalSearch, type SearchDocument } from '$lib/search';
+  
+  export let documents: SearchDocument[] = [];
+  
+  let searchQuery = '';
+  let searchResults: SearchDocument[] = [];
+  let searchInstance: LocalSearch;
+  let isSearching = false;
+  
+  const dispatch = createEventDispatcher();
+  
+  $: {
+    if (documents.length > 0 && !searchInstance) {
+      searchInstance = new LocalSearch(documents);
+    }
+  }
+  
+  $: {
+    if (searchInstance && searchQuery.trim()) {
+      isSearching = true;
+      searchResults = searchInstance.search(searchQuery);
+      isSearching = false;
+    } else {
+      searchResults = [];
+    }
+  }
+  
+  function handleResultClick(result: SearchDocument) {
+    dispatch('resultClick', result);
+  }
+</script>
+
+<div class="search-container">
+  <input
+    type="text"
+    bind:value={searchQuery}
+    placeholder="Search documentation..."
+    class="search-input"
+  />
+  
+  {#if isSearching}
+    <div class="search-loading">Searching...</div>
+  {:else if searchResults.length > 0}
+    <div class="search-results">
+      {#each searchResults as result}
+        <div 
+          class="search-result"
+          on:click={() => handleResultClick(result)}
+        >
+          <h4>{result.title}</h4>
+          {#if result.section}
+            <span class="section">{result.section}</span>
+          {/if}
+          <p>{result.content.substring(0, 150)}...</p>
+        </div>
+      {/each}
+    </div>
+  {:else if searchQuery.trim()}
+    <div class="no-results">No results found</div>
+  {/if}
+</div>
+
+<style>
+  .search-container {
+    position: relative;
+    width: 100%;
+    max-width: 600px;
+  }
+  
+  .search-input {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 16px;
+  }
+  
+  .search-results {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    max-height: 400px;
+    overflow-y: auto;
+    z-index: 1000;
+  }
+  
+  .search-result {
+    padding: 12px 16px;
+    border-bottom: 1px solid #f1f5f9;
+    cursor: pointer;
+  }
+  
+  .search-result:hover {
+    background: #f8fafc;
+  }
+  
+  .search-result h4 {
+    margin: 0 0 4px 0;
+    font-size: 14px;
+    font-weight: 600;
+  }
+  
+  .section {
+    font-size: 12px;
+    color: #64748b;
+    background: #f1f5f9;
+    padding: 2px 6px;
+    border-radius: 4px;
+  }
+  
+  .search-result p {
+    margin: 8px 0 0 0;
+    font-size: 13px;
+    color: #475569;
+  }
+</style>
+```
+
+### 5. **OpenSearch (AWS)** (Enterprise)
+
+**Best for**: Enterprise applications, AWS ecosystem
+**Pros**: 
+- Fully managed service
+- Excellent scalability
+- Advanced analytics
+- Integration with AWS services
+
+**Cons**: 
+- Requires AWS account
+- More complex setup
+- Cost for large datasets
+
+## Integration with svelte-markdown-pages
+
+### Content Indexing
+
+To make your content searchable, you'll need to extract and index your markdown content:
+
+```typescript
+// src/lib/search-index.ts
+import { buildDocs } from 'svelte-markdown-pages/builder';
+import type { SearchDocument } from './search';
+
+export async function buildSearchIndex(contentPath: string): Promise<SearchDocument[]> {
+  const result = await buildDocs(contentPath, {
+    includeContent: true
+  });
+  
+  const documents: SearchDocument[] = [];
+  
+  function processItems(items: any[], parentPath = '') {
+    for (const item of items) {
+      if (item.type === 'page' && item.path) {
+        const content = result.content?.[item.path];
+        if (content) {
+          // Extract title from first heading
+          const titleMatch = content.match(/^#\s+(.+)$/m);
+          const title = titleMatch ? titleMatch[1] : item.label;
+          
+          // Clean content (remove markdown)
+          const cleanContent = content
+            .replace(/^#+\s+/gm, '') // Remove headings
+            .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1') // Remove links
+            .replace(/`([^`]+)`/g, '$1') // Remove inline code
+            .replace(/```[\s\S]*?```/g, '') // Remove code blocks
+            .trim();
+          
+          documents.push({
+            id: item.path,
+            title,
+            content: cleanContent,
+            url: `/${item.path.replace(/\.md$/, '')}`,
+            section: parentPath || undefined
+          });
+        }
+      } else if (item.items) {
+        const sectionPath = parentPath ? `${parentPath} > ${item.label}` : item.label;
+        processItems(item.items, sectionPath);
+      }
+    }
+  }
+  
+  processItems(result.navigation.items);
+  return documents;
+}
+```
+
+### Build Integration
+
+Add search index generation to your build process:
+
+```typescript
+// scripts/build-with-search.js
+import { buildSearchIndex } from '../src/lib/search-index.js';
+import { writeFileSync } from 'fs';
+
+async function buildWithSearch() {
+  // Build documentation
+  await buildDocs('./docs', {
+    appOutput: './src/lib/content',
+    includeContent: true
+  });
+  
+  // Build search index
+  const searchDocuments = await buildSearchIndex('./docs');
+  writeFileSync(
+    './src/lib/search-index.json',
+    JSON.stringify(searchDocuments, null, 2)
+  );
+}
+
+buildWithSearch().catch(console.error);
+```
+
+### SvelteKit Integration
+
+```svelte
+<!-- src/routes/+layout.svelte -->
+<script lang="ts">
+  import Search from '$lib/components/Search.svelte';
+  import searchIndex from '$lib/search-index.json';
+</script>
+
+<header>
+  <Search {searchIndex} />
+</header>
+
+<main>
+  <slot />
+</main>
+```
+
+## Recommendations by Use Case
+
+### **Small Documentation Site (< 100 pages)**
+- **Recommendation**: Local Search with Lunr.js
+- **Reason**: Simple setup, no external dependencies, fast performance
+
+### **Medium Documentation Site (100-1000 pages)**
+- **Recommendation**: Algolia DocSearch
+- **Reason**: Excellent relevance, free for open source, easy integration
+
+### **Large Documentation Site (> 1000 pages)**
+- **Recommendation**: Meilisearch or Typesense
+- **Reason**: Self-hosted control, excellent performance, cost-effective
+
+### **Enterprise/Production Application**
+- **Recommendation**: Algolia DocSearch or OpenSearch
+- **Reason**: Managed service, enterprise features, reliability
+
+### **Open Source Project**
+- **Recommendation**: Algolia DocSearch
+- **Reason**: Free tier available, excellent for community projects
+
+## Implementation Checklist
+
+- [ ] Choose search solution based on requirements
+- [ ] Set up search service/engine
+- [ ] Implement content indexing
+- [ ] Create search UI component
+- [ ] Integrate with svelte-markdown-pages build process
+- [ ] Add search to layout/navigation
+- [ ] Test search functionality
+- [ ] Optimize search performance
+- [ ] Add analytics and monitoring
+
+## Performance Considerations
+
+1. **Index Size**: Keep search index optimized for your use case
+2. **Caching**: Cache search results when possible
+3. **Debouncing**: Implement search debouncing for better UX
+4. **Lazy Loading**: Load search results progressively
+5. **CDN**: Use CDN for search assets when applicable
+
+## Security Considerations
+
+1. **API Keys**: Secure API keys and credentials
+2. **Rate Limiting**: Implement rate limiting for search requests
+3. **Input Validation**: Sanitize search queries
+4. **Access Control**: Ensure search respects content permissions
+
+This guide provides a comprehensive overview of implementing semantic search in svelte-markdown-pages websites, with specific recommendations based on different use cases and requirements.

@@ -7,9 +7,9 @@ Learn how to configure the package for your needs.
 The package can be configured through the build options:
 
 ```typescript
-import { buildDocs } from 'svelte-markdown-pages/builder';
+import { buildPages } from 'svelte-markdown-pages/builder';
 
-await buildDocs('./content', {
+await buildPages('./content', {
   appOutput: './src/lib/content',
   websiteOutput: './src/lib/content',
   includeContent: true
@@ -30,7 +30,7 @@ const processor = {
   }
 };
 
-await buildDocs('./content', {
+await buildPages('./content', {
   appOutput: './src/lib/content',
   processor
 });

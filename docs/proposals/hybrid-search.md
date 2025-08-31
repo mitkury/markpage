@@ -218,7 +218,7 @@ export async function embedTextFast(text: string): Promise<number[]> {
 
 ```typescript
 // scripts/build-hybrid-search.ts
-import { buildDocs } from 'svelte-markdown-pages/builder';
+import { buildPages } from 'svelte-markdown-pages/builder';
 import { writeFileSync } from 'fs';
 import { join } from 'path';
 import { embedText } from './embeddings';
@@ -238,7 +238,7 @@ export async function buildHybridSearchIndex(contentPath: string): Promise<{
   documents: HybridSearchDocument[];
   literalIndex: any;
 }> {
-  const result = await buildDocs(contentPath, {
+  const result = await buildPages(contentPath, {
     includeContent: true
   });
   

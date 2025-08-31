@@ -13,7 +13,7 @@ describe('Content', () => {
   const sampleContentBundle = {
     'getting-started.md': '# Getting Started\n\nWelcome to the documentation!',
     'guides/installation.md': '# Installation\n\n## Prerequisites\n\n- Node.js\n- npm\n\n## Steps\n\n1. Install package\n2. Configure\n3. Build',
-    'api/builder.md': '# Builder API\n\n## Functions\n\n### buildDocs\n\nBuilds documentation.'
+    'api/builder.md': '# Builder API\n\n## Functions\n\n### buildPages\n\nBuilds documentation.'
   };
 
   describe('ContentLoader', () => {

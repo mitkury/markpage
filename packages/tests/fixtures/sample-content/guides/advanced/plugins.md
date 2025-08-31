@@ -35,9 +35,9 @@ const tocPlugin: Plugin = {
 Register plugins when building:
 
 ```typescript
-import { buildDocs } from 'svelte-markdown-pages/builder';
+import { buildPages } from 'svelte-markdown-pages/builder';
 
-await buildDocs('./content', {
+await buildPages('./content', {
   appOutput: './src/lib/content',
   plugins: [tocPlugin, otherPlugin]
 });

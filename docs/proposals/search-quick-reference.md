@@ -185,10 +185,10 @@ npm install typesense-instantsearch-adapter
 
 ### Content Extraction
 ```typescript
-import { buildDocs } from 'svelte-markdown-pages/builder';
+import { buildPages } from 'svelte-markdown-pages/builder';
 
 async function extractSearchContent(contentPath: string) {
-  const result = await buildDocs(contentPath, { includeContent: true });
+  const result = await buildPages(contentPath, { includeContent: true });
   
   return Object.entries(result.content || {}).map(([path, content]) => ({
     id: path,

@@ -100,9 +100,9 @@ my-content/
 ### 3. Build Documentation
 
 ```typescript
-import { buildDocs } from 'svelte-markdown-pages/builder';
+import { buildPages } from 'svelte-markdown-pages/builder';
 
-await buildDocs('./my-content', {
+await buildPages('./my-content', {
   appOutput: './src/lib/content',
   websiteOutput: './src/lib/content',
   includeContent: true
@@ -138,14 +138,14 @@ npx svelte-markdown-pages static ./my-content --output ./dist
 
 ### Builder Module
 
-#### `buildDocs(contentPath, options?)`
+#### `buildPages(contentPath, options?)`
 
 Builds documentation from a content directory.
 
 ```typescript
-import { buildDocs } from 'svelte-markdown-pages/builder';
+import { buildPages } from 'svelte-markdown-pages/builder';
 
-const result = await buildDocs('./content', {
+const result = await buildPages('./content', {
   appOutput: './src/lib/content',
   websiteOutput: './src/lib/content',
   includeContent: true

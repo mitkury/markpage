@@ -4,7 +4,7 @@ The builder module provides functions for building documentation from markdown c
 
 ## Functions
 
-### `buildDocs(contentPath, options?)`
+### `buildPages(contentPath, options?)`
 
 Builds documentation from a content directory.
 
@@ -16,9 +16,9 @@ Builds documentation from a content directory.
 
 **Example:**
 ```typescript
-import { buildDocs } from 'svelte-markdown-pages/builder';
+import { buildPages } from 'svelte-markdown-pages/builder';
 
-const result = await buildDocs('./docs', {
+const result = await buildPages('./docs', {
   appOutput: './src/lib/content',
   websiteOutput: './src/lib/content',
   includeContent: true
@@ -51,7 +51,7 @@ const result = await generateStaticSite('./docs', './dist', {
 
 ### BuildOptions
 
-Configuration options for the `buildDocs` function.
+Configuration options for the `buildPages` function.
 
 ```typescript
 interface BuildOptions {
@@ -95,7 +95,7 @@ interface StaticSiteOptions {
 
 ### BuildResult
 
-Result object returned by `buildDocs`.
+Result object returned by `buildPages`.
 
 ```typescript
 interface BuildResult {
@@ -193,9 +193,9 @@ interface BuildHooks {
 ### Basic Build
 
 ```typescript
-import { buildDocs } from 'svelte-markdown-pages/builder';
+import { buildPages } from 'svelte-markdown-pages/builder';
 
-const result = await buildDocs('./docs', {
+const result = await buildPages('./docs', {
   appOutput: './src/lib/content',
   includeContent: true
 });
@@ -206,7 +206,7 @@ console.log(`Built navigation with ${result.navigation.items.length} root items`
 ### Advanced Build with Custom Processor
 
 ```typescript
-import { buildDocs } from 'svelte-markdown-pages/builder';
+import { buildPages } from 'svelte-markdown-pages/builder';
 
 const customProcessor = {
   process(content: string): string {
@@ -214,7 +214,7 @@ const customProcessor = {
   }
 };
 
-const result = await buildDocs('./docs', {
+const result = await buildPages('./docs', {
   appOutput: './src/lib/content',
   websiteOutput: './src/lib/content',
   includeContent: true,
@@ -249,10 +249,10 @@ console.log(`Available URLs: ${result.urls.join(', ')}`);
 ### Error Handling
 
 ```typescript
-import { buildDocs } from 'svelte-markdown-pages/builder';
+import { buildPages } from 'svelte-markdown-pages/builder';
 
 try {
-  const result = await buildDocs('./docs', {
+  const result = await buildPages('./docs', {
     appOutput: './src/lib/content',
     includeContent: true
   });
@@ -288,7 +288,7 @@ For large documentation sites, consider:
 
 1. **Disable content inclusion** if not needed:
    ```typescript
-   await buildDocs('./docs', {
+   await buildPages('./docs', {
      appOutput: './src/lib/content',
      includeContent: false
    });

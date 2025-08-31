@@ -57,7 +57,7 @@ interface ContentBundle {
 
 ### BuildOptions
 
-Configuration options for the `buildDocs` function.
+Configuration options for the `buildPages` function.
 
 ```typescript
 interface BuildOptions {
@@ -109,7 +109,7 @@ interface StaticSiteOptions {
 
 ### BuildResult
 
-Result object returned by `buildDocs`.
+Result object returned by `buildPages`.
 
 ```typescript
 interface BuildResult {

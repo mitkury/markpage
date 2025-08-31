@@ -395,11 +395,11 @@ To make your content searchable, you'll need to extract and index your markdown 
 
 ```typescript
 // src/lib/search-index.ts
-import { buildDocs } from 'svelte-markdown-pages/builder';
+import { buildPages } from 'svelte-markdown-pages/builder';
 import type { SearchDocument } from './search';
 
 export async function buildSearchIndex(contentPath: string): Promise<SearchDocument[]> {
-  const result = await buildDocs(contentPath, {
+  const result = await buildPages(contentPath, {
     includeContent: true
   });
   
@@ -453,7 +453,7 @@ import { writeFileSync } from 'fs';
 
 async function buildWithSearch() {
   // Build documentation
-  await buildDocs('./docs', {
+  await buildPages('./docs', {
     appOutput: './src/lib/content',
     includeContent: true
   });

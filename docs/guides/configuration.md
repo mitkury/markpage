@@ -7,9 +7,9 @@ Learn how to configure svelte-markdown-pages for your project with detailed opti
 The simplest way to build your documentation:
 
 ```typescript
-import { buildDocs } from 'svelte-markdown-pages/builder';
+import { buildPages } from 'svelte-markdown-pages/builder';
 
-await buildDocs('./docs', {
+await buildPages('./docs', {
   appOutput: './src/lib/content',
   includeContent: true
 });
@@ -21,7 +21,7 @@ await buildDocs('./docs', {
 Directory where app-specific files will be generated.
 
 ```typescript
-await buildDocs('./docs', {
+await buildPages('./docs', {
   appOutput: './src/lib/content'
 });
 ```
@@ -34,7 +34,7 @@ await buildDocs('./docs', {
 Directory where website-specific files will be generated.
 
 ```typescript
-await buildDocs('./docs', {
+await buildPages('./docs', {
   websiteOutput: './src/lib/content'
 });
 ```
@@ -47,7 +47,7 @@ await buildDocs('./docs', {
 Whether to include content in the output bundle.
 
 ```typescript
-await buildDocs('./docs', {
+await buildPages('./docs', {
   appOutput: './src/lib/content',
   includeContent: true  // Default: false
 });
@@ -57,7 +57,7 @@ await buildDocs('./docs', {
 Directory for static site generation.
 
 ```typescript
-await buildDocs('./docs', {
+await buildPages('./docs', {
   staticOutput: './dist'
 });
 ```
@@ -76,7 +76,7 @@ const processor = {
   }
 };
 
-const result = await buildDocs('./docs', {
+const result = await buildPages('./docs', {
   appOutput: './src/lib/content',
   processor
 });
@@ -237,7 +237,7 @@ Create dedicated build scripts for complex configurations:
 
 ```typescript
 // scripts/build-docs.js
-import { buildDocs } from 'svelte-markdown-pages/builder';
+import { buildPages } from 'svelte-markdown-pages/builder';
 import { syntaxHighlightingPlugin } from 'svelte-markdown-pages/plugins';
 
 const processor = {
@@ -247,7 +247,7 @@ const processor = {
   }
 };
 
-await buildDocs('./docs', {
+await buildPages('./docs', {
   appOutput: './src/lib/content',
   websiteOutput: './src/lib/content',
   includeContent: true,
@@ -262,7 +262,7 @@ The builder functions throw errors for common issues:
 
 ```typescript
 try {
-  const result = await buildDocs('./docs');
+  const result = await buildPages('./docs');
 } catch (error) {
   if (error.code === 'ENOENT') {
     console.error('Content directory not found');
@@ -282,7 +282,7 @@ For large documentation sites, consider:
 
 ```typescript
 // Build only what you need
-await buildDocs('./docs', {
+await buildPages('./docs', {
   appOutput: './src/lib/content',
   includeContent: false,  // Don't include content if not needed
   processor: {
@@ -299,7 +299,7 @@ await buildDocs('./docs', {
 Implement caching for faster rebuilds:
 
 ```typescript
-import { buildDocs } from 'svelte-markdown-pages/builder';
+import { buildPages } from 'svelte-markdown-pages/builder';
 import { existsSync, readFileSync } from 'fs';
 
 const cacheFile = './.docs-cache.json';
@@ -310,7 +310,7 @@ if (existsSync(cacheFile)) {
   // Use cache if valid
 }
 
-const result = await buildDocs('./docs', {
+const result = await buildPages('./docs', {
   appOutput: './src/lib/content',
   includeContent: true
 });

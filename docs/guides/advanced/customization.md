@@ -41,9 +41,9 @@ const customProcessor = {
 	}
 };
 
-await buildDocs('./docs', {
-	appOutput: './src/lib/content',
-	processor: customProcessor
+await buildPages('./docs', {
+  appOutput: './src/lib/content',
+  processor: customProcessor
 });
 ```
 
@@ -325,9 +325,9 @@ const buildHooks = {
 	}
 };
 
-await buildDocs('./docs', {
-	appOutput: './src/lib/content',
-	hooks: buildHooks
+await buildPages('./docs', {
+  appOutput: './src/lib/content',
+  hooks: buildHooks
 });
 ```
 

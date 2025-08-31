@@ -95,9 +95,9 @@ const navigationPlugin: Plugin = {
 ## Using Plugins
 
 ```typescript
-import { buildDocs } from 'svelte-markdown-pages/builder';
+import { buildPages } from 'svelte-markdown-pages/builder';
 
-const result = await buildDocs('./content', {
+const result = await buildPages('./content', {
   appOutput: './src/lib/content',
   plugins: [syntaxHighlightingPlugin, tocPlugin, navigationPlugin]
 });

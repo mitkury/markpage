@@ -4,12 +4,12 @@ The builder module provides functionality for processing markdown content and ge
 
 ## Functions
 
-### buildDocs
+### buildPages
 
 Builds documentation from a content directory.
 
 ```typescript
-function buildDocs(
+function buildPages(
   contentPath: string,
   options?: BuildOptions
 ): Promise<BuildResult>
@@ -23,9 +23,9 @@ function buildDocs(
 
 **Example:**
 ```typescript
-import { buildDocs } from 'svelte-markdown-pages/builder';
+import { buildPages } from 'svelte-markdown-pages/builder';
 
-const result = await buildDocs('./docs', {
+const result = await buildPages('./docs', {
   appOutput: './src/lib/content',
   websiteOutput: './src/lib/content',
   includeContent: true

@@ -78,9 +78,9 @@ my-docs/
 ### 4. Build Your Documentation
 
 ```typescript
-import { buildDocs } from 'svelte-markdown-pages/builder';
+import { buildPages } from 'svelte-markdown-pages/builder';
 
-await buildDocs('./my-docs', {
+await buildPages('./my-docs', {
   appOutput: './src/lib/content',
   includeContent: true
 });

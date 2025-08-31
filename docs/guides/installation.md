@@ -77,7 +77,7 @@ Create a build script in your `package.json`:
 ```json
 {
   "scripts": {
-    "build:docs": "node -e \"import('svelte-markdown-pages/builder').then(({buildDocs}) => buildDocs('./docs', {appOutput: './src/lib/content', includeContent: true}))\""
+    "build:docs": "node -e \"import('svelte-markdown-pages/builder').then(({buildPages}) => buildPages('./docs', {appOutput: './src/lib/content', includeContent: true}))\""
   }
 }
 ```
@@ -86,9 +86,9 @@ Or create a build script file:
 
 ```typescript
 // scripts/build-docs.js
-import { buildDocs } from 'svelte-markdown-pages/builder';
+import { buildPages } from 'svelte-markdown-pages/builder';
 
-await buildDocs('./docs', {
+await buildPages('./docs', {
   appOutput: './src/lib/content',
   websiteOutput: './src/lib/content',
   includeContent: true
@@ -182,9 +182,9 @@ Each `.index.json` file defines the navigation structure for that directory:
 ### Basic Build
 
 ```typescript
-import { buildDocs } from 'svelte-markdown-pages/builder';
+import { buildPages } from 'svelte-markdown-pages/builder';
 
-await buildDocs('./docs', {
+await buildPages('./docs', {
   appOutput: './src/lib/content',
   includeContent: true
 });
@@ -193,7 +193,7 @@ await buildDocs('./docs', {
 ### Advanced Build Options
 
 ```typescript
-await buildDocs('./docs', {
+await buildPages('./docs', {
   appOutput: './src/lib/content',
   websiteOutput: './src/lib/content',
   staticOutput: './dist',
