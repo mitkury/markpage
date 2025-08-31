@@ -6,7 +6,7 @@ import {
   buildDocs, 
   processMarkdown, 
   generateStaticPages,
-  BuilderError 
+  BuilderError
 } from 'svelte-markdown-pages/builder';
 import { ContentProcessor } from 'svelte-markdown-pages';
 

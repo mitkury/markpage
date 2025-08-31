@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import { NavigationTree, createNavigationTree } from 'svelte-markdown-pages/renderer';
 import { NavigationTree as NavigationTreeType, NavigationItem } from 'svelte-markdown-pages';
 

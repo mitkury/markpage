@@ -2,11 +2,10 @@ import { describe, it, expect } from 'vitest';
 import { 
   DocsSidebar, 
   DocsContent, 
-  DocsLayout,
   createDocsSidebar,
   createDocsContent,
   createDocsLayout
-} from 'svelte-markdown-pages/components';
+} from 'svelte-markdown-pages/renderer';
 import { NavigationTree as NavigationTreeType } from 'svelte-markdown-pages';
 
 describe('Components', () => {
