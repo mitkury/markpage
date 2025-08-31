@@ -3,7 +3,7 @@ import { writeFileSync, mkdirSync, readFileSync, existsSync, rmSync } from 'fs';
 import { join } from 'path';
 import { tmpdir } from 'os';
 import { 
-  buildDocs, 
+  buildPages, 
   processMarkdown, 
   generateStaticPages,
   BuilderError
@@ -57,9 +57,9 @@ describe('Builder', () => {
     }
   });
 
-  describe('buildDocs', () => {
+  describe('buildPages', () => {
     it('should build documentation with content', async () => {
-      const result = await buildDocs(contentDir, {
+      const result = await buildPages(contentDir, {
         appOutput: outputDir,
         includeContent: true
       });
@@ -72,7 +72,7 @@ describe('Builder', () => {
     });
 
     it('should build documentation without content', async () => {
-      const result = await buildDocs(contentDir, {
+      const result = await buildPages(contentDir, {
         appOutput: outputDir,
         includeContent: false
       });
@@ -82,7 +82,7 @@ describe('Builder', () => {
     });
 
     it('should write app output files', async () => {
-      await buildDocs(contentDir, {
+      await buildPages(contentDir, {
         appOutput: outputDir,
         includeContent: true
       });
@@ -101,7 +101,7 @@ describe('Builder', () => {
     });
 
     it('should write website output files', async () => {
-      await buildDocs(contentDir, {
+      await buildPages(contentDir, {
         websiteOutput: outputDir
       });
 
@@ -113,7 +113,7 @@ describe('Builder', () => {
     });
 
     it('should throw BuilderError for invalid content path', async () => {
-      await expect(buildDocs('nonexistent-path')).rejects.toThrow(BuilderError);
+      await expect(buildPages('nonexistent-path')).rejects.toThrow(BuilderError);
     });
   });
 

@@ -21,7 +21,7 @@ export {
 } from './types.js';
 
 export {
-  buildDocs,
+  buildPages,
   generateStaticSite,
   type StaticSiteOptions,
   type StaticSiteResult

@@ -15,7 +15,7 @@ export interface ContentBundle {
   [path: string]: string;
 }
 
-export async function buildDocs(
+export async function buildPages(
   contentPath: string,
   options: BuildOptions = {}
 ): Promise<BuildResult> {

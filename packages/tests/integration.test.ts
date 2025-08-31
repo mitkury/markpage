@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { writeFileSync, mkdirSync, readFileSync, existsSync, rmSync } from 'fs';
 import { join } from 'path';
 import { tmpdir } from 'os';
-import { buildDocs, generateStaticSite } from 'svelte-markdown-pages/builder';
+import { buildPages, generateStaticSite } from 'svelte-markdown-pages/builder';
 import { NavigationTree, ContentLoader } from 'svelte-markdown-pages/renderer';
 
 describe('Integration', () => {
@@ -106,7 +106,7 @@ describe('Integration', () => {
   describe('Complete Workflow', () => {
     it('should build documentation and render content', async () => {
       // Step 1: Build documentation
-      const buildResult = await buildDocs(contentDir, {
+      const buildResult = await buildPages(contentDir, {
         appOutput: outputDir,
         includeContent: true
       });
@@ -146,7 +146,7 @@ describe('Integration', () => {
     });
 
     it('should handle navigation tree operations', async () => {
-      const buildResult = await buildDocs(contentDir, {
+      const buildResult = await buildPages(contentDir, {
         appOutput: outputDir,
         includeContent: true
       });
@@ -235,7 +235,7 @@ describe('Integration', () => {
         }
       };
 
-      const buildResult = await buildDocs(contentDir, {
+      const buildResult = await buildPages(contentDir, {
         appOutput: outputDir,
         includeContent: true
       });
