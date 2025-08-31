@@ -1,6 +1,6 @@
 {
   "name": "svelte-markdown-pages",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Build and render markdown-based content with distributed navigation for Svelte projects",
   "main": "dist/index.cjs",
   "module": "dist/index.js",
