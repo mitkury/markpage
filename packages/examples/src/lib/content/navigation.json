@@ -1,48 +1,46 @@
-{
-  "items": [
-    {
-      "name": "getting-started",
-      "type": "page",
-      "label": "Getting Started",
-      "path": "getting-started.md"
-    },
-    {
-      "name": "guides",
-      "type": "section",
-      "label": "Guides",
-      "items": [
-        {
-          "name": "installation",
-          "type": "page",
-          "label": "Installation",
-          "path": "guides/installation.md"
-        },
-        {
-          "name": "configuration",
-          "type": "page",
-          "label": "Configuration",
-          "path": "guides/configuration.md"
-        }
-      ]
-    },
-    {
-      "name": "api",
-      "type": "section",
-      "label": "API Reference",
-      "items": [
-        {
-          "name": "builder",
-          "type": "page",
-          "label": "Builder",
-          "path": "api/builder.md"
-        },
-        {
-          "name": "renderer",
-          "type": "page",
-          "label": "Renderer",
-          "path": "api/renderer.md"
-        }
-      ]
-    }
-  ]
-}
+[
+  {
+    "name": "getting-started",
+    "type": "page",
+    "label": "Getting Started",
+    "path": "getting-started.md"
+  },
+  {
+    "name": "guides",
+    "type": "section",
+    "label": "Guides",
+    "items": [
+      {
+        "name": "installation",
+        "type": "page",
+        "label": "Installation",
+        "path": "guides/installation.md"
+      },
+      {
+        "name": "configuration",
+        "type": "page",
+        "label": "Configuration",
+        "path": "guides/configuration.md"
+      }
+    ]
+  },
+  {
+    "name": "api",
+    "type": "section",
+    "label": "API Reference",
+    "items": [
+      {
+        "name": "builder",
+        "type": "page",
+        "label": "Builder",
+        "path": "api/builder.md"
+      },
+      {
+        "name": "renderer",
+        "type": "page",
+        "label": "Renderer",
+        "path": "api/renderer.md"
+      }
+    ]
+  }
+]

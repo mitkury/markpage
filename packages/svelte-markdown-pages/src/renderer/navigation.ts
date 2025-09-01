@@ -1,12 +1,12 @@
-import { NavigationTree as NavigationTreeType, NavigationItem } from '../types.js';
+import { NavigationItem } from '../types.js';
 
 export class NavigationTree {
   private _items: NavigationItem[];
   private _flatItems: NavigationItem[] = [];
   private _pathMap: Map<string, NavigationItem> = new Map();
 
-  constructor(data: NavigationTreeType) {
-    this._items = data.items;
+  constructor(data: NavigationItem[]) {
+    this._items = data;
     this._buildIndexes();
   }
 
@@ -158,6 +158,6 @@ export class NavigationTree {
   }
 }
 
-export function createNavigationTree(data: NavigationTreeType): NavigationTree {
+export function createNavigationTree(data: NavigationItem[]): NavigationTree {
   return new NavigationTree(data);
 }

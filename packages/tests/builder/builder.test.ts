@@ -64,7 +64,7 @@ describe('Builder', () => {
         includeContent: true
       });
 
-      expect(result.navigation.items).toHaveLength(2);
+      expect(result.navigation).toHaveLength(2);
       expect(result.content).toBeDefined();
       expect(Object.keys(result.content!)).toHaveLength(2);
       expect(result.content!['getting-started.md']).toContain('# Getting Started');
@@ -77,7 +77,7 @@ describe('Builder', () => {
         includeContent: false
       });
 
-      expect(result.navigation.items).toHaveLength(2);
+      expect(result.navigation).toHaveLength(2);
       expect(result.content).toBeUndefined();
     });
 
@@ -96,7 +96,7 @@ describe('Builder', () => {
       const navigation = JSON.parse(readFileSync(navigationPath, 'utf-8'));
       const content = JSON.parse(readFileSync(contentPath, 'utf-8'));
 
-      expect(navigation.items).toHaveLength(2);
+      expect(navigation).toHaveLength(2);
       expect(Object.keys(content)).toHaveLength(2);
     });
 
@@ -109,7 +109,7 @@ describe('Builder', () => {
       expect(existsSync(navigationPath)).toBe(true);
 
       const navigation = JSON.parse(readFileSync(navigationPath, 'utf-8'));
-      expect(navigation.items).toHaveLength(2);
+      expect(navigation).toHaveLength(2);
     });
 
     it('should throw BuilderError for invalid content path', async () => {
@@ -143,16 +143,14 @@ describe('Builder', () => {
 
   describe('generateStaticPages', () => {
     it('should generate static pages', () => {
-      const navigation = {
-        items: [
-          {
-            name: 'getting-started',
-            type: 'page' as const,
-            label: 'Getting Started',
-            path: 'getting-started.md'
-          }
-        ]
-      };
+      const navigation = [
+        {
+          name: 'getting-started',
+          type: 'page' as const,
+          label: 'Getting Started',
+          path: 'getting-started.md'
+        }
+      ];
 
       const pages = generateStaticPages(navigation, contentDir);
 
@@ -169,16 +167,14 @@ describe('Builder', () => {
         }
       };
 
-      const navigation = {
-        items: [
-          {
-            name: 'getting-started',
-            type: 'page' as const,
-            label: 'Getting Started',
-            path: 'getting-started.md'
-          }
-        ]
-      };
+      const navigation = [
+        {
+          name: 'getting-started',
+          type: 'page' as const,
+          label: 'Getting Started',
+          path: 'getting-started.md'
+        }
+      ];
 
       const pages = generateStaticPages(navigation, contentDir, { processor });
 
@@ -187,16 +183,14 @@ describe('Builder', () => {
     });
 
     it('should generate static pages with custom page options', () => {
-      const navigation = {
-        items: [
-          {
-            name: 'getting-started',
-            type: 'page' as const,
-            label: 'Getting Started',
-            path: 'getting-started.md'
-          }
-        ]
-      };
+      const navigation = [
+        {
+          name: 'getting-started',
+          type: 'page' as const,
+          label: 'Getting Started',
+          path: 'getting-started.md'
+        }
+      ];
 
       const pages = generateStaticPages(navigation, contentDir, {
         pageOptions: {
@@ -215,16 +209,14 @@ describe('Builder', () => {
     });
 
     it('should handle missing markdown files', () => {
-      const navigation = {
-        items: [
-          {
-            name: 'nonexistent',
-            type: 'page' as const,
-            label: 'Nonexistent',
-            path: 'nonexistent.md'
-          }
-        ]
-      };
+      const navigation = [
+        {
+          name: 'nonexistent',
+          type: 'page' as const,
+          label: 'Nonexistent',
+          path: 'nonexistent.md'
+        }
+      ];
 
       expect(() => generateStaticPages(navigation, contentDir)).toThrow(BuilderError);
     });

@@ -2,7 +2,7 @@ import { readFileSync, writeFileSync, mkdirSync } from 'fs';
 import { join, dirname } from 'path';
 import { marked } from 'marked';
 import { buildNavigationTree, validateContentStructure } from './parser.js';
-import { BuildOptions, BuildResult, NavigationTree, ContentProcessor } from '../types.js';
+import { BuildOptions, BuildResult, NavigationItem, ContentProcessor } from '../types.js';
 
 export class BuilderError extends Error {
   constructor(message: string, public filePath?: string) {
@@ -58,12 +58,12 @@ export async function buildPages(
 }
 
 function bundleMarkdownContent(
-  navigation: NavigationTree,
+  navigation: NavigationItem[],
   basePath: string
 ): ContentBundle {
   const content: ContentBundle = {};
   
-  function processItems(items: NavigationTree['items']): void {
+  function processItems(items: NavigationItem[]): void {
     for (const item of items) {
       if (item.type === 'page' && item.path) {
         const filePath = join(basePath, item.path);
@@ -82,12 +82,12 @@ function bundleMarkdownContent(
     }
   }
   
-  processItems(navigation.items);
+  processItems(navigation);
   return content;
 }
 
 async function writeAppOutput(
-  navigation: NavigationTree,
+  navigation: NavigationItem[],
   content: ContentBundle | undefined,
   outputPath: string
 ): Promise<void> {
@@ -112,7 +112,7 @@ async function writeAppOutput(
 }
 
 async function writeWebsiteOutput(
-  navigation: NavigationTree,
+  navigation: NavigationItem[],
   outputPath: string
 ): Promise<void> {
   try {
@@ -140,7 +140,7 @@ export function processMarkdown(
 }
 
 export function generateStaticPages(
-  navigation: NavigationTree,
+  navigation: NavigationItem[],
   basePath: string,
   options: {
     processor?: ContentProcessor;
@@ -162,7 +162,7 @@ export function generateStaticPages(
     html: string;
   }> = [];
   
-  function processItems(items: NavigationTree['items']): void {
+  function processItems(items: NavigationItem[]): void {
     for (const item of items) {
       if (item.type === 'page' && item.path) {
         const filePath = join(basePath, item.path);
@@ -188,7 +188,7 @@ export function generateStaticPages(
     }
   }
   
-  processItems(navigation.items);
+  processItems(navigation);
   return pages;
 }
 

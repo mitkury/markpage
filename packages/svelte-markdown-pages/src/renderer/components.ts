@@ -1,8 +1,8 @@
-import { NavigationTree, NavigationItem } from '../types.js';
+import { NavigationItem } from '../types.js';
 
 // Legacy class-based components for backward compatibility
 export interface DocsSidebarProps {
-  navigation: NavigationTree;
+  navigation: NavigationItem[];
   currentPage?: string | null;
   onPageSelect?: ((path: string) => void) | undefined;
   collapsed?: boolean | undefined;
@@ -16,7 +16,7 @@ export interface DocsContentProps {
 }
 
 export interface DocsLayoutProps {
-  navigation: NavigationTree;
+  navigation: NavigationItem[];
   currentPage?: string | null;
   content?: string | null;
   onPageSelect?: ((path: string) => void) | undefined;
@@ -35,7 +35,7 @@ export class DocsSidebarClass {
   render(): string {
     return `
       <nav class="docs-sidebar ${this.props.collapsed ? 'collapsed' : ''}">
-        ${this.renderNavigationItems(this.props.navigation.items)}
+        ${this.renderNavigationItems(this.props.navigation)}
       </nav>
     `;
   }

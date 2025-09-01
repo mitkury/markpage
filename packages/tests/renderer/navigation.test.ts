@@ -1,51 +1,49 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { NavigationTree, createNavigationTree } from 'svelte-markdown-pages/renderer';
-import { NavigationTree as NavigationTreeType, NavigationItem } from 'svelte-markdown-pages';
+import { NavigationItem } from 'svelte-markdown-pages';
 
 describe('Navigation', () => {
-  const sampleNavigationData: NavigationTreeType = {
-    items: [
-      {
-        name: 'getting-started',
-        type: 'page',
-        label: 'Getting Started',
-        path: 'getting-started.md'
-      },
-      {
-        name: 'guides',
-        type: 'section',
-        label: 'Guides',
-        items: [
-          {
-            name: 'installation',
-            type: 'page',
-            label: 'Installation',
-            path: 'guides/installation.md'
-          },
-          {
-            name: 'configuration',
-            type: 'page',
-            label: 'Configuration',
-            path: 'guides/configuration.md'
-          }
-        ]
-      },
-      {
-        name: 'api',
-        type: 'section',
-        label: 'API Reference',
-        collapsed: true,
-        items: [
-          {
-            name: 'builder',
-            type: 'page',
-            label: 'Builder API',
-            path: 'api/builder.md'
-          }
-        ]
-      }
-    ]
-  };
+  const sampleNavigationData: NavigationItem[] = [
+    {
+      name: 'getting-started',
+      type: 'page',
+      label: 'Getting Started',
+      path: 'getting-started.md'
+    },
+    {
+      name: 'guides',
+      type: 'section',
+      label: 'Guides',
+      items: [
+        {
+          name: 'installation',
+          type: 'page',
+          label: 'Installation',
+          path: 'guides/installation.md'
+        },
+        {
+          name: 'configuration',
+          type: 'page',
+          label: 'Configuration',
+          path: 'guides/configuration.md'
+        }
+      ]
+    },
+    {
+      name: 'api',
+      type: 'section',
+      label: 'API Reference',
+      collapsed: true,
+      items: [
+        {
+          name: 'builder',
+          type: 'page',
+          label: 'Builder API',
+          path: 'api/builder.md'
+        }
+      ]
+    }
+  ];
 
   describe('NavigationTree', () => {
     let navigation: NavigationTree;

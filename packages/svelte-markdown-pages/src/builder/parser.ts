@@ -1,6 +1,6 @@
 import { readFileSync, readdirSync, statSync, existsSync } from 'fs';
 import { join, relative } from 'path';
-import { IndexSchema, NavigationItem, NavigationTree, DocItem } from '../types.js';
+import { IndexSchema, NavigationItem, DocItem } from '../types.js';
 
 export class ParserError extends Error {
   constructor(message: string, public filePath?: string) {
@@ -121,7 +121,7 @@ function hasIndexFile(dirPath: string): boolean {
 export function buildNavigationTree(
   contentPath: string,
   options: ParseOptions = {}
-): NavigationTree {
+): NavigationItem[] {
   const { basePath = contentPath, validateFiles = true, autoDiscover = true } = options;
   
   try {
@@ -172,7 +172,7 @@ export function buildNavigationTree(
     navigationItems.push(navigationItem);
   }
   
-  return { items: navigationItems };
+  return navigationItems;
 }
 
 function processNavigationItem(

@@ -111,7 +111,7 @@ describe('Integration', () => {
         includeContent: true
       });
 
-      expect(buildResult.navigation.items).toHaveLength(3);
+      expect(buildResult.navigation).toHaveLength(3);
       expect(buildResult.content).toBeDefined();
       expect(Object.keys(buildResult.content!)).toHaveLength(8);
 

@@ -6,38 +6,36 @@ import {
   createDocsContent,
   createDocsLayout
 } from 'svelte-markdown-pages/renderer';
-import { NavigationTree as NavigationTreeType } from 'svelte-markdown-pages';
+import { NavigationItem } from 'svelte-markdown-pages';
 
 describe('Components', () => {
-  const sampleNavigationData: NavigationTreeType = {
-    items: [
-      {
-        name: 'getting-started',
-        type: 'page',
-        label: 'Getting Started',
-        path: 'getting-started.md'
-      },
-      {
-        name: 'guides',
-        type: 'section',
-        label: 'Guides',
-        items: [
-          {
-            name: 'installation',
-            type: 'page',
-            label: 'Installation',
-            path: 'guides/installation.md'
-          },
-          {
-            name: 'configuration',
-            type: 'page',
-            label: 'Configuration',
-            path: 'guides/configuration.md'
-          }
-        ]
-      }
-    ]
-  };
+  const sampleNavigationData: NavigationItem[] = [
+    {
+      name: 'getting-started',
+      type: 'page',
+      label: 'Getting Started',
+      path: 'getting-started.md'
+    },
+    {
+      name: 'guides',
+      type: 'section',
+      label: 'Guides',
+      items: [
+        {
+          name: 'installation',
+          type: 'page',
+          label: 'Installation',
+          path: 'guides/installation.md'
+        },
+        {
+          name: 'configuration',
+          type: 'page',
+          label: 'Configuration',
+          path: 'guides/configuration.md'
+        }
+      ]
+    }
+  ];
 
   describe('DocsSidebar', () => {
     it('should create DocsSidebar with props', () => {

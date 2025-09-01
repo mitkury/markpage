@@ -86,9 +86,9 @@ describe('Parser', () => {
       mkdirSync(guidesDir);
 
       const result = buildNavigationTree(tempDir);
-      expect(result.items).toHaveLength(2);
-      expect(result.items[0].name).toBe('getting-started');
-      expect(result.items[1].name).toBe('guides');
+      expect(result).toHaveLength(2);
+      expect(result[0].name).toBe('getting-started');
+      expect(result[1].name).toBe('guides');
     });
 
     it('should auto-discover content when no .index.json exists', () => {
@@ -103,22 +103,22 @@ describe('Parser', () => {
       const result = buildNavigationTree(tempDir, { autoDiscover: true });
       
       // Should discover all items in alphabetical order
-      expect(result.items).toHaveLength(3);
-      expect(result.items[0].name).toBe('getting-started');
-      expect(result.items[0].type).toBe('page');
-      expect(result.items[0].label).toBe('Getting Started');
-      expect(result.items[1].name).toBe('installation');
-      expect(result.items[1].type).toBe('page');
-      expect(result.items[1].label).toBe('Installation');
-      expect(result.items[2].name).toBe('guides');
-      expect(result.items[2].type).toBe('section');
-      expect(result.items[2].label).toBe('Guides');
+      expect(result).toHaveLength(3);
+      expect(result[0].name).toBe('getting-started');
+      expect(result[0].type).toBe('page');
+      expect(result[0].label).toBe('Getting Started');
+      expect(result[1].name).toBe('installation');
+      expect(result[1].type).toBe('page');
+      expect(result[1].label).toBe('Installation');
+      expect(result[2].name).toBe('guides');
+      expect(result[2].type).toBe('section');
+      expect(result[2].label).toBe('Guides');
       
       // Should auto-discover section content
-      expect(result.items[2].items).toHaveLength(1);
-      expect(result.items[2].items![0].name).toBe('advanced');
-      expect(result.items[2].items![0].type).toBe('page');
-      expect(result.items[2].items![0].label).toBe('Advanced');
+      expect(result[2].items).toHaveLength(1);
+      expect(result[2].items![0].name).toBe('advanced');
+      expect(result[2].items![0].type).toBe('page');
+      expect(result[2].items![0].label).toBe('Advanced');
     });
 
     it('should use .index.json when present even with auto-discovery enabled', () => {
@@ -142,8 +142,8 @@ describe('Parser', () => {
       const result = buildNavigationTree(tempDir, { autoDiscover: true });
       
       // Should only include items from .index.json
-      expect(result.items).toHaveLength(1);
-      expect(result.items[0].name).toBe('getting-started');
+      expect(result).toHaveLength(1);
+      expect(result[0].name).toBe('getting-started');
     });
 
     it('should generate proper labels from filenames', () => {
@@ -157,10 +157,10 @@ describe('Parser', () => {
       const result = buildNavigationTree(tempDir, { autoDiscover: true });
       
       // Items are sorted alphabetically
-      expect(result.items[0].label).toBe('Api Reference'); // api_reference.md comes first
-      expect(result.items[1].label).toBe('Getting Started');
-      expect(result.items[2].label).toBe('User Guide');
-      expect(result.items[3].label).toBe('Advanced Topics');
+      expect(result[0].label).toBe('Api Reference'); // api_reference.md comes first
+      expect(result[1].label).toBe('Getting Started');
+      expect(result[2].label).toBe('User Guide');
+      expect(result[3].label).toBe('Advanced Topics');
     });
 
     it('should throw error when auto-discovery is disabled and no .index.json exists', () => {
@@ -192,11 +192,11 @@ describe('Parser', () => {
 
       const result = buildNavigationTree(tempDir, { autoDiscover: true });
       
-      expect(result.items).toHaveLength(2);
-      expect(result.items[1].name).toBe('guides');
-      expect(result.items[1].items).toHaveLength(2);
-      expect(result.items[1].items![0].name).toBe('configuration');
-      expect(result.items[1].items![1].name).toBe('installation');
+      expect(result).toHaveLength(2);
+      expect(result[1].name).toBe('guides');
+      expect(result[1].items).toHaveLength(2);
+      expect(result[1].items![0].name).toBe('configuration');
+      expect(result[1].items![1].name).toBe('installation');
     });
 
     it('should exclude index.md and README.md from auto-discovered pages', () => {
@@ -208,9 +208,9 @@ describe('Parser', () => {
       
       const result = buildNavigationTree(tempDir, { autoDiscover: true });
       
-      expect(result.items).toHaveLength(2);
-      expect(result.items[0].name).toBe('getting-started');
-      expect(result.items[1].name).toBe('installation');
+      expect(result).toHaveLength(2);
+      expect(result[0].name).toBe('getting-started');
+      expect(result[1].name).toBe('installation');
       // index.md and README.md should not be included as pages
     });
 
@@ -223,12 +223,12 @@ describe('Parser', () => {
       
       const result = buildNavigationTree(tempDir, { autoDiscover: true });
       
-      expect(result.items).toHaveLength(1);
-      expect(result.items[0].name).toBe('guides');
-      expect(result.items[0].type).toBe('section');
-      expect(result.items[0].path).toBe('guides/index.md');
-      expect(result.items[0].items).toHaveLength(1);
-      expect(result.items[0].items![0].name).toBe('installation');
+      expect(result).toHaveLength(1);
+      expect(result[0].name).toBe('guides');
+      expect(result[0].type).toBe('section');
+      expect(result[0].path).toBe('guides/index.md');
+      expect(result[0].items).toHaveLength(1);
+      expect(result[0].items![0].name).toBe('installation');
     });
 
     it('should set section path to README.md when index.md is not present', () => {
@@ -240,12 +240,12 @@ describe('Parser', () => {
       
       const result = buildNavigationTree(tempDir, { autoDiscover: true });
       
-      expect(result.items).toHaveLength(1);
-      expect(result.items[0].name).toBe('guides');
-      expect(result.items[0].type).toBe('section');
-      expect(result.items[0].path).toBe('guides/README.md');
-      expect(result.items[0].items).toHaveLength(1);
-      expect(result.items[0].items![0].name).toBe('installation');
+      expect(result).toHaveLength(1);
+      expect(result[0].name).toBe('guides');
+      expect(result[0].type).toBe('section');
+      expect(result[0].path).toBe('guides/README.md');
+      expect(result[0].items).toHaveLength(1);
+      expect(result[0].items![0].name).toBe('installation');
     });
 
     it('should set section path to readme.md when neither index.md nor README.md is present', () => {
@@ -257,13 +257,13 @@ describe('Parser', () => {
       
       const result = buildNavigationTree(tempDir, { autoDiscover: true });
       
-      expect(result.items).toHaveLength(1);
-      expect(result.items[0].name).toBe('guides');
-      expect(result.items[0].type).toBe('section');
+      expect(result).toHaveLength(1);
+      expect(result[0].name).toBe('guides');
+      expect(result[0].type).toBe('section');
       // On case-insensitive file systems, readme.md might be detected as README.md
-      expect(result.items[0].path).toMatch(/guides\/(readme|README)\.md/);
-      expect(result.items[0].items).toHaveLength(1);
-      expect(result.items[0].items![0].name).toBe('installation');
+      expect(result[0].path).toMatch(/guides\/(readme|README)\.md/);
+      expect(result[0].items).toHaveLength(1);
+      expect(result[0].items![0].name).toBe('installation');
     });
 
     it('should prioritize index.md over README.md for section path', () => {
@@ -276,12 +276,12 @@ describe('Parser', () => {
       
       const result = buildNavigationTree(tempDir, { autoDiscover: true });
       
-      expect(result.items).toHaveLength(1);
-      expect(result.items[0].name).toBe('guides');
-      expect(result.items[0].type).toBe('section');
-      expect(result.items[0].path).toBe('guides/index.md'); // Should prioritize index.md
-      expect(result.items[0].items).toHaveLength(1);
-      expect(result.items[0].items![0].name).toBe('installation');
+      expect(result).toHaveLength(1);
+      expect(result[0].name).toBe('guides');
+      expect(result[0].type).toBe('section');
+      expect(result[0].path).toBe('guides/index.md'); // Should prioritize index.md
+      expect(result[0].items).toHaveLength(1);
+      expect(result[0].items![0].name).toBe('installation');
     });
 
 

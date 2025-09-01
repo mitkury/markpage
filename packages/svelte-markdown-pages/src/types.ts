@@ -24,10 +24,6 @@ export interface NavigationItem extends DocItem {
   parent?: NavigationItem | undefined;
 }
 
-export interface NavigationTree {
-  items: NavigationItem[];
-}
-
 // Build output types
 export interface BuildOptions {
   appOutput?: string;
@@ -38,7 +34,7 @@ export interface BuildOptions {
 }
 
 export interface BuildResult {
-  navigation: NavigationTree;
+  navigation: NavigationItem[];
   content?: Record<string, string> | undefined;
   pages?: Array<{
     path: string;

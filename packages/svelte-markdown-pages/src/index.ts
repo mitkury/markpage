@@ -14,7 +14,6 @@ export {
   IndexSchema,
   type DocItem,
   type IndexFile,
-  type NavigationTree,
   type NavigationItem,
   type BuildOptions,
   type BuildResult

@@ -2,7 +2,7 @@ import { writeFileSync, mkdirSync } from 'fs';
 import { join, dirname } from 'path';
 import { buildNavigationTree, validateContentStructure } from './parser.js';
 import { generateStaticPages, processMarkdown } from './builder.js';
-import { ContentProcessor, StaticPageOptions } from '../types.js';
+import { ContentProcessor, StaticPageOptions, NavigationItem } from '../types.js';
 
 export class StaticGeneratorError extends Error {
   constructor(message: string, public filePath?: string) {
@@ -93,7 +93,7 @@ export async function generateStaticSite(
 }
 
 function generateIndexPage(
-  navigation: { items: Array<{ label: string; type: string; path?: string; items?: any[] }> },
+  navigation: NavigationItem[],
   options: StaticSiteOptions
 ): { html: string } {
   const title = options.indexTitle || options.title || 'Documentation';
@@ -101,7 +101,7 @@ function generateIndexPage(
   const css = options.css || '';
   const js = options.js || '';
   
-  const navigationHtml = generateNavigationHtml(navigation.items);
+  const navigationHtml = generateNavigationHtml(navigation);
   
   const html = `<!DOCTYPE html>
 <html lang="en">
@@ -131,7 +131,7 @@ function generateIndexPage(
   return { html };
 }
 
-function generateNavigationHtml(items: Array<{ label: string; type: string; path?: string; items?: any[] }>): string {
+function generateNavigationHtml(items: NavigationItem[]): string {
   let html = '<ul class="nav-list">';
   
   for (const item of items) {
