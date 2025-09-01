@@ -1,6 +1,6 @@
 {
   "name": "markpage",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "Build and manage markdown-based content with distributed navigation - framework agnostic content management system",
   "main": "dist/index.cjs",
   "module": "dist/index.js",
