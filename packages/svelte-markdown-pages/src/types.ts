@@ -47,26 +47,3 @@ export interface BuildResult {
 export interface ContentProcessor {
   process(content: string): string;
 }
-
-export interface ContentProcessorOptional {
-  process(content: string): string;
-}
-
-export interface StaticPageOptions {
-  title?: string;
-  baseUrl?: string;
-  css?: string;
-  js?: string;
-}
-
-export interface StaticSiteResult {
-  pages: Array<{
-    path: string;
-    content: string;
-    html: string;
-  }>;
-  index?: {
-    path: string;
-    html: string;
-  } | undefined;
-}

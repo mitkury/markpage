@@ -1,11 +1,11 @@
 import { marked } from 'marked';
-import { ContentProcessor, ContentProcessorOptional } from '../types.js';
+import { ContentProcessor } from '../types.js';
 
 export class ContentLoader {
   private content: Record<string, string>;
-  private processor?: ContentProcessorOptional | undefined;
+  private processor?: ContentProcessor | undefined;
 
-  constructor(content: Record<string, string>, processor?: ContentProcessorOptional) {
+  constructor(content: Record<string, string>, processor?: ContentProcessor) {
     this.content = content;
     this.processor = processor;
   }
@@ -52,7 +52,7 @@ export class ContentLoader {
 export async function loadContent(
   path: string,
   contentBundle: Record<string, string>,
-  processor?: ContentProcessorOptional
+  processor?: ContentProcessor
 ): Promise<string | undefined> {
   const loader = new ContentLoader(contentBundle, processor);
   return loader.loadAndProcess(path);
@@ -60,7 +60,7 @@ export async function loadContent(
 
 export function createContentLoader(
   contentBundle: Record<string, string>,
-  processor?: ContentProcessorOptional
+  processor?: ContentProcessor
 ): ContentLoader {
   return new ContentLoader(contentBundle, processor);
 }

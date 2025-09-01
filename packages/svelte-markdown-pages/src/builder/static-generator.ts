@@ -2,7 +2,7 @@ import { writeFileSync, mkdirSync } from 'fs';
 import { join, dirname } from 'path';
 import { buildNavigationTree, validateContentStructure } from './parser.js';
 import { generateStaticPages, processMarkdown } from './builder.js';
-import { ContentProcessor, StaticPageOptions, NavigationItem } from '../types.js';
+import { ContentProcessor, NavigationItem } from '../types.js';
 
 export class StaticGeneratorError extends Error {
   constructor(message: string, public filePath?: string) {
