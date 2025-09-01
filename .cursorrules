@@ -2295,9 +2295,9 @@ const customProcessor = {
 	}
 };
 
-await buildDocs('./docs', {
-	appOutput: './src/lib/content',
-	processor: customProcessor
+await buildPages('./docs', {
+  appOutput: './src/lib/content',
+  processor: customProcessor
 });
 ```
 
@@ -2579,9 +2579,9 @@ const buildHooks = {
 	}
 };
 
-await buildDocs('./docs', {
-	appOutput: './src/lib/content',
-	hooks: buildHooks
+await buildPages('./docs', {
+  appOutput: './src/lib/content',
+  hooks: buildHooks
 });
 ```
 
@@ -2641,9 +2641,9 @@ Learn how to configure svelte-markdown-pages for your project with detailed opti
 The simplest way to build your documentation:
 
 ```typescript
-import { buildDocs } from 'svelte-markdown-pages/builder';
+import { buildPages } from 'svelte-markdown-pages/builder';
 
-await buildDocs('./docs', {
+await buildPages('./docs', {
   appOutput: './src/lib/content',
   includeContent: true
 });
@@ -2655,7 +2655,7 @@ await buildDocs('./docs', {
 Directory where app-specific files will be generated.
 
 ```typescript
-await buildDocs('./docs', {
+await buildPages('./docs', {
   appOutput: './src/lib/content'
 });
 ```
@@ -2668,7 +2668,7 @@ await buildDocs('./docs', {
 Directory where website-specific files will be generated.
 
 ```typescript
-await buildDocs('./docs', {
+await buildPages('./docs', {
   websiteOutput: './src/lib/content'
 });
 ```
@@ -2681,7 +2681,7 @@ await buildDocs('./docs', {
 Whether to include content in the output bundle.
 
 ```typescript
-await buildDocs('./docs', {
+await buildPages('./docs', {
   appOutput: './src/lib/content',
   includeContent: true  // Default: false
 });
@@ -2691,7 +2691,7 @@ await buildDocs('./docs', {
 Directory for static site generation.
 
 ```typescript
-await buildDocs('./docs', {
+await buildPages('./docs', {
   staticOutput: './dist'
 });
 ```
@@ -2710,7 +2710,7 @@ const processor = {
   }
 };
 
-const result = await buildDocs('./docs', {
+const result = await buildPages('./docs', {
   appOutput: './src/lib/content',
   processor
 });
@@ -2871,7 +2871,7 @@ Create dedicated build scripts for complex configurations:
 
 ```typescript
 // scripts/build-docs.js
-import { buildDocs } from 'svelte-markdown-pages/builder';
+import { buildPages } from 'svelte-markdown-pages/builder';
 import { syntaxHighlightingPlugin } from 'svelte-markdown-pages/plugins';
 
 const processor = {
@@ -2881,7 +2881,7 @@ const processor = {
   }
 };
 
-await buildDocs('./docs', {
+await buildPages('./docs', {
   appOutput: './src/lib/content',
   websiteOutput: './src/lib/content',
   includeContent: true,
@@ -2896,7 +2896,7 @@ The builder functions throw errors for common issues:
 
 ```typescript
 try {
-  const result = await buildDocs('./docs');
+  const result = await buildPages('./docs');
 } catch (error) {
   if (error.code === 'ENOENT') {
     console.error('Content directory not found');
@@ -2916,7 +2916,7 @@ For large documentation sites, consider:
 
 ```typescript
 // Build only what you need
-await buildDocs('./docs', {
+await buildPages('./docs', {
   appOutput: './src/lib/content',
   includeContent: false,  // Don't include content if not needed
   processor: {
@@ -2933,7 +2933,7 @@ await buildDocs('./docs', {
 Implement caching for faster rebuilds:
 
 ```typescript
-import { buildDocs } from 'svelte-markdown-pages/builder';
+import { buildPages } from 'svelte-markdown-pages/builder';
 import { existsSync, readFileSync } from 'fs';
 
 const cacheFile = './.docs-cache.json';
@@ -2944,7 +2944,7 @@ if (existsSync(cacheFile)) {
   // Use cache if valid
 }
 
-const result = await buildDocs('./docs', {
+const result = await buildPages('./docs', {
   appOutput: './src/lib/content',
   includeContent: true
 });
@@ -3043,7 +3043,7 @@ Create a build script in your `package.json`:
 ```json
 {
   "scripts": {
-    "build:docs": "node -e \"import('svelte-markdown-pages/builder').then(({buildDocs}) => buildDocs('./docs', {appOutput: './src/lib/content', includeContent: true}))\""
+    "build:docs": "node -e \"import('svelte-markdown-pages/builder').then(({buildPages}) => buildPages('./docs', {appOutput: './src/lib/content', includeContent: true}))\""
   }
 }
 ```
@@ -3052,9 +3052,9 @@ Or create a build script file:
 
 ```typescript
 // scripts/build-docs.js
-import { buildDocs } from 'svelte-markdown-pages/builder';
+import { buildPages } from 'svelte-markdown-pages/builder';
 
-await buildDocs('./docs', {
+await buildPages('./docs', {
   appOutput: './src/lib/content',
   websiteOutput: './src/lib/content',
   includeContent: true
@@ -3148,9 +3148,9 @@ Each `.index.json` file defines the navigation structure for that directory:
 ### Basic Build
 
 ```typescript
-import { buildDocs } from 'svelte-markdown-pages/builder';
+import { buildPages } from 'svelte-markdown-pages/builder';
 
-await buildDocs('./docs', {
+await buildPages('./docs', {
   appOutput: './src/lib/content',
   includeContent: true
 });
@@ -3159,7 +3159,7 @@ await buildDocs('./docs', {
 ### Advanced Build Options
 
 ```typescript
-await buildDocs('./docs', {
+await buildPages('./docs', {
   appOutput: './src/lib/content',
   websiteOutput: './src/lib/content',
   staticOutput: './dist',
@@ -3696,7 +3696,7 @@ export class FuseSearch {
 
 ```typescript
 // scripts/build-search-index.ts
-import { buildDocs } from 'svelte-markdown-pages/builder';
+import { buildPages } from 'svelte-markdown-pages/builder';
 import { writeFileSync } from 'fs';
 import { join } from 'path';
 
@@ -3737,7 +3737,7 @@ function cleanContent(content: string): string {
 }
 
 export async function buildSearchIndex(contentPath: string): Promise<SearchDocument[]> {
-  const result = await buildDocs(contentPath, {
+  const result = await buildPages(contentPath, {
     includeContent: true
   });
   
@@ -4193,7 +4193,7 @@ export async function embedTextFast(text: string): Promise<number[]> {
 
 ```typescript
 // scripts/build-hybrid-search.ts
-import { buildDocs } from 'svelte-markdown-pages/builder';
+import { buildPages } from 'svelte-markdown-pages/builder';
 import { writeFileSync } from 'fs';
 import { join } from 'path';
 import { embedText } from './embeddings';
@@ -4213,7 +4213,7 @@ export async function buildHybridSearchIndex(contentPath: string): Promise<{
   documents: HybridSearchDocument[];
   literalIndex: any;
 }> {
-  const result = await buildDocs(contentPath, {
+  const result = await buildPages(contentPath, {
     includeContent: true
   });
   
@@ -4822,7 +4822,7 @@ interface ContentProcessor {
 }
 ```
 
-This is used in the `buildDocs` and `generateStaticSite` functions to transform markdown content before it's converted to HTML.
+This is used in the `buildPages` and `generateStaticSite` functions to transform markdown content before it's converted to HTML.
 
 ## Proposed Plugin System
 
@@ -4980,7 +4980,7 @@ const linkValidatorPlugin: Plugin = {
 ### Phase 1: Basic Plugin Support
 
 1. **Extend BuildOptions interface** to include plugins array
-2. **Modify buildDocs function** to accept and process plugins
+2. **Modify buildPages function** to accept and process plugins
 3. **Add plugin context** to provide metadata during processing
 4. **Implement basic plugin lifecycle** (beforeBuild, process, afterBuild)
 
@@ -5052,7 +5052,7 @@ const tocPlugin: Plugin = {
 ### Global Configuration
 
 ```typescript
-await buildDocs('./docs', {
+await buildPages('./docs', {
   appOutput: './src/lib/content',
   plugins: [admonitionPlugin, tocPlugin],
   pluginOptions: {
@@ -5160,13 +5160,13 @@ The plugin system would be backward compatible:
 
 ```typescript
 // Current usage continues to work
-await buildDocs('./docs', {
+await buildPages('./docs', {
   appOutput: './src/lib/content',
   includeContent: true
 });
 
 // New plugin usage
-await buildDocs('./docs', {
+await buildPages('./docs', {
   appOutput: './src/lib/content',
   includeContent: true,
   plugins: [myPlugin]
@@ -5407,10 +5407,10 @@ npm install typesense-instantsearch-adapter
 
 ### Content Extraction
 ```typescript
-import { buildDocs } from 'svelte-markdown-pages/builder';
+import { buildPages } from 'svelte-markdown-pages/builder';
 
 async function extractSearchContent(contentPath: string) {
-  const result = await buildDocs(contentPath, { includeContent: true });
+  const result = await buildPages(contentPath, { includeContent: true });
   
   return Object.entries(result.content || {}).map(([path, content]) => ({
     id: path,
@@ -5876,11 +5876,11 @@ To make your content searchable, you'll need to extract and index your markdown 
 
 ```typescript
 // src/lib/search-index.ts
-import { buildDocs } from 'svelte-markdown-pages/builder';
+import { buildPages } from 'svelte-markdown-pages/builder';
 import type { SearchDocument } from './search';
 
 export async function buildSearchIndex(contentPath: string): Promise<SearchDocument[]> {
-  const result = await buildDocs(contentPath, {
+  const result = await buildPages(contentPath, {
     includeContent: true
   });
   
@@ -5934,7 +5934,7 @@ import { writeFileSync } from 'fs';
 
 async function buildWithSearch() {
   // Build documentation
-  await buildDocs('./docs', {
+  await buildPages('./docs', {
     appOutput: './src/lib/content',
     includeContent: true
   });
