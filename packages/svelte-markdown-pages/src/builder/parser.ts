@@ -250,7 +250,7 @@ function processNavigationItem(
       );
     }
     
-    // Check for index.md or README.md as section root (for all sections)
+    // Check for index.md or README.md as section root (for all sections, regardless of .index.json)
     const indexPath = join(sectionPath, 'index.md');
     const readmePath = join(sectionPath, 'README.md');
     const readmeLowerPath = join(sectionPath, 'readme.md');
@@ -291,8 +291,6 @@ function processNavigationItem(
         sectionRootPath = readmeLowerPath;
       }
     }
-    
-
     
     if (sectionRootPath) {
       navigationItem.path = relative(basePath, sectionRootPath);

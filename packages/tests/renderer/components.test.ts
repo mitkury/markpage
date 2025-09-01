@@ -110,6 +110,37 @@ describe('Components', () => {
       expect(html).toContain('Configuration');
       expect(html).toContain('data-path="guides/installation.md"');
     });
+
+    it('should render clickable sections when they have content', () => {
+      const navigationData = [
+        {
+          name: 'guides',
+          type: 'section',
+          label: 'Guides',
+          path: 'guides/README.md', // Section has README content
+          items: [
+            {
+              name: 'installation',
+              type: 'page',
+              label: 'Installation',
+              path: 'guides/installation.md'
+            }
+          ]
+        }
+      ];
+      
+      const sidebar = new DocsSidebar({
+        navigation: navigationData,
+        currentPage: 'guides/README.md',
+        collapsed: false
+      });
+
+      const html = sidebar.render();
+      expect(html).toContain('nav-section clickable');
+      expect(html).toContain('nav-section-header clickable');
+      expect(html).toContain('data-path="guides/README.md"');
+      expect(html).toContain('📖'); // Visual indicator for sections with content
+    });
   });
 
   describe('DocsContent', () => {

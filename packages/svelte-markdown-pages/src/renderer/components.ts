@@ -43,9 +43,15 @@ export class DocsSidebarClass {
   private renderNavigationItems(items: NavigationItem[]): string {
     return items.map(item => {
       if (item.type === 'section') {
+        const hasContent = item.path; // Section has content if it has a path (README/index)
+        const sectionClass = hasContent ? 'nav-section clickable' : 'nav-section';
+        const sectionContent = hasContent 
+          ? `<div class="nav-section-header clickable" data-path="${item.path}" onclick="this.dispatchEvent(new CustomEvent('pageSelect', {detail: '${item.path}'}))">${item.label} 📖</div>`
+          : `<div class="nav-section-header">${item.label}</div>`;
+        
         return `
-          <div class="nav-section">
-            <div class="nav-section-header">${item.label}</div>
+          <div class="${sectionClass}">
+            ${sectionContent}
             ${item.items ? this.renderNavigationItems(item.items) : ''}
           </div>
         `;

@@ -344,7 +344,7 @@ npx svelte-markdown-pages static ./content --output ./dist
   let pageContent = $state<string | null>(null);
   
   $effect(() => {
-    if (currentPage) {
+    if (currentPage && contentBundle) {
       loadContent(currentPage, contentBundle).then(content => {
         pageContent = content;
       });
@@ -357,6 +357,28 @@ npx svelte-markdown-pages static ./content --output ./dist
   <DocsContent {pageContent} />
 </div>
 ```
+
+### Clickable Sections in Action
+
+When you have sections with README/index files, the UI automatically renders them as clickable:
+
+```html
+<!-- Section WITHOUT content (non-clickable) -->
+<div class="nav-section">
+  <div class="nav-section-header">Configuration</div>
+  <!-- child items -->
+</div>
+
+<!-- Section WITH content (clickable) -->
+<div class="nav-section clickable">
+  <div class="nav-section-header clickable" data-path="guides/README.md" onclick="...">
+    Guides 📖
+  </div>
+  <!-- child items -->
+</div>
+```
+
+The `📖` icon indicates that the section has clickable content, and users can click on the section header to view the README/index content.
 
 ## Contributing
 

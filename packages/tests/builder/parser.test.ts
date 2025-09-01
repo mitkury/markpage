@@ -284,6 +284,111 @@ describe('Parser', () => {
       expect(result[0].items![0].name).toBe('installation');
     });
 
+    it('should discover README/index content for sections even when .index.json exists', () => {
+      // Create .index.json with section definition
+      const indexPath = join(tempDir, '.index.json');
+      const indexContent = {
+        items: [
+          { name: 'guides', type: 'section', label: 'Guides' }
+        ]
+      };
+      writeFileSync(indexPath, JSON.stringify(indexContent));
+      
+      // Create guides directory with README.md
+      const guidesDir = join(tempDir, 'guides');
+      mkdirSync(guidesDir);
+      writeFileSync(join(guidesDir, 'README.md'), '# Guides Overview');
+      writeFileSync(join(guidesDir, 'installation.md'), '# Installation Guide');
+      
+      // Create .index.json in guides directory
+      const guidesIndexPath = join(guidesDir, '.index.json');
+      const guidesIndexContent = {
+        items: [
+          { name: 'installation', type: 'page', label: 'Installation' }
+        ]
+      };
+      writeFileSync(guidesIndexPath, JSON.stringify(guidesIndexContent));
+
+      const result = buildNavigationTree(tempDir, { autoDiscover: true });
+      
+      expect(result).toHaveLength(1);
+      expect(result[0].name).toBe('guides');
+      expect(result[0].type).toBe('section');
+      expect(result[0].path).toBe('guides/README.md'); // Should discover README content
+      expect(result[0].items).toHaveLength(1);
+      expect(result[0].items![0].name).toBe('installation');
+      expect(result[0].items![0].type).toBe('page');
+    });
+
+    it('should demonstrate complete workflow: .index.json navigation + README content for clickable sections', () => {
+      // Create root .index.json with mixed structure
+      const indexPath = join(tempDir, '.index.json');
+      const indexContent = {
+        items: [
+          { name: 'getting-started', type: 'page', label: 'Getting Started' },
+          { name: 'guides', type: 'section', label: 'Guides' },
+          { name: 'api', type: 'section', label: 'API Reference' }
+        ]
+      };
+      writeFileSync(indexPath, JSON.stringify(indexContent));
+      
+      // Create getting-started.md
+      writeFileSync(join(tempDir, 'getting-started.md'), '# Getting Started\n\nWelcome to the documentation!');
+      
+      // Create guides section with README.md and .index.json
+      const guidesDir = join(tempDir, 'guides');
+      mkdirSync(guidesDir);
+      writeFileSync(join(guidesDir, 'README.md'), '# Guides Overview\n\nThis section contains various guides.');
+      writeFileSync(join(guidesDir, 'installation.md'), '# Installation Guide\n\nHow to install the software.');
+      writeFileSync(join(guidesDir, 'configuration.md'), '# Configuration Guide\n\nHow to configure the software.');
+      
+      const guidesIndexPath = join(guidesDir, '.index.json');
+      const guidesIndexContent = {
+        items: [
+          { name: 'installation', type: 'page', label: 'Installation' },
+          { name: 'configuration', type: 'page', label: 'Configuration' }
+        ]
+      };
+      writeFileSync(guidesIndexPath, JSON.stringify(guidesIndexContent));
+      
+      // Create API section with index.md (no .index.json, so auto-discovery)
+      const apiDir = join(tempDir, 'api');
+      mkdirSync(apiDir);
+      writeFileSync(join(apiDir, 'index.md'), '# API Reference\n\nComplete API documentation.');
+      writeFileSync(join(apiDir, 'endpoints.md'), '# API Endpoints\n\nAvailable API endpoints.');
+
+      const result = buildNavigationTree(tempDir, { autoDiscover: true });
+      
+      // Verify root structure
+      expect(result).toHaveLength(3);
+      
+      // Verify getting-started page
+      expect(result[0].name).toBe('getting-started');
+      expect(result[0].type).toBe('page');
+      expect(result[0].path).toBe('getting-started.md');
+      
+      // Verify guides section with README content
+      expect(result[1].name).toBe('guides');
+      expect(result[1].type).toBe('section');
+      expect(result[1].path).toBe('guides/README.md'); // Should have README content for clicking
+      expect(result[1].items).toHaveLength(2);
+      expect(result[1].items![0].name).toBe('installation');
+      expect(result[1].items![1].name).toBe('configuration');
+      
+      // Verify API section with index.md content
+      expect(result[2].name).toBe('api');
+      expect(result[2].type).toBe('section');
+      expect(result[2].path).toBe('api/index.md'); // Should have index.md content for clicking
+      expect(result[2].items).toHaveLength(1);
+      expect(result[2].items![0].name).toBe('endpoints');
+      
+      // This demonstrates the complete workflow:
+      // 1. .index.json files define the navigation structure
+      // 2. README/index.md files provide clickable content for sections
+      // 3. Users can click on section headers to see the section's overview content
+      // 4. The navigation maintains the exact structure defined in .index.json
+    });
+
 
   });
 
