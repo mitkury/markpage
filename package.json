@@ -1,27 +1,27 @@
 {
-  "name": "svelte-markdown-pages-monorepo",
+  "name": "markpage-monorepo",
   "version": "0.0.2",
-  "description": "Monorepo for svelte-markdown-pages",
+  "description": "Monorepo for markpage - markdown content management system",
   "private": true,
   "workspaces": [
     "packages/*"
   ],
   "scripts": {
-    "build": "npm run build --workspace=svelte-markdown-pages",
-    "dev": "npm run dev --workspace=svelte-markdown-pages",
-    "test": "npm run test --workspace=@svelte-markdown-pages/tests",
-    "test:watch": "npm run test:watch --workspace=@svelte-markdown-pages/tests",
-    "test:coverage": "npm run test:coverage --workspace=@svelte-markdown-pages/tests",
-    "build:examples": "npm run build --workspace=@svelte-markdown-pages/examples",
-    "dev:examples": "npm run dev --workspace=@svelte-markdown-pages/examples",
-    "build:website": "npm run build --workspace=@svelte-markdown-pages/website",
-    "dev:website": "npm run dev --workspace=@svelte-markdown-pages/website",
+    "build": "npm run build --workspace=markpage",
+    "dev": "npm run dev --workspace=markpage",
+    "test": "npm run test --workspace=@markpage/tests",
+    "test:watch": "npm run test:watch --workspace=@markpage/tests",
+    "test:coverage": "npm run test:coverage --workspace=@markpage/tests",
+    "build:examples": "npm run build --workspace=@markpage/examples",
+    "dev:examples": "npm run dev --workspace=@markpage/examples",
+    "build:website": "npm run build --workspace=@markpage/website",
+    "dev:website": "npm run dev --workspace=@markpage/website",
     "prepublishOnly": "npm run build && npm run test"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
     "typescript": "^5.0.0"
   },
-  "repository": "https://github.com/mitkury/svelte-markdown-pages",
+  "repository": "https://github.com/mitkury/markpage",
   "license": "MIT"
 }

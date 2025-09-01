@@ -1,24 +1,20 @@
 {
-  "name": "@svelte-markdown-pages/tests",
+  "name": "@markpage/tests",
   "version": "0.0.1",
-  "description": "Test suite for svelte-markdown-pages",
+  "description": "Test suite for markpage",
   "private": true,
+  "type": "module",
   "scripts": {
-    "test": "vitest run",
+    "test": "vitest",
     "test:watch": "vitest --watch",
-    "test:coverage": "vitest run --coverage"
-  },
-  "dependencies": {
-    "svelte-markdown-pages": "file:../svelte-markdown-pages"
+    "test:coverage": "vitest --coverage"
   },
   "devDependencies": {
-    "@sveltejs/vite-plugin-svelte": "^3.0.0",
     "@types/node": "^20.0.0",
-    "@vitest/coverage-v8": "^1.0.0",
-    "jsdom": "^26.1.0",
-    "svelte": "^5.0.0",
     "typescript": "^5.0.0",
-    "vite": "^5.0.0",
     "vitest": "^1.0.0"
+  },
+  "dependencies": {
+    "markpage": "file:../markpage"
   }
 }

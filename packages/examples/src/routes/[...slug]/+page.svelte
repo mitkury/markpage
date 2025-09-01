@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { loadContent } from 'svelte-markdown-pages/renderer';
+	import { loadContent } from 'markpage/renderer';
 	import { page } from '$app/state';
 	import navigationData from '$lib/content/navigation.json';
 	import contentData from '$lib/content/content.json';
@@ -97,7 +97,7 @@
 	{#if navigation}
 		<nav class="docs-sidebar">
 			<header class="docs-header">
-				<h1>svelte-markdown-pages</h1>
+				<h1>Markpage</h1>
 				<p>Example Documentation</p>
 			</header>
 			{@html renderNavigationItems(navigation.items)}

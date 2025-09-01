@@ -1,151 +1,122 @@
-# svelte-markdown-pages Examples
+# Markpage Examples
 
-This is an example SvelteKit project demonstrating how to use the `svelte-markdown-pages` package to build documentation sites with distributed navigation structure.
+This is an example SvelteKit project demonstrating how to use the `markpage` package to build documentation sites with distributed navigation structure.
 
 ## Features Demonstrated
 
-- **Content-driven approach**: Uses markdown files and `.index.json` files for navigation
-- **Proper SvelteKit routing**: Uses `[...slug]` dynamic routes for clean URLs
-- **Built content files**: Generates `navigation.json` and `content.json` from markdown content
-- **Modern Svelte 5**: Uses the latest Svelte 5 runes and patterns
-- **Type-safe**: Full TypeScript support
-- **Automatic content building**: Content is built automatically when the dev server starts
+- **Content Building**: Building documentation from markdown files
+- **Navigation**: Distributed navigation structure with `.index.json` files
+- **Content Loading**: Dynamic content loading and rendering
+- **Routing**: SvelteKit dynamic routes for documentation pages
+- **Styling**: Basic documentation site styling
 
 ## Project Structure
 
 ```
-packages/examples/
-├── content/                    # Markdown content directory
-│   ├── .index.json            # Root navigation
-│   ├── getting-started.md     # Getting started page
-│   ├── guides/                # Guides section
-│   │   ├── .index.json        # Guides navigation
-│   │   ├── installation.md    # Installation guide
-│   │   └── configuration.md   # Configuration guide
-│   └── api/                   # API section
-│       ├── .index.json        # API navigation
-│       ├── builder.md         # Builder API docs
-│       └── renderer.md        # Renderer API docs
+examples/
+├── content/                    # Source markdown content
+│   ├── .index.json           # Root navigation
+│   ├── getting-started.md    # Getting started page
+│   ├── guides/               # Guides section
+│   │   ├── .index.json      # Guides navigation
+│   │   ├── installation.md  # Installation guide
+│   │   └── configuration.md # Configuration guide
+│   └── api/                 # API section
+│       ├── .index.json      # API navigation
+│       ├── builder.md       # Builder API docs
+│       ├── renderer.md      # Renderer API docs
+│       └── types.md         # Types documentation
 ├── src/
 │   ├── lib/
-│   │   └── content/           # Generated content files
-│   │       ├── navigation.json
-│   │       └── content.json
+│   │   └── content/         # Built content (generated)
 │   └── routes/
-│       ├── +page.svelte       # Root page (redirects to first page)
-│       └── [...slug]/
-│           └── +page.svelte   # Dynamic route for all pages
-├── vite.config.ts             # Vite config with content building plugin
+│       └── [...slug]/       # Dynamic route for all pages
 └── package.json
 ```
 
-## Getting Started
+## Content Structure
 
-### 1. Install Dependencies
+The example uses a distributed navigation structure where each folder can define its own navigation:
 
-```bash
-npm install
-```
-
-### 2. Start Development Server
-
-```bash
-npm run dev
-```
-
-That's it! The development server will automatically:
-1. Build the content from markdown files (via Vite plugin)
-2. Generate `navigation.json` and `content.json`
-3. Start the Vite dev server
-
-## How It Works
-
-### Automatic Content Building
-
-The project uses a custom Vite plugin (`vite.config.ts`) that automatically builds content when the dev server starts:
-
-```typescript
-const buildContentPlugin = () => {
-  return {
-    name: 'build-content',
-    buildStart: async () => {
-      const { buildPages } = await import('svelte-markdown-pages/builder');
-      await buildPages('./content', {
-        appOutput: './src/lib/content',
-        includeContent: true
-      });
-    }
-  };
-};
-```
-
-### Content Structure
-
-Each directory can contain a `.index.json` file that defines the navigation structure:
-
+### Root Level (content/.index.json)
 ```json
 {
   "items": [
     { "name": "getting-started", "type": "page", "label": "Getting Started" },
-    { "name": "guides", "type": "section", "label": "Guides" }
+    { "name": "guides", "type": "section", "label": "Guides" },
+    { "name": "api", "type": "section", "label": "API Reference" }
   ]
 }
 ```
 
-### URL Routing
+### Section Level (content/guides/.index.json)
+```json
+{
+  "items": [
+    { "name": "installation", "type": "page", "label": "Installation" },
+    { "name": "configuration", "type": "page", "label": "Configuration" }
+  ]
+}
+```
 
-The example uses SvelteKit's `[...slug]` dynamic routing:
+## Building Content
 
-- `/` → Redirects to first page
-- `/getting-started` → Getting started page
-- `/guides/installation` → Installation guide
-- `/api/builder` → Builder API docs
+The example includes a build script that processes the markdown content:
 
-### Content Loading
+```typescript
+const { buildPages } = await import('markpage/builder');
 
-The main page component (`src/routes/[...slug]/+page.svelte`) uses the `loadContent` function from `svelte-markdown-pages/renderer` to load and render markdown content.
+await buildPages('./content', {
+  appOutput: './src/lib/content',
+  includeContent: true
+});
+```
 
-## Key Differences from Old Approach
+This generates:
+- `navigation.json` - Navigation structure
+- `content.json` - Content bundle
 
-### ✅ New Approach (Current)
-- **Content-driven**: Uses actual markdown files and `.index.json` files
-- **Proper routing**: Uses SvelteKit's `[...slug]` dynamic routes
-- **Built files**: Generates `navigation.json` and `content.json` from content
-- **Clean URLs**: URLs match the content structure
-- **Type-safe**: Full TypeScript support
-- **Seamless integration**: Content builds automatically during server startup
+## Usage in SvelteKit
 
-### ❌ Old Approach (Deprecated)
-- **Hardcoded data**: Navigation and content were hardcoded in the component
-- **Client-side routing**: Used custom event handling and `window.history.pushState`
-- **Manual mapping**: Required manual URL-to-content path mapping
-- **Limited scalability**: Hard to maintain for large documentation sites
+The main page component (`src/routes/[...slug]/+page.svelte`) uses the `loadContent` function from `markpage/renderer` to load and render markdown content.
+
+## Running the Example
+
+1. **Install dependencies**:
+   ```bash
+   npm install
+   ```
+
+2. **Build content**:
+   ```bash
+   npm run build:content
+   ```
+
+3. **Start development server**:
+   ```bash
+   npm run dev
+   ```
+
+4. **Open browser**:
+   Navigate to `http://localhost:5173`
 
 ## Customization
 
-### Adding New Pages
+You can customize this example by:
 
-1. Create a new markdown file in the appropriate directory
-2. Update the corresponding `.index.json` file to include the new page
-3. Restart the dev server (`npm run dev`) to rebuild content
+- **Adding new content**: Create new markdown files and update `.index.json` files
+- **Modifying styling**: Update the CSS in the Svelte components
+- **Adding features**: Implement search, table of contents, etc.
+- **Changing layout**: Modify the component structure
 
-### Styling
+## Integration with Your Project
 
-The example includes a clean, modern design that you can customize by modifying the CSS in `src/routes/[...slug]/+page.svelte`.
+To use this pattern in your own project:
 
-### Content Processing
+1. Copy the content structure
+2. Install the `markpage` package
+3. Set up the build process
+4. Create your own styling and components
+5. Add your content
 
-You can add custom content processors by modifying the `loadContent` call in the main component.
-
-## Scripts
-
-- `npm run dev` - Start development server (content builds automatically)
-- `npm run build` - Build for production
-- `npm run build:content` - Generate navigation and content files (manual)
-- `npm run preview` - Preview production build
-
-## Learn More
-
-- [Main Package Documentation](../../README.md)
-- [API Reference](../../docs/api/)
-- [Website Example](../website/) - Another example implementation
+This example demonstrates the core concepts of markpage and can serve as a starting point for your own documentation sites.

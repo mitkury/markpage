@@ -2,17 +2,17 @@ import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { writeFileSync, mkdirSync, readFileSync, existsSync, rmSync } from 'fs';
 import { join } from 'path';
 import { tmpdir } from 'os';
-import { buildPages, generateStaticSite } from 'svelte-markdown-pages/builder';
-import { NavigationTree, ContentLoader } from 'svelte-markdown-pages/renderer';
+import { buildPages, generateStaticSite } from 'markpage/builder';
+import { NavigationTree, ContentLoader } from 'markpage/renderer';
 
-describe('Integration', () => {
+describe('Integration Tests', () => {
   let tempDir: string;
   let contentDir: string;
   let outputDir: string;
 
   beforeEach(() => {
     // Use system temp directory instead of project root
-    tempDir = join(tmpdir(), `svelte-markdown-pages-test-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`);
+    tempDir = join(tmpdir(), `markpage-test-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`);
     contentDir = join(tempDir, 'content');
     outputDir = join(tempDir, 'output');
     

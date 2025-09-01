@@ -36,7 +36,7 @@ async function handleBuild() {
   
   if (!contentPath) {
     console.error('Error: Content path is required');
-    console.error('Usage: svelte-markdown-pages build <content-path> --output <output-path>');
+    console.error('Usage: markpage build <content-path> --output <output-path>');
     process.exit(1);
   }
   
@@ -58,7 +58,7 @@ async function handleStatic() {
   
   if (!contentPath) {
     console.error('Error: Content path is required');
-    console.error('Usage: svelte-markdown-pages static <content-path> --output <output-path>');
+    console.error('Usage: markpage static <content-path> --output <output-path>');
     process.exit(1);
   }
   
@@ -75,10 +75,10 @@ async function handleStatic() {
 
 function showHelp() {
   console.log(`
-Svelte Markdown Pages CLI
+Markpage CLI
 
 Usage:
-  svelte-markdown-pages <command> [options]
+  markpage <command> [options]
 
 Commands:
   build <content-path> --output <output-path>  Build documentation for app/website
@@ -86,9 +86,9 @@ Commands:
   --help, -h                                   Show this help message
 
 Examples:
-  svelte-markdown-pages build ./docs --output ./src/lib/content
-  svelte-markdown-pages static ./docs --output ./dist
-  svelte-markdown-pages build ./blog --output ./src/blog
+  markpage build ./docs --output ./src/lib/content
+  markpage static ./docs --output ./dist
+  markpage build ./blog --output ./src/blog
 `);
 }
 

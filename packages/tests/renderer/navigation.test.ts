@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { NavigationTree, createNavigationTree } from 'svelte-markdown-pages/renderer';
-import { NavigationItem } from 'svelte-markdown-pages';
+import { NavigationTree } from 'markpage/renderer';
+import type { NavigationItem } from 'markpage';
 
 describe('Navigation', () => {
   const sampleNavigationData: NavigationItem[] = [
@@ -241,7 +241,7 @@ describe('Navigation', () => {
 
   describe('createNavigationTree', () => {
     it('should create NavigationTree instance', () => {
-      const navigation = createNavigationTree(sampleNavigationData);
+      const navigation = new NavigationTree(sampleNavigationData);
       expect(navigation).toBeInstanceOf(NavigationTree);
       expect(navigation.items).toHaveLength(3);
     });

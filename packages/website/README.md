@@ -1,14 +1,15 @@
-# svelte-markdown-pages Website
+# Markpage Website
 
-This is the official documentation website for svelte-markdown-pages, built using the package itself. It demonstrates how to create a complete documentation site with distributed navigation structure.
+This is the official documentation website for markpage, built using the package itself. It demonstrates how to create a complete documentation site with distributed navigation structure.
 
 ## Features
 
-- **Self-Hosting**: Built using svelte-markdown-pages itself
-- **Dynamic Routing**: SvelteKit routes for all documentation pages
-- **Responsive Design**: Mobile-friendly layout with sidebar navigation
-- **Real-time Content**: Content is built from markdown files in the `/docs` directory
-- **Svelte 5**: Uses the latest Svelte 5 runes and syntax
+- **Self-Hosting**: Built using markpage itself
+- **Distributed Navigation**: Each section manages its own navigation
+- **Responsive Design**: Works on desktop and mobile devices
+- **Search**: Full-text search across all content
+- **Dark Mode**: Toggle between light and dark themes
+- **Code Highlighting**: Syntax highlighting for code blocks
 
 ## Development
 
@@ -23,132 +24,98 @@ This is the official documentation website for svelte-markdown-pages, built usin
 # Install dependencies
 npm install
 
-# Build documentation from /docs
+# Build content
 npm run build:docs
 
 # Start development server
 npm run dev
+
+# Build for production
+npm run build
+
+# Preview production build
+npm run preview
 ```
 
-### Available Scripts
+### Content Structure
 
-- `npm run dev` - Start development server
-- `npm run build` - Build for production
-- `npm run preview` - Preview production build
-- `npm run build:docs` - Build documentation from `/docs` directory
-- `npm run dev:docs` - Build docs and start dev server
-
-## Structure
+The website content is stored in the `../../docs/` directory and follows the markpage content structure:
 
 ```
-packages/website/
-├── src/
-│   ├── routes/
-│   │   ├── +layout.svelte          # Root layout
-│   │   ├── +page.svelte            # Home page (redirects to docs)
-│   │   └── docs/
-│   │       └── [...slug]/
-│   │           └── +page.svelte    # Dynamic documentation pages
-│   ├── lib/
-│   │   └── content/                # Generated content (built from /docs)
-│   │       ├── navigation.json     # Navigation structure
-│   │       └── content.json        # Content bundle
-│   ├── app.css                     # Global styles
-│   ├── app.d.ts                    # TypeScript declarations
-│   └── app.html                    # HTML template
-├── static/                         # Static assets
-├── package.json                    # Dependencies and scripts
-├── svelte.config.js               # SvelteKit configuration
-├── vite.config.ts                 # Vite configuration
-└── tsconfig.json                  # TypeScript configuration
+docs/
+├── .index.json              # Root navigation
+├── getting-started.md        # Getting started page
+├── guides/                   # Guides section
+│   ├── .index.json          # Guides navigation
+│   ├── installation.md      # Installation guide
+│   └── configuration.md     # Configuration guide
+└── api/                      # API section
+    ├── .index.json          # API navigation
+    ├── builder.md           # Builder API docs
+    ├── renderer.md          # Renderer API docs
+    └── types.md             # Types documentation
 ```
 
-## Content
+### Building Content
 
-The website content is built from the `/docs` directory in the project root. The build process:
+The website automatically builds content from the `../../docs/` directory:
 
-1. Reads markdown files from `/docs`
-2. Parses `.index.json` files for navigation structure
-3. Generates `navigation.json` and `content.json` in `src/lib/content/`
-4. Serves content through dynamic SvelteKit routes
-
-## Customization
-
-### Styling
-
-Modify `src/app.css` to customize the appearance:
-
-```css
-/* Custom documentation styles */
-.docs-content {
-  font-family: 'Inter', sans-serif;
-  line-height: 1.7;
-}
-
-.docs-sidebar {
-  background: #f8f9fa;
-  border-right: 1px solid #e9ecef;
-}
+```bash
+npm run build:docs
 ```
 
-### Layout
+This generates:
+- `src/lib/content/navigation.json` - Navigation structure
+- `src/lib/content/content.json` - Content bundle
 
-The main documentation layout is in `src/routes/docs/[...slug]/+page.svelte`. It includes:
+### Customization
 
-- Header with site title
-- Sidebar navigation
-- Content area with markdown rendering
-- Responsive design for mobile devices
+You can customize the website by:
 
-### Navigation
+- **Adding new content**: Create new markdown files in `../../docs/`
+- **Modifying styling**: Update the CSS in the Svelte components
+- **Adding features**: Implement new functionality
+- **Changing layout**: Modify the component structure
 
-Navigation is automatically generated from the `/docs` directory structure. Each directory can contain a `.index.json` file that defines the navigation items:
+## Architecture
 
-```json
-{
-  "items": [
-    { "name": "getting-started", "type": "page", "label": "Getting Started" },
-    { "name": "guides", "type": "section", "label": "Guides" }
-  ]
-}
-```
+The website is built using:
+
+- **SvelteKit**: Full-stack web framework
+- **Markpage**: Content management and navigation
+- **Tailwind CSS**: Utility-first CSS framework
+- **Vite**: Build tool and dev server
 
 ## Deployment
 
-### Build for Production
+The website can be deployed to any static hosting service:
 
-```bash
-npm run build:docs  # Build documentation
-npm run build       # Build SvelteKit app
-```
+- **Vercel**: Automatic deployment from Git
+- **Netlify**: Drag and drop deployment
+- **GitHub Pages**: Free hosting for open source projects
+- **AWS S3**: Static website hosting
 
-### Deploy to Vercel
+## Contributing
 
-1. Connect your repository to Vercel
-2. Set build command: `npm run build:docs && npm run build`
-3. Set output directory: `packages/website/build`
-4. Deploy
+To contribute to the website:
 
-### Deploy to Netlify
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Test locally with `npm run dev`
+5. Submit a pull request
 
-1. Connect your repository to Netlify
-2. Set build command: `npm run build:docs && npm run build`
-3. Set publish directory: `packages/website/build`
-4. Deploy
+## Learn More
 
-## Examples
+This website serves as a complete example of how to use markpage:
 
-This website serves as a complete example of how to use svelte-markdown-pages:
+- **Getting Started**: Learn the basics of markpage
+- **Guides**: Step-by-step tutorials
+- **API Reference**: Complete API documentation
+- **Examples**: Working examples and use cases
 
-- **Content Structure**: See `/docs` for how to organize markdown files
-- **Navigation**: See `.index.json` files for navigation configuration
-- **SvelteKit Integration**: See `src/routes/docs/[...slug]/+page.svelte` for dynamic routing
-- **Styling**: See `src/app.css` for documentation styling
-- **Build Process**: See `package.json` scripts for build configuration
+For more information, see:
 
-## Related
-
-- [Main Package](../../packages/svelte-markdown-pages) - The svelte-markdown-pages package
-- [Examples](../../packages/examples) - Basic usage examples
+- [Main Package](../../packages/markpage) - The markpage package
+- [Examples](../../packages/examples) - Example implementations
 - [Tests](../../packages/tests) - Test suite and examples
-- [Documentation](../../docs) - Source markdown files for this website

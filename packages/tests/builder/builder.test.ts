@@ -2,13 +2,8 @@ import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { writeFileSync, mkdirSync, readFileSync, existsSync, rmSync } from 'fs';
 import { join } from 'path';
 import { tmpdir } from 'os';
-import { 
-  buildPages, 
-  processMarkdown, 
-  generateStaticPages,
-  BuilderError
-} from 'svelte-markdown-pages/builder';
-import { ContentProcessor } from 'svelte-markdown-pages';
+import { buildPages, generateStaticSite, generateStaticPages, BuilderError, processMarkdown } from 'markpage/builder';
+import { ContentProcessor } from 'markpage';
 
 describe('Builder', () => {
   let tempDir: string;
@@ -16,7 +11,7 @@ describe('Builder', () => {
   let outputDir: string;
 
   beforeEach(() => {
-    tempDir = join(tmpdir(), `svelte-markdown-pages-test-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`);
+    tempDir = join(tmpdir(), `markpage-test-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`);
     contentDir = join(tempDir, 'content');
     outputDir = join(tempDir, 'output');
     

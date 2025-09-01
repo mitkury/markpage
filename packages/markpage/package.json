@@ -1,7 +1,7 @@
 {
-  "name": "svelte-markdown-pages",
+  "name": "markpage",
   "version": "0.3.1",
-  "description": "Build and render markdown-based content with distributed navigation for Svelte projects",
+  "description": "Build and render markdown-based content with distributed navigation for any framework",
   "main": "dist/index.cjs",
   "module": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -57,7 +57,7 @@
     "svelte": "^5.0.0"
   },
   "bin": {
-    "svelte-markdown-pages": "bin/svelte-markdown-pages.js"
+    "markpage": "bin/markpage.js"
   },
   "keywords": [
     "markdown",
@@ -65,19 +65,20 @@
     "static-site",
     "navigation",
     "content-management",
-    "svelte",
-    "sveltekit",
+    "framework-agnostic",
     "docs",
-    "documentation-generator"
+    "documentation-generator",
+    "markdown-builder",
+    "content-bundler"
   ],
   "author": "Dmitry Kury (d@dkury.com)",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/mitkury/svelte-markdown-pages.git"
+    "url": "git+https://github.com/mitkury/markpage.git"
   },
-  "homepage": "https://github.com/mitkury/svelte-markdown-pages#readme",
+  "homepage": "https://github.com/mitkury/markpage#readme",
   "bugs": {
-    "url": "https://github.com/mitkury/svelte-markdown-pages/issues"
+    "url": "https://github.com/mitkury/markpage/issues"
   }
 }

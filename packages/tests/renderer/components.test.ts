@@ -2,11 +2,11 @@ import { describe, it, expect } from 'vitest';
 import { 
   DocsSidebar, 
   DocsContent, 
-  createDocsSidebar,
-  createDocsContent,
-  createDocsLayout
-} from 'svelte-markdown-pages/renderer';
-import { NavigationItem } from 'svelte-markdown-pages';
+  createDocsSidebar, 
+  createDocsContent, 
+  createDocsLayout 
+} from 'markpage/renderer';
+import type { NavigationItem } from 'markpage';
 
 describe('Components', () => {
   const sampleNavigationData: NavigationItem[] = [
@@ -45,7 +45,7 @@ describe('Components', () => {
         collapsed: false
       });
 
-      expect(sidebar).toBeDefined();
+      expect(sidebar).toBeInstanceOf(DocsSidebar);
     });
 
     it('should render sidebar HTML', () => {
@@ -150,7 +150,7 @@ describe('Components', () => {
         title: 'Page Title'
       });
 
-      expect(content).toBeDefined();
+      expect(content).toBeInstanceOf(DocsContent);
     });
 
     it('should render content HTML', () => {

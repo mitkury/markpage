@@ -2,13 +2,8 @@ import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { writeFileSync, mkdirSync, readFileSync, existsSync, rmSync } from 'fs';
 import { join } from 'path';
 import { tmpdir } from 'os';
-import { 
-  generateStaticSite,
-  generateSitemap,
-  generateRobotsTxt,
-  StaticGeneratorError 
-} from 'svelte-markdown-pages/builder';
-import { ContentProcessor } from 'svelte-markdown-pages';
+import { generateStaticSite, StaticGeneratorError, generateSitemap, generateRobotsTxt } from 'markpage/builder';
+import { ContentProcessor } from 'markpage';
 
 describe('Static Generator', () => {
   let tempDir: string;
@@ -16,7 +11,7 @@ describe('Static Generator', () => {
   let outputDir: string;
 
   beforeEach(() => {
-    tempDir = join(tmpdir(), `svelte-markdown-pages-test-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`);
+    tempDir = join(tmpdir(), `markpage-test-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`);
     contentDir = join(tempDir, 'content');
     outputDir = join(tempDir, 'output');
     

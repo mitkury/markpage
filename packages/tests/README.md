@@ -1,6 +1,6 @@
-# Tests
+# Markpage Tests
 
-Comprehensive test suite for the svelte-markdown-pages package.
+Comprehensive test suite for the markpage package.
 
 ## Test Structure
 

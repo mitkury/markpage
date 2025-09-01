@@ -7,13 +7,13 @@ import {
   buildNavigationTree, 
   validateContentStructure,
   ParserError 
-} from 'svelte-markdown-pages/builder';
+} from 'markpage/builder';
 
 describe('Parser', () => {
   let tempDir: string;
 
   beforeEach(() => {
-    tempDir = join(tmpdir(), `svelte-markdown-pages-test-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`);
+    tempDir = join(tmpdir(), `markpage-test-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`);
     mkdirSync(tempDir, { recursive: true });
   });
 
