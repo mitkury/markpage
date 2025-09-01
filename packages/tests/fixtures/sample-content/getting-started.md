@@ -7,7 +7,7 @@ Welcome to the documentation! This guide will help you get started with our proj
 To install the package, run:
 
 ```bash
-npm install svelte-markdown-pages
+npm install markpage
 ```
 
 ## Quick Start

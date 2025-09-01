@@ -8,7 +8,7 @@ You can create custom Svelte components for rendering:
 
 ```svelte
 <script lang="ts">
-  import { NavigationTree, loadContent } from 'svelte-markdown-pages/renderer';
+  import { NavigationTree, loadContent } from 'markpage/renderer';
   
   let navigation = new NavigationTree(navigationData);
   let content = await loadContent(pagePath, contentBundle);

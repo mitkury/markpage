@@ -4,7 +4,9 @@ This is a context for AI editor/agent about the project. It's generated with a t
 
 # Markpage
 
-A standalone npm package for building and rendering markdown-based content with distributed navigation structure for any framework.
+A tool that builds and manages markdown content with organized navigation.
+
+**What it does**: Point at a directory with markdown files and get navigation structure and content that you can use to render in your app.
 
 ## Project Structure
 
@@ -12,15 +14,15 @@ This is a monorepo with the following packages:
 
 - **`packages/markpage`** - The main package that gets published to npm
 - **`packages/tests`** - Comprehensive test suite for the package
-- **`packages/examples`** - Example SvelteKit project demonstrating usage
+- **`packages/website`** - This documentation website
 
 ## Features
 
-- **Distributed Navigation**: Each folder defines its own structure with `.index.json` files
+- **Organized Navigation**: Each folder defines its own structure with `.index.json` files
 - **Multiple Output Formats**: App bundles, website navigation, and static HTML sites
 - **Type-Safe**: Full TypeScript support with Zod validation
 - **Framework Agnostic**: Works with any framework or no framework at all
-- **Flexible**: Point to any directory with markdown and `.index.json` files
+- **Content Management**: Point to any directory with markdown and `.index.json` files
 - **Comprehensive Testing**: >90% test coverage with comprehensive test suite
 
 ## Development
@@ -42,11 +44,7 @@ npm run build
 # Run tests
 npm test
 
-# Build examples
-npm run build:examples
 
-# Start examples in development mode
-npm run dev:examples
 ```
 
 ### Package Scripts
@@ -56,8 +54,7 @@ npm run dev:examples
 - `npm test` - Run all tests
 - `npm run test:watch` - Run tests in watch mode
 - `npm run test:coverage` - Run tests with coverage report
-- `npm run build:examples` - Build the example SvelteKit project
-- `npm run dev:examples` - Start the example project in development mode
+
 
 ## Installation
 
@@ -192,7 +189,6 @@ const siblings = navigation.getSiblings('guides/installation.md');
 const nextSibling = navigation.getNextSibling('guides/installation.md');
 const prevSibling = navigation.getPreviousSibling('guides/installation.md');
 ```
-
 #### `ContentLoader`
 
 Manages content loading and processing.
@@ -286,7 +282,7 @@ Each directory can contain a `.index.json` file that defines the navigation stru
 
 ## Use Cases
 
-### Documentation Sites
+### Content Sites
 
 ```bash
 npx markpage build ./docs --output ./src/lib/docs
@@ -312,14 +308,47 @@ npx markpage static ./content --output ./dist
 
 ## Integration Examples
 
-### SvelteKit Integration
+### React Integration
+
+```tsx
+// src/components/DocsLayout.tsx
+import React, { useState, useEffect } from 'react';
+import { NavigationTree, loadContent } from 'markpage/renderer';
+import navigationData from '../content/navigation.json';
+import contentBundle from '../content/content.json';
+
+function DocsLayout() {
+  const [navigation] = useState(() => new NavigationTree(navigationData));
+  const [currentPage, setCurrentPage] = useState("getting-started.md");
+  const [pageContent, setPageContent] = useState<string | null>(null);
+  
+  useEffect(() => {
+    if (currentPage && contentBundle) {
+      loadContent(currentPage, contentBundle).then(setPageContent);
+    }
+  }, [currentPage]);
+  
+  return (
+    <div className="docs-layout">
+      <nav className="docs-sidebar">
+        {/* Implement your own navigation */}
+      </nav>
+      <main className="docs-content">
+        {pageContent && <div dangerouslySetInnerHTML={{ __html: pageContent }} />}
+      </main>
+    </div>
+  );
+}
+```
+
+### Svelte Integration
 
 ```svelte
 <!-- src/routes/docs/[...slug]/+page.svelte -->
 <script lang="ts">
-  import { NavigationTree } from 'markpage/renderer';
-  import { DocsSidebar, DocsContent } from 'markpage/components';
+  import { NavigationTree, loadContent } from 'markpage/renderer';
   import navigationData from '$lib/content/navigation.json';
+  import contentBundle from '$lib/content/content.json';
   
   export let data;
   let { content, slug } = data;
@@ -328,37 +357,12 @@ npx markpage static ./content --output ./dist
 </script>
 
 <div class="docs-layout">
-  <DocsSidebar {navigation} currentPage={slug} />
-  <DocsContent {content} />
-</div>
-```
-
-### App Integration
-
-```svelte
-<!-- src/lib/components/ContentPopover.svelte -->
-<script lang="ts">
-  import { NavigationTree, loadContent } from 'markpage/renderer';
-  import { DocsSidebar, DocsContent } from 'markpage/components';
-  import navigationData from '$lib/content/navigation.json';
-  import contentBundle from '$lib/content/content.json';
-  
-  let navigation = $state(new NavigationTree(navigationData));
-  let currentPage = $state<string | null>(null);
-  let pageContent = $state<string | null>(null);
-  
-  $effect(() => {
-    if (currentPage) {
-      loadContent(currentPage, contentBundle).then(content => {
-        pageContent = content;
-      });
-    }
-  });
-</script>
-
-<div class="content-popover">
-  <DocsSidebar {navigation} bind:currentPage />
-  <DocsContent {pageContent} />
+  <nav class="docs-sidebar">
+    <!-- Implement your own navigation -->
+  </nav>
+  <main class="docs-content">
+    {@html content || 'No content selected'}
+  </main>
 </div>
 ```
 
@@ -418,7 +422,7 @@ Builds documentation from a content directory.
 
 **Example:**
 ```typescript
-import { buildPages } from 'svelte-markdown-pages/builder';
+import { buildPages } from 'markpage/builder';
 
 const result = await buildPages('./docs', {
   appOutput: './src/lib/content',
@@ -440,7 +444,7 @@ Generates a complete static HTML site from markdown content.
 
 **Example:**
 ```typescript
-import { generateStaticSite } from 'svelte-markdown-pages/builder';
+import { generateStaticSite } from 'markpage/builder';
 
 const result = await generateStaticSite('./docs', './dist', {
   title: 'My Documentation',
@@ -595,7 +599,7 @@ interface BuildHooks {
 ### Basic Build
 
 ```typescript
-import { buildPages } from 'svelte-markdown-pages/builder';
+import { buildPages } from 'markpage/builder';
 
 const result = await buildPages('./docs', {
   appOutput: './src/lib/content',
@@ -608,7 +612,7 @@ console.log(`Built navigation with ${result.navigation.items.length} root items`
 ### Advanced Build with Custom Processor
 
 ```typescript
-import { buildPages } from 'svelte-markdown-pages/builder';
+import { buildPages } from 'markpage/builder';
 
 const customProcessor = {
   process(content: string): string {
@@ -627,7 +631,7 @@ const result = await buildPages('./docs', {
 ### Static Site Generation
 
 ```typescript
-import { generateStaticSite } from 'svelte-markdown-pages/builder';
+import { generateStaticSite } from 'markpage/builder';
 
 const result = await generateStaticSite('./docs', './dist', {
   title: 'My Documentation',
@@ -651,7 +655,7 @@ console.log(`Available URLs: ${result.urls.join(', ')}`);
 ### Error Handling
 
 ```typescript
-import { buildPages } from 'svelte-markdown-pages/builder';
+import { buildPages } from 'markpage/builder';
 
 try {
   const result = await buildPages('./docs', {
@@ -734,7 +738,7 @@ For large documentation sites, consider:
 
 # Renderer API
 
-The renderer module provides classes and functions for rendering content and managing navigation in your Svelte applications.
+The renderer module provides classes and functions for managing content and navigation in your applications.
 
 ## Classes
 
@@ -743,7 +747,7 @@ The renderer module provides classes and functions for rendering content and man
 Manages navigation structure and provides navigation utilities.
 
 ```typescript
-import { NavigationTree } from 'svelte-markdown-pages/renderer';
+import { NavigationTree } from 'markpage/renderer';
 
 const navigation = new NavigationTree(navigationData);
 ```
@@ -932,7 +936,7 @@ if (parent) {
 Manages content loading and processing.
 
 ```typescript
-import { ContentLoader } from 'svelte-markdown-pages/renderer';
+import { ContentLoader } from 'markpage/renderer';
 
 const loader = new ContentLoader(contentBundle);
 ```
@@ -1021,7 +1025,7 @@ Loads and processes content for a specific path.
 
 **Example:**
 ```typescript
-import { loadContent } from 'svelte-markdown-pages/renderer';
+import { loadContent } from 'markpage/renderer';
 
 const content = await loadContent('getting-started.md', contentBundle);
 ```
@@ -1037,7 +1041,7 @@ Extracts headings from markdown content.
 
 **Example:**
 ```typescript
-import { extractHeadings } from 'svelte-markdown-pages/renderer';
+import { extractHeadings } from 'markpage/renderer';
 
 const headings = extractHeadings(content);
 headings.forEach(heading => {
@@ -1056,7 +1060,7 @@ Extracts table of contents from markdown content.
 
 **Example:**
 ```typescript
-import { extractTableOfContents } from 'svelte-markdown-pages/renderer';
+import { extractTableOfContents } from 'markpage/renderer';
 
 const toc = extractTableOfContents(content);
 toc.forEach(item => {
@@ -1076,7 +1080,7 @@ Adds a table of contents to markdown content.
 
 **Example:**
 ```typescript
-import { addTableOfContents } from 'svelte-markdown-pages/renderer';
+import { addTableOfContents } from 'markpage/renderer';
 
 const contentWithToc = addTableOfContents(content);
 ```
@@ -1193,7 +1197,7 @@ interface ContentProcessor {
 ### Basic Navigation Usage
 
 ```typescript
-import { NavigationTree } from 'svelte-markdown-pages/renderer';
+import { NavigationTree } from 'markpage/renderer';
 import navigationData from './content/navigation.json';
 
 const navigation = new NavigationTree(navigationData);
@@ -1212,7 +1216,7 @@ const prevPage = navigation.getPreviousSibling('guides/installation.md');
 ### Content Loading
 
 ```typescript
-import { ContentLoader, loadContent } from 'svelte-markdown-pages/renderer';
+import { ContentLoader, loadContent } from 'markpage/renderer';
 import contentBundle from './content/content.json';
 
 // Using ContentLoader class
@@ -1230,7 +1234,7 @@ import {
   extractHeadings, 
   extractTableOfContents, 
   addTableOfContents 
-} from 'svelte-markdown-pages/renderer';
+} from 'markpage/renderer';
 
 // Extract headings
 const headings = extractHeadings(content);
@@ -1245,7 +1249,7 @@ const contentWithToc = addTableOfContents(content, toc);
 ### Custom Content Processing
 
 ```typescript
-import { loadContent } from 'svelte-markdown-pages/renderer';
+import { loadContent } from 'markpage/renderer';
 
 const customProcessor = {
   process(content: string): string {
@@ -1263,71 +1267,67 @@ const processedContent = await loadContent(
 );
 ```
 
-### Svelte Component Integration
+### React Component Integration
 
-```svelte
-<script lang="ts">
-  import { NavigationTree, loadContent } from 'svelte-markdown-pages/renderer';
-  import type { NavigationItem } from 'svelte-markdown-pages';
-  import navigationData from '$lib/content/navigation.json';
-  import contentBundle from '$lib/content/content.json';
+```tsx
+// src/components/DocsLayout.tsx
+import React, { useState, useEffect } from 'react';
+import { NavigationTree, loadContent } from 'markpage/renderer';
+import type { NavigationItem } from 'markpage';
+import navigationData from '../content/navigation.json';
+import contentBundle from '../content/content.json';
+
+function DocsLayout() {
+  const [navigation] = useState(() => new NavigationTree(navigationData));
+  const [currentPage, setCurrentPage] = useState<string>("getting-started.md");
+  const [pageContent, setPageContent] = useState<string | null>(null);
   
-  let navigation = $state(new NavigationTree(navigationData));
-  let currentPage = $state<string>("getting-started.md");
-  let pageContent = $state<string | null>(null);
-  
-  $effect(() => {
+  useEffect(() => {
     if (currentPage && contentBundle) {
-      loadContent(currentPage, contentBundle).then(content => {
-        pageContent = content;
-      });
+      loadContent(currentPage, contentBundle).then(setPageContent);
     }
-  });
+  }, [currentPage]);
   
   function handlePageSelect(path: string) {
-    currentPage = path;
+    setCurrentPage(path);
   }
   
-  function renderNavigationItems(items: NavigationItem[]): string {
+  function renderNavigationItems(items: NavigationItem[]) {
     return items.map(item => {
       if (item.type === 'section') {
-        return `
-          <div class="nav-section">
-            <h3>${item.label}</h3>
-            ${renderNavigationItems(item.items || [])}
+        return (
+          <div key={item.name} className="nav-section">
+            <h3>{item.label}</h3>
+            {renderNavigationItems(item.items || [])}
           </div>
-        `;
+        );
       } else {
         const isActive = currentPage === item.name + '.md';
-        return `
+        return (
           <button 
-            class="nav-link ${isActive ? 'active' : ''}"
-            onclick="window.dispatchEvent(new CustomEvent('pageSelect', { detail: '${item.name}.md' }))"
+            key={item.name}
+            className={`nav-link ${isActive ? 'active' : ''}`}
+            onClick={() => handlePageSelect(item.name + '.md')}
           >
-            ${item.label}
+            {item.label}
           </button>
-        `;
+        );
       }
-    }).join('');
-  }
-  
-  // Set up event listener
-  if (typeof window !== 'undefined') {
-    window.addEventListener('pageSelect', (event: any) => {
-      handlePageSelect(event.detail);
     });
   }
-</script>
-
-<div class="docs-layout">
-  <nav class="docs-sidebar">
-    {@html renderNavigationItems(navigation.items)}
-  </nav>
   
-  <div class="docs-content">
-    {@html pageContent || 'No content selected'}
-  </div>
-</div>
+  return (
+    <div className="docs-layout">
+      <nav className="docs-sidebar">
+        {renderNavigationItems(navigation.items)}
+      </nav>
+      
+      <div className="docs-content">
+        {pageContent ? <div dangerouslySetInnerHTML={{ __html: pageContent }} /> : 'No content selected'}
+      </div>
+    </div>
+  );
+}
 ```
 
 ## Error Handling
@@ -1335,7 +1335,7 @@ const processedContent = await loadContent(
 ### Content Loading Errors
 
 ```typescript
-import { loadContent } from 'svelte-markdown-pages/renderer';
+import { loadContent } from 'markpage/renderer';
 
 try {
   const content = await loadContent('non-existent.md', contentBundle);
@@ -1351,7 +1351,7 @@ try {
 ### Navigation Errors
 
 ```typescript
-import { NavigationTree } from 'svelte-markdown-pages/renderer';
+import { NavigationTree } from 'markpage/renderer';
 
 try {
   const navigation = new NavigationTree(navigationData);
@@ -1409,7 +1409,7 @@ async function loadContentWithCache(path: string, contentBundle: any): Promise<s
 
 # Types
 
-Complete type definitions and interfaces for svelte-markdown-pages.
+Complete type definitions and interfaces for markpage.
 
 ## Core Types
 
@@ -1839,7 +1839,7 @@ const BuildOptionsSchema = z.object({
 ### Type-Safe Navigation
 
 ```typescript
-import type { NavigationItem, NavigationData } from 'svelte-markdown-pages';
+import type { NavigationItem, NavigationData } from 'markpage';
 
 function validateNavigation(data: unknown): NavigationData {
   if (!isNavigationData(data)) {
@@ -1865,7 +1865,7 @@ function findPage(items: NavigationItem[], name: string): NavigationItem | null 
 ### Type-Safe Content Processing
 
 ```typescript
-import type { ContentProcessor, ContentBundle } from 'svelte-markdown-pages';
+import type { ContentProcessor, ContentBundle } from 'markpage';
 
 function createProcessor(options: ProcessorOptions): ContentProcessor {
   return {
@@ -1900,7 +1900,7 @@ function validateContentBundle(bundle: unknown): ContentBundle {
 ### Type-Safe Plugin Development
 
 ```typescript
-import type { Plugin, PluginConfig } from 'svelte-markdown-pages';
+import type { Plugin, PluginConfig } from 'markpage';
 
 function createPlugin(config: PluginConfig): Plugin {
   return {
@@ -2108,37 +2108,39 @@ In Svelte 5 `on:click` syntax is not allowed. Event handlers have been given a f
 
 # Getting Started
 
-Welcome to **svelte-markdown-pages** - a powerful, flexible solution for building documentation sites with distributed navigation structure for Svelte projects.
+Welcome to **Markpage** - a tool that builds and manages markdown content with organized navigation.
 
-## What is svelte-markdown-pages?
+**What it does**: Point at a directory with markdown files and get navigation structure and content that you can use to render in your app.
 
-svelte-markdown-pages is a standalone npm package that transforms your markdown content into a fully-featured documentation site. It provides:
+## What is Markpage?
+
+Markpage is a standalone npm package that transforms your markdown content into structured data and navigation. It provides:
 
 - **Distributed Navigation**: Each folder defines its own structure with `.index.json` files
 - **Multiple Output Formats**: App bundles, website navigation, and static HTML sites
 - **Type-Safe**: Full TypeScript support with Zod validation
-- **Framework Agnostic**: Svelte 5 components that work in any Svelte project
+- **Framework Agnostic**: Works with any framework or no framework at all
 - **Flexible**: Point to any directory with markdown and `.index.json` files
 - **Comprehensive Testing**: >90% test coverage with comprehensive test suite
 
 ## Key Features
 
-### 🗂️ Distributed Navigation
-Organize your documentation with a distributed navigation system. Each folder can define its own structure using `.index.json` files, making it easy to maintain large documentation sites.
+### 🗂️ Organized Navigation
+Organize your content with a navigation system. Each folder can define its own structure using `.index.json` files, making it easy to maintain large content sites.
 
 ### 📦 Multiple Output Formats
 Generate different outputs for different use cases:
-- **App bundles** for integration into existing Svelte applications
-- **Website navigation** for standalone documentation sites
+- **App bundles** for integration into existing applications
+- **Website navigation** for standalone content sites
 - **Static HTML sites** for deployment to any hosting platform
 
 ### 🔧 Type-Safe Development
 Built with TypeScript and Zod validation, providing excellent developer experience with full type safety and runtime validation.
 
 ### 🎨 Framework Agnostic
-Svelte 5 components that work seamlessly in any Svelte project, including SvelteKit applications.
+Pure JavaScript/TypeScript utilities that work seamlessly with any framework - React, Vue, Svelte, Angular, or vanilla JS.
 
-### ⚡ Flexible & Extensible
+### ⚡ Content Management
 Point to any directory with markdown content and `.index.json` files. Customize everything from styling to content processing with custom processors.
 
 ## Quick Start
@@ -2146,7 +2148,7 @@ Point to any directory with markdown content and `.index.json` files. Customize 
 ### 1. Install the Package
 
 ```bash
-npm install svelte-markdown-pages
+npm install markpage
 ```
 
 ### 2. Create Your Content Structure
@@ -2186,7 +2188,7 @@ my-docs/
 ### 4. Build Your Documentation
 
 ```typescript
-import { buildPages } from 'svelte-markdown-pages/builder';
+import { buildPages } from 'markpage/builder';
 
 await buildPages('./my-docs', {
   appOutput: './src/lib/content',
@@ -2197,7 +2199,7 @@ await buildPages('./my-docs', {
 ### 5. Use in Your App
 
 ```typescript
-import { NavigationTree, loadContent } from 'svelte-markdown-pages/renderer';
+import { NavigationTree, loadContent } from 'markpage/renderer';
 import navigationData from './src/lib/content/navigation.json';
 import contentBundle from './src/lib/content/content.json';
 
@@ -2207,26 +2209,22 @@ const content = await loadContent('getting-started.md', contentBundle);
 
 ## Use Cases
 
-### Documentation Sites
-Perfect for project documentation, API references, and user guides.
+### Content Sites
+Perfect for documentation, blogs, knowledge bases, and any markdown-based content.
 
-### Blog Systems
-Create blog systems with hierarchical organization and easy content management.
-
-### Knowledge Bases
-Build comprehensive knowledge bases with distributed content management.
+### Websites
+Create websites with organized content and easy navigation management.
 
 ### Static Sites
 Generate complete static HTML sites for deployment to any hosting platform.
 
 ## What's Next?
 
-Ready to get started? Check out the [Installation](./guides/installation.md) guide to set up your first documentation site!
+Ready to get started? Check out the [Installation](./guides/installation.md) guide to set up your first content site!
 
 ## Examples
 
-- **This Website**: Built using svelte-markdown-pages itself
-- **Example Project**: See the `packages/examples` directory for a complete working example
+- **This Website**: Built using Markpage itself
 - **Test Suite**: Comprehensive examples in the `packages/tests` directory
 ---
 
@@ -2254,7 +2252,7 @@ Ready to get started? Check out the [Installation](./guides/installation.md) gui
 
 # Advanced Customization
 
-Learn how to customize svelte-markdown-pages for your specific needs with advanced configuration options.
+Learn how to customize markpage for your specific needs with advanced configuration options.
 
 ## Custom Components
 
@@ -2362,7 +2360,7 @@ Create custom navigation components:
 ```svelte
 <!-- src/lib/components/CustomSidebar.svelte -->
 <script lang="ts">
-	import type { NavigationItem } from 'svelte-markdown-pages';
+	import type { NavigationItem } from 'markpage';
 	
 	let { items, currentPage } = $props<{
 		items: NavigationItem[];
@@ -2634,14 +2632,14 @@ Now that you understand advanced customization, explore:
 
 # Configuration
 
-Learn how to configure svelte-markdown-pages for your project with detailed options and examples.
+Learn how to configure markpage for your project with detailed options and examples.
 
 ## Basic Configuration
 
 The simplest way to build your documentation:
 
 ```typescript
-import { buildPages } from 'svelte-markdown-pages/builder';
+import { buildPages } from 'markpage/builder';
 
 await buildPages('./docs', {
   appOutput: './src/lib/content',
@@ -2723,7 +2721,7 @@ const result = await buildPages('./docs', {
 Generate a complete static HTML site:
 
 ```typescript
-import { generateStaticSite } from 'svelte-markdown-pages/builder';
+import { generateStaticSite } from 'markpage/builder';
 
 const result = await generateStaticSite('./docs', './dist', {
   title: 'My Documentation',
@@ -2802,7 +2800,7 @@ await generateStaticSite('./docs', './dist', {
 Build documentation for app integration:
 
 ```bash
-npx svelte-markdown-pages build <content-path> --output <output-path>
+npx markpage build <content-path> --output <output-path>
 ```
 
 **Options:**
@@ -2811,7 +2809,7 @@ npx svelte-markdown-pages build <content-path> --output <output-path>
 **Examples:**
 ```bash
 # Basic build
-npx svelte-markdown-pages build ./docs --output ./src/lib/content
+npx markpage build ./docs --output ./src/lib/content
 ```
 
 ### Static Command
@@ -2819,7 +2817,7 @@ npx svelte-markdown-pages build ./docs --output ./src/lib/content
 Generate a complete static HTML site:
 
 ```bash
-npx svelte-markdown-pages static <content-path> --output <output-path>
+npx markpage static <content-path> --output <output-path>
 ```
 
 **Options:**
@@ -2828,7 +2826,7 @@ npx svelte-markdown-pages static <content-path> --output <output-path>
 **Examples:**
 ```bash
 # Basic static site
-npx svelte-markdown-pages static ./docs --output ./dist
+npx markpage static ./docs --output ./dist
 ```
 
 ## Environment Variables
@@ -2839,14 +2837,14 @@ Configure behavior using environment variables:
 Enable debug logging.
 
 ```bash
-SMP_DEBUG=1 npx svelte-markdown-pages build ./docs
+SMP_DEBUG=1 npx markpage build ./docs
 ```
 
 ### `SMP_VERBOSE`
 Enable verbose output.
 
 ```bash
-SMP_VERBOSE=1 npx svelte-markdown-pages build ./docs
+SMP_VERBOSE=1 npx markpage build ./docs
 ```
 
 ## Configuration Files
@@ -2858,8 +2856,8 @@ Add build scripts to your `package.json`:
 ```json
 {
   "scripts": {
-    "build:docs": "svelte-markdown-pages build ./docs --output ./src/lib/content --include-content",
-    "build:static": "svelte-markdown-pages static ./docs ./dist --title \"My Documentation\" --include-index",
+    "build:docs": "markpage build ./docs --output ./src/lib/content --include-content",
+    "build:static": "markpage static ./docs ./dist --title \"My Documentation\" --include-index",
     "dev:docs": "npm run build:docs && npm run dev"
   }
 }
@@ -2871,8 +2869,7 @@ Create dedicated build scripts for complex configurations:
 
 ```typescript
 // scripts/build-docs.js
-import { buildPages } from 'svelte-markdown-pages/builder';
-import { syntaxHighlightingPlugin } from 'svelte-markdown-pages/plugins';
+import { buildPages } from 'markpage/builder';
 
 const processor = {
   process(content: string): string {
@@ -2885,8 +2882,7 @@ await buildPages('./docs', {
   appOutput: './src/lib/content',
   websiteOutput: './src/lib/content',
   includeContent: true,
-  processor,
-  plugins: [syntaxHighlightingPlugin]
+  processor
 });
 ```
 
@@ -2933,7 +2929,7 @@ await buildPages('./docs', {
 Implement caching for faster rebuilds:
 
 ```typescript
-import { buildPages } from 'svelte-markdown-pages/builder';
+import { buildPages } from 'markpage/builder';
 import { existsSync, readFileSync } from 'fs';
 
 const cacheFile = './.docs-cache.json';
@@ -2966,46 +2962,55 @@ Now that you understand configuration, explore:
 
 # Installation
 
-Follow this guide to install and set up svelte-markdown-pages in your project.
+Follow this guide to install and set up Markpage in your project.
 
 ## Prerequisites
 
-Before installing svelte-markdown-pages, make sure you have:
+Before installing Markpage, make sure you have:
 
 - **Node.js 18+** - Required for modern JavaScript features
 - **npm or yarn** - Package manager for installing dependencies
-- **Svelte 5+** - The package is designed for Svelte 5 and later
+- **Any framework or none** - The package works with React, Vue, Svelte, Angular, or vanilla JS
 
 ## Quick Install
 
 Install the package using npm:
 
 ```bash
-npm install svelte-markdown-pages
+npm install markpage
 ```
 
 Or using yarn:
 
 ```bash
-yarn add svelte-markdown-pages
+yarn add markpage
 ```
 
 ## Manual Setup
 
-### 1. Create a New SvelteKit Project (Optional)
+### 1. Create a New Project (Any Framework)
 
-If you're starting from scratch, create a new SvelteKit project:
+If you're starting from scratch, create a new project with your preferred framework:
 
 ```bash
+# For React
+npm create react-app my-docs-site
+
+# For Vue
+npm create vue@latest my-docs-site
+
+# For Svelte
 npm create svelte@latest my-docs-site
-cd my-docs-site
-npm install
+
+# For vanilla JS
+mkdir my-docs-site && cd my-docs-site
+npm init -y
 ```
 
-### 2. Install svelte-markdown-pages
+### 2. Install Markpage
 
 ```bash
-npm install svelte-markdown-pages
+npm install markpage
 ```
 
 ### 3. Set Up Your Content Structure
@@ -3033,7 +3038,7 @@ echo '# Getting Started
 
 Welcome to your documentation site!
 
-This is your first page created with svelte-markdown-pages.' > docs/getting-started.md
+This is your first page created with Markpage.' > docs/getting-started.md
 ```
 
 ### 5. Build Your Documentation
@@ -3043,7 +3048,7 @@ Create a build script in your `package.json`:
 ```json
 {
   "scripts": {
-    "build:docs": "node -e \"import('svelte-markdown-pages/builder').then(({buildPages}) => buildPages('./docs', {appOutput: './src/lib/content', includeContent: true}))\""
+    "build:docs": "node -e \"import('markpage/builder').then(({buildPages}) => buildPages('./docs', {appOutput: './src/lib/content', includeContent: true}))\""
   }
 }
 ```
@@ -3052,7 +3057,7 @@ Or create a build script file:
 
 ```typescript
 // scripts/build-docs.js
-import { buildPages } from 'svelte-markdown-pages/builder';
+import { buildPages } from 'markpage/builder';
 
 await buildPages('./docs', {
   appOutput: './src/lib/content',
@@ -3061,38 +3066,37 @@ await buildPages('./docs', {
 });
 ```
 
-### 6. Use in Your SvelteKit App
+### 6. Use in Your App
 
-Create a documentation page in your SvelteKit app:
+Create a documentation page in your app:
 
-```svelte
-<!-- src/routes/docs/+page.svelte -->
-<script lang="ts">
-  import { NavigationTree, loadContent } from 'svelte-markdown-pages/renderer';
-  import navigationData from '$lib/content/navigation.json';
-  import contentBundle from '$lib/content/content.json';
+```typescript
+// Example for React
+import { NavigationTree, loadContent } from 'markpage/renderer';
+import navigationData from './content/navigation.json';
+import contentBundle from './content/content.json';
+
+function DocsPage() {
+  const [currentPage, setCurrentPage] = useState("getting-started.md");
+  const [pageContent, setPageContent] = useState<string | null>(null);
   
-  let navigation = $state(new NavigationTree(navigationData));
-  let currentPage = $state("getting-started.md");
-  let pageContent = $state<string | null>(null);
-  
-  $effect(() => {
+  useEffect(() => {
     if (currentPage && contentBundle) {
-      loadContent(currentPage, contentBundle).then(content => {
-        pageContent = content;
-      });
+      loadContent(currentPage, contentBundle).then(setPageContent);
     }
-  });
-</script>
-
-<div class="docs-layout">
-  <nav class="sidebar">
-    <!-- Navigation will go here -->
-  </nav>
-  <main class="content">
-    {@html pageContent || 'Loading...'}
-  </main>
-</div>
+  }, [currentPage]);
+  
+  return (
+    <div className="docs-layout">
+      <nav className="sidebar">
+        {/* Navigation will go here */}
+      </nav>
+      <main className="content">
+        {pageContent ? <div dangerouslySetInnerHTML={{ __html: pageContent }} /> : 'Loading...'}
+      </main>
+    </div>
+  );
+}
 ```
 
 ## Content Structure
@@ -3148,13 +3152,12 @@ Each `.index.json` file defines the navigation structure for that directory:
 ### Basic Build
 
 ```typescript
-import { buildPages } from 'svelte-markdown-pages/builder';
+import { buildPages } from 'markpage/builder';
 
 await buildPages('./docs', {
   appOutput: './src/lib/content',
   includeContent: true
 });
-```
 
 ### Advanced Build Options
 
@@ -3175,15 +3178,15 @@ You can also use the CLI for quick builds:
 
 ```bash
 # Build for app integration
-npx svelte-markdown-pages build ./docs --output ./src/lib/content
+npx markpage build ./docs --output ./src/lib/content
 
 # Generate static site
-npx svelte-markdown-pages static ./docs --output ./dist
+npx markpage static ./docs --output ./dist
 ```
 
 ## Next Steps
 
-Now that you have svelte-markdown-pages installed, check out:
+Now that you have Markpage installed, check out:
 
 - [Configuration](./configuration.md) - Learn about build options and customization
 - [API Reference](../api/builder.md) - Complete API documentation
@@ -3223,7 +3226,7 @@ Now that you have svelte-markdown-pages installed, check out:
 
 # Client-Side Search for Static Websites
 
-A comprehensive guide for implementing search functionality in svelte-markdown-pages websites using client-side JavaScript solutions that work entirely in the browser.
+A comprehensive guide for implementing search functionality in markpage websites using client-side JavaScript solutions that work entirely in the browser.
 
 ## Overview
 
@@ -3690,13 +3693,13 @@ export class FuseSearch {
 }
 ```
 
-## Content Indexing with svelte-markdown-pages
+## Content Indexing with markpage
 
 ### Build-Time Index Generation
 
 ```typescript
 // scripts/build-search-index.ts
-import { buildPages } from 'svelte-markdown-pages/builder';
+import { buildPages } from 'markpage/builder';
 import { writeFileSync } from 'fs';
 import { join } from 'path';
 
@@ -3975,7 +3978,7 @@ This guide provides everything needed to implement client-side search that works
 
 # Hybrid Search: Semantic + Literal Search
 
-A comprehensive guide for implementing hybrid search that combines semantic search with literal/full-text search to provide the best search experience for svelte-markdown-pages websites.
+A comprehensive guide for implementing hybrid search that combines semantic search with literal/full-text search to provide the best search experience for markpage websites.
 
 ## Overview
 
@@ -4193,7 +4196,7 @@ export async function embedTextFast(text: string): Promise<number[]> {
 
 ```typescript
 // scripts/build-hybrid-search.ts
-import { buildPages } from 'svelte-markdown-pages/builder';
+import { buildPages } from 'markpage/builder';
 import { writeFileSync } from 'fs';
 import { join } from 'path';
 import { embedText } from './embeddings';
@@ -4806,11 +4809,11 @@ Hybrid search provides the best user experience by combining the strengths of bo
 
 # Plugin System Proposal
 
-A proposal for extending svelte-markdown-pages functionality with a plugin system for custom processing, styling, and features.
+A proposal for extending markpage functionality with a plugin system for custom processing, styling, and features.
 
 ## Overview
 
-This proposal outlines a plugin system that would allow users to extend the functionality of svelte-markdown-pages with custom processors, transformers, and utilities. The system would be designed to integrate seamlessly with the existing architecture while providing flexibility for advanced use cases.
+This proposal outlines a plugin system that would allow users to extend the functionality of markpage with custom processors, transformers, and utilities. The system would be designed to integrate seamlessly with the existing architecture while providing flexibility for advanced use cases.
 
 ## Current Architecture
 
@@ -5111,14 +5114,14 @@ my-plugin/
 
 ```json
 {
-  "name": "svelte-markdown-pages-my-plugin",
+  "name": "markpage-my-plugin",
   "version": "1.0.0",
-  "description": "My custom plugin for svelte-markdown-pages",
+  "description": "My custom plugin for markpage",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "keywords": ["svelte-markdown-pages", "plugin"],
+  "keywords": ["markpage", "plugin"],
   "peerDependencies": {
-    "svelte-markdown-pages": "^1.0.0"
+    "markpage": "^1.0.0"
   },
   "exports": {
     ".": {
@@ -5222,7 +5225,7 @@ This proposal provides a foundation for a flexible and powerful plugin system wh
 
 # Search Solutions Quick Reference
 
-Quick comparison and setup guide for the most popular search solutions for svelte-markdown-pages.
+Quick comparison and setup guide for the most popular search solutions for markpage.
 
 ## Quick Comparison
 
@@ -5403,11 +5406,11 @@ npm install typesense-instantsearch-adapter
 - ❌ Requires server setup
 - ❌ Smaller community
 
-## Integration with svelte-markdown-pages
+## Integration with markpage
 
 ### Content Extraction
 ```typescript
-import { buildPages } from 'svelte-markdown-pages/builder';
+import { buildPages } from 'markpage/builder';
 
 async function extractSearchContent(contentPath: string) {
   const result = await buildPages(contentPath, { includeContent: true });
@@ -5474,18 +5477,18 @@ async function extractSearchContent(contentPath: string) {
 - [Lunr.js Documentation](https://lunrjs.com/)
 - [Meilisearch Documentation](https://docs.meilisearch.com/)
 - [Typesense Documentation](https://typesense.org/docs/)
-- [svelte-markdown-pages Documentation](../README.md)
+- [markpage Documentation](../README.md)
 ---
 
 # From docs/proposals/search.md:
 
 # Semantic Search Implementation Guide
 
-A guide for adding semantic search functionality to svelte-markdown-pages websites using various solutions.
+A guide for adding semantic search functionality to markpage websites using various solutions.
 
 ## Overview
 
-Semantic search allows users to find content using natural language queries, understanding context and meaning rather than just keyword matching. This guide covers several approaches to implement search in svelte-markdown-pages websites.
+Semantic search allows users to find content using natural language queries, understanding context and meaning rather than just keyword matching. This guide covers several approaches to implement search in markpage websites.
 
 ## Search Solutions
 
@@ -5868,7 +5871,7 @@ export class LocalSearch {
 - More complex setup
 - Cost for large datasets
 
-## Integration with svelte-markdown-pages
+## Integration with markpage
 
 ### Content Indexing
 
@@ -5876,7 +5879,7 @@ To make your content searchable, you'll need to extract and index your markdown 
 
 ```typescript
 // src/lib/search-index.ts
-import { buildPages } from 'svelte-markdown-pages/builder';
+import { buildPages } from 'markpage/builder';
 import type { SearchDocument } from './search';
 
 export async function buildSearchIndex(contentPath: string): Promise<SearchDocument[]> {
@@ -5996,7 +5999,7 @@ buildWithSearch().catch(console.error);
 - [ ] Set up search service/engine
 - [ ] Implement content indexing
 - [ ] Create search UI component
-- [ ] Integrate with svelte-markdown-pages build process
+- [ ] Integrate with markpage build process
 - [ ] Add search to layout/navigation
 - [ ] Test search functionality
 - [ ] Optimize search performance
@@ -6017,4 +6020,4 @@ buildWithSearch().catch(console.error);
 3. **Input Validation**: Sanitize search queries
 4. **Access Control**: Ensure search respects content permissions
 
-This guide provides a comprehensive overview of implementing semantic search in svelte-markdown-pages websites, with specific recommendations based on different use cases and requirements.
+This guide provides a comprehensive overview of implementing semantic search in markpage websites, with specific recommendations based on different use cases and requirements.

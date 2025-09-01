@@ -23,7 +23,7 @@ function buildPages(
 
 **Example:**
 ```typescript
-import { buildPages } from 'svelte-markdown-pages/builder';
+import { buildPages } from 'markpage/builder';
 
 const result = await buildPages('./docs', {
   appOutput: './src/lib/content',

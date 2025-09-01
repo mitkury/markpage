@@ -10,7 +10,7 @@ This guide covers the installation process for the package.
 ## Step 1: Install the Package
 
 ```bash
-npm install svelte-markdown-pages
+npm install markpage
 ```
 
 ## Step 2: Create Content Structure
@@ -29,7 +29,7 @@ my-content/
 ## Step 3: Build Documentation
 
 ```bash
-npx svelte-markdown-pages build ./my-content --output ./src/lib/content
+npx markpage build ./my-content --output ./src/lib/content
 ```
 
 ## Verification

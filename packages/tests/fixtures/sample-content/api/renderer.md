@@ -29,7 +29,7 @@ class NavigationTree {
 
 **Example:**
 ```typescript
-import { NavigationTree } from 'svelte-markdown-pages/renderer';
+import { NavigationTree } from 'markpage/renderer';
 
 const navigation = new NavigationTree(navigationData);
 const item = navigation.findItemByPath('guides/installation.md');
@@ -56,7 +56,7 @@ class ContentLoader {
 
 **Example:**
 ```typescript
-import { ContentLoader } from 'svelte-markdown-pages/renderer';
+import { ContentLoader } from 'markpage/renderer';
 
 const loader = new ContentLoader(contentBundle);
 const content = loader.loadAndProcess('guides/installation.md');

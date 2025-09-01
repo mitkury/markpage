@@ -7,7 +7,7 @@ Learn how to configure the package for your needs.
 The package can be configured through the build options:
 
 ```typescript
-import { buildPages } from 'svelte-markdown-pages/builder';
+import { buildPages } from 'markpage/builder';
 
 await buildPages('./content', {
   appOutput: './src/lib/content',
@@ -41,7 +41,7 @@ await buildPages('./content', {
 For static site generation:
 
 ```typescript
-import { generateStaticSite } from 'svelte-markdown-pages/builder';
+import { generateStaticSite } from 'markpage/builder';
 
 await generateStaticSite('./content', './dist', {
   title: 'My Documentation',
