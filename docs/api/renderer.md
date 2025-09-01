@@ -1,6 +1,6 @@
 # Renderer API
 
-The renderer module provides classes and functions for rendering content and managing navigation in your Svelte applications.
+The renderer module provides classes and functions for managing content and navigation in your applications.
 
 ## Classes
 
@@ -9,7 +9,7 @@ The renderer module provides classes and functions for rendering content and man
 Manages navigation structure and provides navigation utilities.
 
 ```typescript
-import { NavigationTree } from 'svelte-markdown-pages/renderer';
+import { NavigationTree } from 'markpage/renderer';
 
 const navigation = new NavigationTree(navigationData);
 ```
@@ -198,7 +198,7 @@ if (parent) {
 Manages content loading and processing.
 
 ```typescript
-import { ContentLoader } from 'svelte-markdown-pages/renderer';
+import { ContentLoader } from 'markpage/renderer';
 
 const loader = new ContentLoader(contentBundle);
 ```
@@ -287,7 +287,7 @@ Loads and processes content for a specific path.
 
 **Example:**
 ```typescript
-import { loadContent } from 'svelte-markdown-pages/renderer';
+import { loadContent } from 'markpage/renderer';
 
 const content = await loadContent('getting-started.md', contentBundle);
 ```
@@ -303,7 +303,7 @@ Extracts headings from markdown content.
 
 **Example:**
 ```typescript
-import { extractHeadings } from 'svelte-markdown-pages/renderer';
+import { extractHeadings } from 'markpage/renderer';
 
 const headings = extractHeadings(content);
 headings.forEach(heading => {
@@ -322,7 +322,7 @@ Extracts table of contents from markdown content.
 
 **Example:**
 ```typescript
-import { extractTableOfContents } from 'svelte-markdown-pages/renderer';
+import { extractTableOfContents } from 'markpage/renderer';
 
 const toc = extractTableOfContents(content);
 toc.forEach(item => {
@@ -342,7 +342,7 @@ Adds a table of contents to markdown content.
 
 **Example:**
 ```typescript
-import { addTableOfContents } from 'svelte-markdown-pages/renderer';
+import { addTableOfContents } from 'markpage/renderer';
 
 const contentWithToc = addTableOfContents(content);
 ```
@@ -459,7 +459,7 @@ interface ContentProcessor {
 ### Basic Navigation Usage
 
 ```typescript
-import { NavigationTree } from 'svelte-markdown-pages/renderer';
+import { NavigationTree } from 'markpage/renderer';
 import navigationData from './content/navigation.json';
 
 const navigation = new NavigationTree(navigationData);
@@ -478,7 +478,7 @@ const prevPage = navigation.getPreviousSibling('guides/installation.md');
 ### Content Loading
 
 ```typescript
-import { ContentLoader, loadContent } from 'svelte-markdown-pages/renderer';
+import { ContentLoader, loadContent } from 'markpage/renderer';
 import contentBundle from './content/content.json';
 
 // Using ContentLoader class
@@ -496,7 +496,7 @@ import {
   extractHeadings, 
   extractTableOfContents, 
   addTableOfContents 
-} from 'svelte-markdown-pages/renderer';
+} from 'markpage/renderer';
 
 // Extract headings
 const headings = extractHeadings(content);
@@ -511,7 +511,7 @@ const contentWithToc = addTableOfContents(content, toc);
 ### Custom Content Processing
 
 ```typescript
-import { loadContent } from 'svelte-markdown-pages/renderer';
+import { loadContent } from 'markpage/renderer';
 
 const customProcessor = {
   process(content: string): string {
@@ -529,71 +529,67 @@ const processedContent = await loadContent(
 );
 ```
 
-### Svelte Component Integration
+### React Component Integration
 
-```svelte
-<script lang="ts">
-  import { NavigationTree, loadContent } from 'svelte-markdown-pages/renderer';
-  import type { NavigationItem } from 'svelte-markdown-pages';
-  import navigationData from '$lib/content/navigation.json';
-  import contentBundle from '$lib/content/content.json';
+```tsx
+// src/components/DocsLayout.tsx
+import React, { useState, useEffect } from 'react';
+import { NavigationTree, loadContent } from 'markpage/renderer';
+import type { NavigationItem } from 'markpage';
+import navigationData from '../content/navigation.json';
+import contentBundle from '../content/content.json';
+
+function DocsLayout() {
+  const [navigation] = useState(() => new NavigationTree(navigationData));
+  const [currentPage, setCurrentPage] = useState<string>("getting-started.md");
+  const [pageContent, setPageContent] = useState<string | null>(null);
   
-  let navigation = $state(new NavigationTree(navigationData));
-  let currentPage = $state<string>("getting-started.md");
-  let pageContent = $state<string | null>(null);
-  
-  $effect(() => {
+  useEffect(() => {
     if (currentPage && contentBundle) {
-      loadContent(currentPage, contentBundle).then(content => {
-        pageContent = content;
-      });
+      loadContent(currentPage, contentBundle).then(setPageContent);
     }
-  });
+  }, [currentPage]);
   
   function handlePageSelect(path: string) {
-    currentPage = path;
+    setCurrentPage(path);
   }
   
-  function renderNavigationItems(items: NavigationItem[]): string {
+  function renderNavigationItems(items: NavigationItem[]) {
     return items.map(item => {
       if (item.type === 'section') {
-        return `
-          <div class="nav-section">
-            <h3>${item.label}</h3>
-            ${renderNavigationItems(item.items || [])}
+        return (
+          <div key={item.name} className="nav-section">
+            <h3>{item.label}</h3>
+            {renderNavigationItems(item.items || [])}
           </div>
-        `;
+        );
       } else {
         const isActive = currentPage === item.name + '.md';
-        return `
+        return (
           <button 
-            class="nav-link ${isActive ? 'active' : ''}"
-            onclick="window.dispatchEvent(new CustomEvent('pageSelect', { detail: '${item.name}.md' }))"
+            key={item.name}
+            className={`nav-link ${isActive ? 'active' : ''}`}
+            onClick={() => handlePageSelect(item.name + '.md')}
           >
-            ${item.label}
+            {item.label}
           </button>
-        `;
+        );
       }
-    }).join('');
-  }
-  
-  // Set up event listener
-  if (typeof window !== 'undefined') {
-    window.addEventListener('pageSelect', (event: any) => {
-      handlePageSelect(event.detail);
     });
   }
-</script>
-
-<div class="docs-layout">
-  <nav class="docs-sidebar">
-    {@html renderNavigationItems(navigation.items)}
-  </nav>
   
-  <div class="docs-content">
-    {@html pageContent || 'No content selected'}
-  </div>
-</div>
+  return (
+    <div className="docs-layout">
+      <nav className="docs-sidebar">
+        {renderNavigationItems(navigation.items)}
+      </nav>
+      
+      <div className="docs-content">
+        {pageContent ? <div dangerouslySetInnerHTML={{ __html: pageContent }} /> : 'No content selected'}
+      </div>
+    </div>
+  );
+}
 ```
 
 ## Error Handling
@@ -601,7 +597,7 @@ const processedContent = await loadContent(
 ### Content Loading Errors
 
 ```typescript
-import { loadContent } from 'svelte-markdown-pages/renderer';
+import { loadContent } from 'markpage/renderer';
 
 try {
   const content = await loadContent('non-existent.md', contentBundle);
@@ -617,7 +613,7 @@ try {
 ### Navigation Errors
 
 ```typescript
-import { NavigationTree } from 'svelte-markdown-pages/renderer';
+import { NavigationTree } from 'markpage/renderer';
 
 try {
   const navigation = new NavigationTree(navigationData);

@@ -7,8 +7,8 @@ const buildContentPlugin = () => {
     name: 'build-content',
     buildStart: async () => {
       try {
-        console.log('Building content from docs...');
-        const { buildPages } = await import('svelte-markdown-pages/builder');
+        console.log('Building content from root docs...');
+        const { buildPages } = await import('markpage/builder');
         await buildPages('../../docs', {
           appOutput: './src/lib/content',
           includeContent: true

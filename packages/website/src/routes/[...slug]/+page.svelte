@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { loadContent } from 'svelte-markdown-pages/renderer';
+	import { loadContent } from 'markpage/renderer';
 	import { page } from '$app/state';
 	import navigationData from '$lib/content/navigation.json';
 	import contentData from '$lib/content/content.json';
@@ -8,12 +8,17 @@
 	let navigation = $state<any>(navigationData);
 	let contentBundle = $state<any>(contentData);
 	
+	// Debug logging
+	console.log('Navigation data:', navigationData);
+	console.log('Navigation state:', navigation);
+	console.log('Content bundle:', contentData);
+	
 	// Map URL path to content path
 	function getContentPathFromUrl(urlPath: string): string | null {
 		const cleanPath = urlPath.replace(/^\/+/, '').replace(/\.md$/, '');
 		if (!cleanPath) {
 			// Return the first page from navigation as default
-			return navigation?.items?.[0]?.path || null;
+			return navigation?.[0]?.path || null;
 		}
 		
 		// Use the navigation data to find the correct path
@@ -32,8 +37,8 @@
 				return null;
 			};
 			
-			// Try to find the path in navigation
-			const foundPath = findPath(navigation.items, cleanPath);
+			// Try to find the path in navigation (navigation is the array itself)
+			const foundPath = findPath(navigation, cleanPath);
 			if (foundPath) {
 				return foundPath;
 			}
@@ -46,7 +51,7 @@
     const urlPath = page.url.pathname;
     const contentPath = getContentPathFromUrl(urlPath);
     
-    return contentPath || navigation?.items?.[0]?.path || null;
+    return contentPath || navigation?.[0]?.path || null;
   });
 
   let notFound = $derived.by(() => !currentPage && page.url.pathname !== "/");
@@ -90,16 +95,39 @@
 		}).join('');
 	}
 	
-
+	// Generate dynamic navigation links for 404 page
+	function getNavigationLinks(): string[] {
+		const links: string[] = [];
+		
+		function collectLinks(items: any[], parentPath: string = '') {
+			for (const item of items) {
+				if (item.type === 'page' && item.path) {
+					const urlPath = parentPath ? `/${parentPath}/${item.name}` : `/${item.name}`;
+					links.push(urlPath);
+				}
+				if (item.items) {
+					const currentPath = parentPath ? `${parentPath}/${item.name}` : item.name;
+					collectLinks(item.items, currentPath);
+				}
+			}
+		}
+		
+		if (navigation) {
+			collectLinks(navigation);
+		}
+		
+		return links.slice(0, 5); // Limit to 5 links for 404 page
+	}
 </script>
 
 <div class="docs-layout">
 	{#if navigation}
 		<nav class="docs-sidebar">
 			<header class="docs-header">
-				<h1>svelte-markdown-pages</h1>
+				<h1>Markpage</h1>
+				<p class="docs-subtitle">Documentation</p>
 			</header>
-			{@html renderNavigationItems(navigation.items)}
+			{@html renderNavigationItems(navigation)}
 		</nav>
 		
 		<div class="docs-content">
@@ -109,10 +137,9 @@
 					<p>The page you're looking for doesn't exist.</p>
 					<p>Try one of these pages:</p>
 					<ul>
-						<li><a href="/getting-started">Getting Started</a></li>
-						<li><a href="/guides/installation">Installation Guide</a></li>
-						<li><a href="/guides/configuration">Configuration</a></li>
-						<li><a href="/api/builder">API Reference</a></li>
+						{#each getNavigationLinks() as link}
+							<li><a href={link}>{link.replace(/^\//, '')}</a></li>
+						{/each}
 					</ul>
 				</div>
 			{:else}

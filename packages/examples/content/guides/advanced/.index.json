@@ -1,6 +1,0 @@
-{
-  "items": [
-    { "name": "customization", "type": "page", "label": "Customization" },
-    { "name": "plugins", "type": "page", "label": "Plugins" }
-  ]
-}

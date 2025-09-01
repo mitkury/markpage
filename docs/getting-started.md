@@ -1,36 +1,38 @@
 # Getting Started
 
-Welcome to **svelte-markdown-pages** - a powerful, flexible solution for building documentation sites with distributed navigation structure for Svelte projects.
+Welcome to **Markpage** - a tool that builds and manages markdown content with organized navigation.
 
-## What is svelte-markdown-pages?
+**What it does**: Point at a directory with markdown files and get navigation structure and content that you can use to render in your app.
 
-svelte-markdown-pages is a standalone npm package that transforms your markdown content into a fully-featured documentation site. It provides:
+## What is Markpage?
+
+Markpage is a standalone npm package that transforms your markdown content into structured data and navigation. It provides:
 
 - **Distributed Navigation**: Each folder defines its own structure with `.index.json` files
 - **Multiple Output Formats**: App bundles, website navigation, and static HTML sites
 - **Type-Safe**: Full TypeScript support with Zod validation
-- **Framework Agnostic**: Svelte 5 components that work in any Svelte project
+- **Framework Agnostic**: Works with any framework or no framework at all
 - **Flexible**: Point to any directory with markdown and `.index.json` files
 - **Comprehensive Testing**: >90% test coverage with comprehensive test suite
 
 ## Key Features
 
-### 🗂️ Distributed Navigation
-Organize your documentation with a distributed navigation system. Each folder can define its own structure using `.index.json` files, making it easy to maintain large documentation sites.
+### 🗂️ Organized Navigation
+Organize your content with a navigation system. Each folder can define its own structure using `.index.json` files, making it easy to maintain large content sites.
 
 ### 📦 Multiple Output Formats
 Generate different outputs for different use cases:
-- **App bundles** for integration into existing Svelte applications
-- **Website navigation** for standalone documentation sites
+- **App bundles** for integration into existing applications
+- **Website navigation** for standalone content sites
 - **Static HTML sites** for deployment to any hosting platform
 
 ### 🔧 Type-Safe Development
 Built with TypeScript and Zod validation, providing excellent developer experience with full type safety and runtime validation.
 
 ### 🎨 Framework Agnostic
-Svelte 5 components that work seamlessly in any Svelte project, including SvelteKit applications.
+Pure JavaScript/TypeScript utilities that work seamlessly with any framework - React, Vue, Svelte, Angular, or vanilla JS.
 
-### ⚡ Flexible & Extensible
+### ⚡ Content Management
 Point to any directory with markdown content and `.index.json` files. Customize everything from styling to content processing with custom processors.
 
 ## Quick Start
@@ -38,7 +40,7 @@ Point to any directory with markdown content and `.index.json` files. Customize 
 ### 1. Install the Package
 
 ```bash
-npm install svelte-markdown-pages
+npm install markpage
 ```
 
 ### 2. Create Your Content Structure
@@ -78,7 +80,7 @@ my-docs/
 ### 4. Build Your Documentation
 
 ```typescript
-import { buildPages } from 'svelte-markdown-pages/builder';
+import { buildPages } from 'markpage/builder';
 
 await buildPages('./my-docs', {
   appOutput: './src/lib/content',
@@ -89,7 +91,7 @@ await buildPages('./my-docs', {
 ### 5. Use in Your App
 
 ```typescript
-import { NavigationTree, loadContent } from 'svelte-markdown-pages/renderer';
+import { NavigationTree, loadContent } from 'markpage/renderer';
 import navigationData from './src/lib/content/navigation.json';
 import contentBundle from './src/lib/content/content.json';
 
@@ -99,24 +101,20 @@ const content = await loadContent('getting-started.md', contentBundle);
 
 ## Use Cases
 
-### Documentation Sites
-Perfect for project documentation, API references, and user guides.
+### Content Sites
+Perfect for documentation, blogs, knowledge bases, and any markdown-based content.
 
-### Blog Systems
-Create blog systems with hierarchical organization and easy content management.
-
-### Knowledge Bases
-Build comprehensive knowledge bases with distributed content management.
+### Websites
+Create websites with organized content and easy navigation management.
 
 ### Static Sites
 Generate complete static HTML sites for deployment to any hosting platform.
 
 ## What's Next?
 
-Ready to get started? Check out the [Installation](./guides/installation.md) guide to set up your first documentation site!
+Ready to get started? Check out the [Installation](./guides/installation.md) guide to set up your first content site!
 
 ## Examples
 
-- **This Website**: Built using svelte-markdown-pages itself
-- **Example Project**: See the `packages/examples` directory for a complete working example
+- **This Website**: Built using Markpage itself
 - **Test Suite**: Comprehensive examples in the `packages/tests` directory

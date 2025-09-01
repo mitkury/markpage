@@ -1,7 +1,7 @@
 {
   "name": "markpage",
   "version": "0.3.1",
-  "description": "Build and render markdown-based content with distributed navigation for any framework",
+  "description": "Build and manage markdown-based content with distributed navigation - framework agnostic content management system",
   "main": "dist/index.cjs",
   "module": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -21,11 +21,6 @@
       "types": "./dist/renderer/index.d.ts",
       "import": "./dist/renderer/index.js",
       "require": "./dist/renderer/index.cjs"
-    },
-    "./components": {
-      "types": "./dist/renderer/components.d.ts",
-      "import": "./dist/renderer/components.js",
-      "require": "./dist/renderer/components.cjs"
     }
   },
   "files": [
@@ -46,15 +41,10 @@
     "zod": "^3.22.0"
   },
   "devDependencies": {
-    "@sveltejs/vite-plugin-svelte": "^3.0.0",
     "@types/node": "^20.0.0",
-    "svelte": "^5.0.0",
     "tsup": "^8.5.0",
     "typescript": "^5.0.0",
     "vitest": "^1.0.0"
-  },
-  "peerDependencies": {
-    "svelte": "^5.0.0"
   },
   "bin": {
     "markpage": "bin/markpage.js"

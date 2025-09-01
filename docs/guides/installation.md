@@ -1,45 +1,54 @@
 # Installation
 
-Follow this guide to install and set up svelte-markdown-pages in your project.
+Follow this guide to install and set up Markpage in your project.
 
 ## Prerequisites
 
-Before installing svelte-markdown-pages, make sure you have:
+Before installing Markpage, make sure you have:
 
 - **Node.js 18+** - Required for modern JavaScript features
 - **npm or yarn** - Package manager for installing dependencies
-- **Svelte 5+** - The package is designed for Svelte 5 and later
+- **Any framework or none** - The package works with React, Vue, Svelte, Angular, or vanilla JS
 
 ## Quick Install
 
 Install the package using npm:
 
 ```bash
-npm install svelte-markdown-pages
+npm install markpage
 ```
 
 Or using yarn:
 
 ```bash
-yarn add svelte-markdown-pages
+yarn add markpage
 ```
 
 ## Manual Setup
 
-### 1. Create a New SvelteKit Project (Optional)
+### 1. Create a New Project (Any Framework)
 
-If you're starting from scratch, create a new SvelteKit project:
+If you're starting from scratch, create a new project with your preferred framework:
 
 ```bash
+# For React
+npm create react-app my-docs-site
+
+# For Vue
+npm create vue@latest my-docs-site
+
+# For Svelte
 npm create svelte@latest my-docs-site
-cd my-docs-site
-npm install
+
+# For vanilla JS
+mkdir my-docs-site && cd my-docs-site
+npm init -y
 ```
 
-### 2. Install svelte-markdown-pages
+### 2. Install Markpage
 
 ```bash
-npm install svelte-markdown-pages
+npm install markpage
 ```
 
 ### 3. Set Up Your Content Structure
@@ -67,7 +76,7 @@ echo '# Getting Started
 
 Welcome to your documentation site!
 
-This is your first page created with svelte-markdown-pages.' > docs/getting-started.md
+This is your first page created with Markpage.' > docs/getting-started.md
 ```
 
 ### 5. Build Your Documentation
@@ -77,7 +86,7 @@ Create a build script in your `package.json`:
 ```json
 {
   "scripts": {
-    "build:docs": "node -e \"import('svelte-markdown-pages/builder').then(({buildPages}) => buildPages('./docs', {appOutput: './src/lib/content', includeContent: true}))\""
+    "build:docs": "node -e \"import('markpage/builder').then(({buildPages}) => buildPages('./docs', {appOutput: './src/lib/content', includeContent: true}))\""
   }
 }
 ```
@@ -86,7 +95,7 @@ Or create a build script file:
 
 ```typescript
 // scripts/build-docs.js
-import { buildPages } from 'svelte-markdown-pages/builder';
+import { buildPages } from 'markpage/builder';
 
 await buildPages('./docs', {
   appOutput: './src/lib/content',
@@ -95,38 +104,37 @@ await buildPages('./docs', {
 });
 ```
 
-### 6. Use in Your SvelteKit App
+### 6. Use in Your App
 
-Create a documentation page in your SvelteKit app:
+Create a documentation page in your app:
 
-```svelte
-<!-- src/routes/docs/+page.svelte -->
-<script lang="ts">
-  import { NavigationTree, loadContent } from 'svelte-markdown-pages/renderer';
-  import navigationData from '$lib/content/navigation.json';
-  import contentBundle from '$lib/content/content.json';
+```typescript
+// Example for React
+import { NavigationTree, loadContent } from 'markpage/renderer';
+import navigationData from './content/navigation.json';
+import contentBundle from './content/content.json';
+
+function DocsPage() {
+  const [currentPage, setCurrentPage] = useState("getting-started.md");
+  const [pageContent, setPageContent] = useState<string | null>(null);
   
-  let navigation = $state(new NavigationTree(navigationData));
-  let currentPage = $state("getting-started.md");
-  let pageContent = $state<string | null>(null);
-  
-  $effect(() => {
+  useEffect(() => {
     if (currentPage && contentBundle) {
-      loadContent(currentPage, contentBundle).then(content => {
-        pageContent = content;
-      });
+      loadContent(currentPage, contentBundle).then(setPageContent);
     }
-  });
-</script>
-
-<div class="docs-layout">
-  <nav class="sidebar">
-    <!-- Navigation will go here -->
-  </nav>
-  <main class="content">
-    {@html pageContent || 'Loading...'}
-  </main>
-</div>
+  }, [currentPage]);
+  
+  return (
+    <div className="docs-layout">
+      <nav className="sidebar">
+        {/* Navigation will go here */}
+      </nav>
+      <main className="content">
+        {pageContent ? <div dangerouslySetInnerHTML={{ __html: pageContent }} /> : 'Loading...'}
+      </main>
+    </div>
+  );
+}
 ```
 
 ## Content Structure
@@ -182,13 +190,12 @@ Each `.index.json` file defines the navigation structure for that directory:
 ### Basic Build
 
 ```typescript
-import { buildPages } from 'svelte-markdown-pages/builder';
+import { buildPages } from 'markpage/builder';
 
 await buildPages('./docs', {
   appOutput: './src/lib/content',
   includeContent: true
 });
-```
 
 ### Advanced Build Options
 
@@ -209,15 +216,15 @@ You can also use the CLI for quick builds:
 
 ```bash
 # Build for app integration
-npx svelte-markdown-pages build ./docs --output ./src/lib/content
+npx markpage build ./docs --output ./src/lib/content
 
 # Generate static site
-npx svelte-markdown-pages static ./docs --output ./dist
+npx markpage static ./docs --output ./dist
 ```
 
 ## Next Steps
 
-Now that you have svelte-markdown-pages installed, check out:
+Now that you have Markpage installed, check out:
 
 - [Configuration](./configuration.md) - Learn about build options and customization
 - [API Reference](../api/builder.md) - Complete API documentation

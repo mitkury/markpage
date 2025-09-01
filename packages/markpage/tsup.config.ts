@@ -5,7 +5,6 @@ export default defineConfig({
     'index': 'src/index.ts',
     'builder/index': 'src/builder/index.ts',
     'renderer/index': 'src/renderer/index.ts',
-    'renderer/components': 'src/renderer/components.ts',
     'renderer/content': 'src/renderer/content.ts',
     'renderer/navigation': 'src/renderer/navigation.ts',
     'builder/builder': 'src/builder/builder.ts',
@@ -20,7 +19,6 @@ export default defineConfig({
   clean: true,
   treeshake: true,
   minify: false,
-  external: ['svelte'],
   outDir: 'dist',
   target: 'node18'
 });

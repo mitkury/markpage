@@ -12,8 +12,7 @@
     "test": "npm run test --workspace=@markpage/tests",
     "test:watch": "npm run test:watch --workspace=@markpage/tests",
     "test:coverage": "npm run test:coverage --workspace=@markpage/tests",
-    "build:examples": "npm run build --workspace=@markpage/examples",
-    "dev:examples": "npm run dev --workspace=@markpage/examples",
+
     "build:website": "npm run build --workspace=@markpage/website",
     "dev:website": "npm run dev --workspace=@markpage/website",
     "prepublishOnly": "npm run build && npm run test"

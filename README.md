@@ -1,6 +1,8 @@
 # Markpage
 
-A standalone npm package for building and rendering markdown-based content with distributed navigation structure for any framework.
+A tool that builds and manages markdown content with organized navigation.
+
+**What it does**: Point at a directory with markdown files and get navigation structure and content that you can use to render in your app.
 
 ## Project Structure
 
@@ -8,15 +10,15 @@ This is a monorepo with the following packages:
 
 - **`packages/markpage`** - The main package that gets published to npm
 - **`packages/tests`** - Comprehensive test suite for the package
-- **`packages/examples`** - Example SvelteKit project demonstrating usage
+- **`packages/website`** - This documentation website
 
 ## Features
 
-- **Distributed Navigation**: Each folder defines its own structure with `.index.json` files
+- **Organized Navigation**: Each folder defines its own structure with `.index.json` files
 - **Multiple Output Formats**: App bundles, website navigation, and static HTML sites
 - **Type-Safe**: Full TypeScript support with Zod validation
 - **Framework Agnostic**: Works with any framework or no framework at all
-- **Flexible**: Point to any directory with markdown and `.index.json` files
+- **Content Management**: Point to any directory with markdown and `.index.json` files
 - **Comprehensive Testing**: >90% test coverage with comprehensive test suite
 
 ## Development
@@ -38,11 +40,7 @@ npm run build
 # Run tests
 npm test
 
-# Build examples
-npm run build:examples
 
-# Start examples in development mode
-npm run dev:examples
 ```
 
 ### Package Scripts
@@ -52,8 +50,7 @@ npm run dev:examples
 - `npm test` - Run all tests
 - `npm run test:watch` - Run tests in watch mode
 - `npm run test:coverage` - Run tests with coverage report
-- `npm run build:examples` - Build the example SvelteKit project
-- `npm run dev:examples` - Start the example project in development mode
+
 
 ## Installation
 
@@ -188,7 +185,6 @@ const siblings = navigation.getSiblings('guides/installation.md');
 const nextSibling = navigation.getNextSibling('guides/installation.md');
 const prevSibling = navigation.getPreviousSibling('guides/installation.md');
 ```
-
 #### `ContentLoader`
 
 Manages content loading and processing.
@@ -282,7 +278,7 @@ Each directory can contain a `.index.json` file that defines the navigation stru
 
 ## Use Cases
 
-### Documentation Sites
+### Content Sites
 
 ```bash
 npx markpage build ./docs --output ./src/lib/docs
@@ -308,14 +304,47 @@ npx markpage static ./content --output ./dist
 
 ## Integration Examples
 
-### SvelteKit Integration
+### React Integration
+
+```tsx
+// src/components/DocsLayout.tsx
+import React, { useState, useEffect } from 'react';
+import { NavigationTree, loadContent } from 'markpage/renderer';
+import navigationData from '../content/navigation.json';
+import contentBundle from '../content/content.json';
+
+function DocsLayout() {
+  const [navigation] = useState(() => new NavigationTree(navigationData));
+  const [currentPage, setCurrentPage] = useState("getting-started.md");
+  const [pageContent, setPageContent] = useState<string | null>(null);
+  
+  useEffect(() => {
+    if (currentPage && contentBundle) {
+      loadContent(currentPage, contentBundle).then(setPageContent);
+    }
+  }, [currentPage]);
+  
+  return (
+    <div className="docs-layout">
+      <nav className="docs-sidebar">
+        {/* Implement your own navigation */}
+      </nav>
+      <main className="docs-content">
+        {pageContent && <div dangerouslySetInnerHTML={{ __html: pageContent }} />}
+      </main>
+    </div>
+  );
+}
+```
+
+### Svelte Integration
 
 ```svelte
 <!-- src/routes/docs/[...slug]/+page.svelte -->
 <script lang="ts">
-  import { NavigationTree } from 'markpage/renderer';
-  import { DocsSidebar, DocsContent } from 'markpage/components';
+  import { NavigationTree, loadContent } from 'markpage/renderer';
   import navigationData from '$lib/content/navigation.json';
+  import contentBundle from '$lib/content/content.json';
   
   export let data;
   let { content, slug } = data;
@@ -324,37 +353,12 @@ npx markpage static ./content --output ./dist
 </script>
 
 <div class="docs-layout">
-  <DocsSidebar {navigation} currentPage={slug} />
-  <DocsContent {content} />
-</div>
-```
-
-### App Integration
-
-```svelte
-<!-- src/lib/components/ContentPopover.svelte -->
-<script lang="ts">
-  import { NavigationTree, loadContent } from 'markpage/renderer';
-  import { DocsSidebar, DocsContent } from 'markpage/components';
-  import navigationData from '$lib/content/navigation.json';
-  import contentBundle from '$lib/content/content.json';
-  
-  let navigation = $state(new NavigationTree(navigationData));
-  let currentPage = $state<string | null>(null);
-  let pageContent = $state<string | null>(null);
-  
-  $effect(() => {
-    if (currentPage) {
-      loadContent(currentPage, contentBundle).then(content => {
-        pageContent = content;
-      });
-    }
-  });
-</script>
-
-<div class="content-popover">
-  <DocsSidebar {navigation} bind:currentPage />
-  <DocsContent {pageContent} />
+  <nav class="docs-sidebar">
+    <!-- Implement your own navigation -->
+  </nav>
+  <main class="docs-content">
+    {@html content || 'No content selected'}
+  </main>
 </div>
 ```
 
@@ -370,3 +374,4 @@ npx markpage static ./content --output ./dist
 ## License
 
 MIT License - see LICENSE file for details.
+

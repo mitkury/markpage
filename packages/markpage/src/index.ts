@@ -27,10 +27,10 @@ export {
 } from './builder/index.js';
 
 export {
-  NavigationTree as NavigationTreeClass,
+  NavigationTree,
   ContentLoader,
   loadContent,
-  type DocsSidebarProps,
-  type DocsContentProps,
-  type DocsLayoutProps
+  extractHeadings,
+  extractTableOfContents,
+  addTableOfContents
 } from './renderer/index.js';
