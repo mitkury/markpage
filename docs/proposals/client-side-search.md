@@ -1,6 +1,6 @@
 # Client-Side Search for Static Websites
 
-A comprehensive guide for implementing search functionality in svelte-markdown-pages websites using client-side JavaScript solutions that work entirely in the browser.
+A comprehensive guide for implementing search functionality in markpage websites using client-side JavaScript solutions that work entirely in the browser.
 
 ## Overview
 
@@ -467,13 +467,13 @@ export class FuseSearch {
 }
 ```
 
-## Content Indexing with svelte-markdown-pages
+## Content Indexing with markpage
 
 ### Build-Time Index Generation
 
 ```typescript
 // scripts/build-search-index.ts
-import { buildPages } from 'svelte-markdown-pages/builder';
+import { buildPages } from 'markpage/builder';
 import { writeFileSync } from 'fs';
 import { join } from 'path';
 

@@ -1,6 +1,6 @@
 # Search Solutions Quick Reference
 
-Quick comparison and setup guide for the most popular search solutions for svelte-markdown-pages.
+Quick comparison and setup guide for the most popular search solutions for markpage.
 
 ## Quick Comparison
 
@@ -181,11 +181,11 @@ npm install typesense-instantsearch-adapter
 - ❌ Requires server setup
 - ❌ Smaller community
 
-## Integration with svelte-markdown-pages
+## Integration with markpage
 
 ### Content Extraction
 ```typescript
-import { buildPages } from 'svelte-markdown-pages/builder';
+import { buildPages } from 'markpage/builder';
 
 async function extractSearchContent(contentPath: string) {
   const result = await buildPages(contentPath, { includeContent: true });
@@ -252,4 +252,4 @@ async function extractSearchContent(contentPath: string) {
 - [Lunr.js Documentation](https://lunrjs.com/)
 - [Meilisearch Documentation](https://docs.meilisearch.com/)
 - [Typesense Documentation](https://typesense.org/docs/)
-- [svelte-markdown-pages Documentation](../README.md)
+- [markpage Documentation](../README.md)

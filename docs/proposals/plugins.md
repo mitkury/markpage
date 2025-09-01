@@ -1,10 +1,10 @@
 # Plugin System Proposal
 
-A proposal for extending svelte-markdown-pages functionality with a plugin system for custom processing, styling, and features.
+A proposal for extending markpage functionality with a plugin system for custom processing, styling, and features.
 
 ## Overview
 
-This proposal outlines a plugin system that would allow users to extend the functionality of svelte-markdown-pages with custom processors, transformers, and utilities. The system would be designed to integrate seamlessly with the existing architecture while providing flexibility for advanced use cases.
+This proposal outlines a plugin system that would allow users to extend the functionality of markpage with custom processors, transformers, and utilities. The system would be designed to integrate seamlessly with the existing architecture while providing flexibility for advanced use cases.
 
 ## Current Architecture
 
@@ -305,14 +305,14 @@ my-plugin/
 
 ```json
 {
-  "name": "svelte-markdown-pages-my-plugin",
+  "name": "markpage-my-plugin",
   "version": "1.0.0",
-  "description": "My custom plugin for svelte-markdown-pages",
+  "description": "My custom plugin for markpage",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "keywords": ["svelte-markdown-pages", "plugin"],
+  "keywords": ["markpage", "plugin"],
   "peerDependencies": {
-    "svelte-markdown-pages": "^1.0.0"
+    "markpage": "^1.0.0"
   },
   "exports": {
     ".": {

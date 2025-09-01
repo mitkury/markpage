@@ -1,6 +1,6 @@
 # Types
 
-Complete type definitions and interfaces for svelte-markdown-pages.
+Complete type definitions and interfaces for markpage.
 
 ## Core Types
 
@@ -430,7 +430,7 @@ const BuildOptionsSchema = z.object({
 ### Type-Safe Navigation
 
 ```typescript
-import type { NavigationItem, NavigationData } from 'svelte-markdown-pages';
+import type { NavigationItem, NavigationData } from 'markpage';
 
 function validateNavigation(data: unknown): NavigationData {
   if (!isNavigationData(data)) {
@@ -456,7 +456,7 @@ function findPage(items: NavigationItem[], name: string): NavigationItem | null 
 ### Type-Safe Content Processing
 
 ```typescript
-import type { ContentProcessor, ContentBundle } from 'svelte-markdown-pages';
+import type { ContentProcessor, ContentBundle } from 'markpage';
 
 function createProcessor(options: ProcessorOptions): ContentProcessor {
   return {
@@ -491,7 +491,7 @@ function validateContentBundle(bundle: unknown): ContentBundle {
 ### Type-Safe Plugin Development
 
 ```typescript
-import type { Plugin, PluginConfig } from 'svelte-markdown-pages';
+import type { Plugin, PluginConfig } from 'markpage';
 
 function createPlugin(config: PluginConfig): Plugin {
   return {

@@ -1,6 +1,6 @@
 # Advanced Customization
 
-Learn how to customize svelte-markdown-pages for your specific needs with advanced configuration options.
+Learn how to customize markpage for your specific needs with advanced configuration options.
 
 ## Custom Components
 
@@ -108,7 +108,7 @@ Create custom navigation components:
 ```svelte
 <!-- src/lib/components/CustomSidebar.svelte -->
 <script lang="ts">
-	import type { NavigationItem } from 'svelte-markdown-pages';
+	import type { NavigationItem } from 'markpage';
 	
 	let { items, currentPage } = $props<{
 		items: NavigationItem[];

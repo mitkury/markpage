@@ -1,13 +1,13 @@
 # Configuration
 
-Learn how to configure svelte-markdown-pages for your project with detailed options and examples.
+Learn how to configure markpage for your project with detailed options and examples.
 
 ## Basic Configuration
 
 The simplest way to build your documentation:
 
 ```typescript
-import { buildPages } from 'svelte-markdown-pages/builder';
+import { buildPages } from 'markpage/builder';
 
 await buildPages('./docs', {
   appOutput: './src/lib/content',
@@ -89,7 +89,7 @@ const result = await buildPages('./docs', {
 Generate a complete static HTML site:
 
 ```typescript
-import { generateStaticSite } from 'svelte-markdown-pages/builder';
+import { generateStaticSite } from 'markpage/builder';
 
 const result = await generateStaticSite('./docs', './dist', {
   title: 'My Documentation',
@@ -168,7 +168,7 @@ await generateStaticSite('./docs', './dist', {
 Build documentation for app integration:
 
 ```bash
-npx svelte-markdown-pages build <content-path> --output <output-path>
+npx markpage build <content-path> --output <output-path>
 ```
 
 **Options:**
@@ -177,7 +177,7 @@ npx svelte-markdown-pages build <content-path> --output <output-path>
 **Examples:**
 ```bash
 # Basic build
-npx svelte-markdown-pages build ./docs --output ./src/lib/content
+npx markpage build ./docs --output ./src/lib/content
 ```
 
 ### Static Command
@@ -185,7 +185,7 @@ npx svelte-markdown-pages build ./docs --output ./src/lib/content
 Generate a complete static HTML site:
 
 ```bash
-npx svelte-markdown-pages static <content-path> --output <output-path>
+npx markpage static <content-path> --output <output-path>
 ```
 
 **Options:**
@@ -194,7 +194,7 @@ npx svelte-markdown-pages static <content-path> --output <output-path>
 **Examples:**
 ```bash
 # Basic static site
-npx svelte-markdown-pages static ./docs --output ./dist
+npx markpage static ./docs --output ./dist
 ```
 
 ## Environment Variables
@@ -205,14 +205,14 @@ Configure behavior using environment variables:
 Enable debug logging.
 
 ```bash
-SMP_DEBUG=1 npx svelte-markdown-pages build ./docs
+SMP_DEBUG=1 npx markpage build ./docs
 ```
 
 ### `SMP_VERBOSE`
 Enable verbose output.
 
 ```bash
-SMP_VERBOSE=1 npx svelte-markdown-pages build ./docs
+SMP_VERBOSE=1 npx markpage build ./docs
 ```
 
 ## Configuration Files
@@ -224,8 +224,8 @@ Add build scripts to your `package.json`:
 ```json
 {
   "scripts": {
-    "build:docs": "svelte-markdown-pages build ./docs --output ./src/lib/content --include-content",
-    "build:static": "svelte-markdown-pages static ./docs ./dist --title \"My Documentation\" --include-index",
+    "build:docs": "markpage build ./docs --output ./src/lib/content --include-content",
+    "build:static": "markpage static ./docs ./dist --title \"My Documentation\" --include-index",
     "dev:docs": "npm run build:docs && npm run dev"
   }
 }
@@ -237,8 +237,7 @@ Create dedicated build scripts for complex configurations:
 
 ```typescript
 // scripts/build-docs.js
-import { buildPages } from 'svelte-markdown-pages/builder';
-import { syntaxHighlightingPlugin } from 'svelte-markdown-pages/plugins';
+import { buildPages } from 'markpage/builder';
 
 const processor = {
   process(content: string): string {
@@ -251,8 +250,7 @@ await buildPages('./docs', {
   appOutput: './src/lib/content',
   websiteOutput: './src/lib/content',
   includeContent: true,
-  processor,
-  plugins: [syntaxHighlightingPlugin]
+  processor
 });
 ```
 
@@ -299,7 +297,7 @@ await buildPages('./docs', {
 Implement caching for faster rebuilds:
 
 ```typescript
-import { buildPages } from 'svelte-markdown-pages/builder';
+import { buildPages } from 'markpage/builder';
 import { existsSync, readFileSync } from 'fs';
 
 const cacheFile = './.docs-cache.json';

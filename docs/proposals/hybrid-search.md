@@ -1,6 +1,6 @@
 # Hybrid Search: Semantic + Literal Search
 
-A comprehensive guide for implementing hybrid search that combines semantic search with literal/full-text search to provide the best search experience for svelte-markdown-pages websites.
+A comprehensive guide for implementing hybrid search that combines semantic search with literal/full-text search to provide the best search experience for markpage websites.
 
 ## Overview
 
@@ -218,7 +218,7 @@ export async function embedTextFast(text: string): Promise<number[]> {
 
 ```typescript
 // scripts/build-hybrid-search.ts
-import { buildPages } from 'svelte-markdown-pages/builder';
+import { buildPages } from 'markpage/builder';
 import { writeFileSync } from 'fs';
 import { join } from 'path';
 import { embedText } from './embeddings';

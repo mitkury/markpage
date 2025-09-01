@@ -16,7 +16,7 @@ Builds documentation from a content directory.
 
 **Example:**
 ```typescript
-import { buildPages } from 'svelte-markdown-pages/builder';
+import { buildPages } from 'markpage/builder';
 
 const result = await buildPages('./docs', {
   appOutput: './src/lib/content',
@@ -38,7 +38,7 @@ Generates a complete static HTML site from markdown content.
 
 **Example:**
 ```typescript
-import { generateStaticSite } from 'svelte-markdown-pages/builder';
+import { generateStaticSite } from 'markpage/builder';
 
 const result = await generateStaticSite('./docs', './dist', {
   title: 'My Documentation',
@@ -193,7 +193,7 @@ interface BuildHooks {
 ### Basic Build
 
 ```typescript
-import { buildPages } from 'svelte-markdown-pages/builder';
+import { buildPages } from 'markpage/builder';
 
 const result = await buildPages('./docs', {
   appOutput: './src/lib/content',
@@ -206,7 +206,7 @@ console.log(`Built navigation with ${result.navigation.items.length} root items`
 ### Advanced Build with Custom Processor
 
 ```typescript
-import { buildPages } from 'svelte-markdown-pages/builder';
+import { buildPages } from 'markpage/builder';
 
 const customProcessor = {
   process(content: string): string {
@@ -225,7 +225,7 @@ const result = await buildPages('./docs', {
 ### Static Site Generation
 
 ```typescript
-import { generateStaticSite } from 'svelte-markdown-pages/builder';
+import { generateStaticSite } from 'markpage/builder';
 
 const result = await generateStaticSite('./docs', './dist', {
   title: 'My Documentation',
@@ -249,7 +249,7 @@ console.log(`Available URLs: ${result.urls.join(', ')}`);
 ### Error Handling
 
 ```typescript
-import { buildPages } from 'svelte-markdown-pages/builder';
+import { buildPages } from 'markpage/builder';
 
 try {
   const result = await buildPages('./docs', {

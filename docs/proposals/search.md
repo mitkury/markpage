@@ -1,10 +1,10 @@
 # Semantic Search Implementation Guide
 
-A guide for adding semantic search functionality to svelte-markdown-pages websites using various solutions.
+A guide for adding semantic search functionality to markpage websites using various solutions.
 
 ## Overview
 
-Semantic search allows users to find content using natural language queries, understanding context and meaning rather than just keyword matching. This guide covers several approaches to implement search in svelte-markdown-pages websites.
+Semantic search allows users to find content using natural language queries, understanding context and meaning rather than just keyword matching. This guide covers several approaches to implement search in markpage websites.
 
 ## Search Solutions
 
@@ -387,7 +387,7 @@ export class LocalSearch {
 - More complex setup
 - Cost for large datasets
 
-## Integration with svelte-markdown-pages
+## Integration with markpage
 
 ### Content Indexing
 
@@ -395,7 +395,7 @@ To make your content searchable, you'll need to extract and index your markdown 
 
 ```typescript
 // src/lib/search-index.ts
-import { buildPages } from 'svelte-markdown-pages/builder';
+import { buildPages } from 'markpage/builder';
 import type { SearchDocument } from './search';
 
 export async function buildSearchIndex(contentPath: string): Promise<SearchDocument[]> {
@@ -515,7 +515,7 @@ buildWithSearch().catch(console.error);
 - [ ] Set up search service/engine
 - [ ] Implement content indexing
 - [ ] Create search UI component
-- [ ] Integrate with svelte-markdown-pages build process
+- [ ] Integrate with markpage build process
 - [ ] Add search to layout/navigation
 - [ ] Test search functionality
 - [ ] Optimize search performance
@@ -536,4 +536,4 @@ buildWithSearch().catch(console.error);
 3. **Input Validation**: Sanitize search queries
 4. **Access Control**: Ensure search respects content permissions
 
-This guide provides a comprehensive overview of implementing semantic search in svelte-markdown-pages websites, with specific recommendations based on different use cases and requirements.
+This guide provides a comprehensive overview of implementing semantic search in markpage websites, with specific recommendations based on different use cases and requirements.
