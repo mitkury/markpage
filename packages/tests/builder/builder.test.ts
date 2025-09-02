@@ -39,6 +39,9 @@ describe('Builder', () => {
 
     writeFileSync(join(contentDir, 'getting-started.md'), '# Getting Started\n\nWelcome to the documentation!');
     writeFileSync(join(guidesDir, 'installation.md'), '# Installation\n\nFollow these steps to install.');
+    
+    // Add README.md to guides section for testing section content bundling
+    writeFileSync(join(guidesDir, 'README.md'), '# Guides Overview\n\nThis section contains various guides.');
   });
 
   afterEach(() => {
@@ -61,9 +64,10 @@ describe('Builder', () => {
 
       expect(result.navigation).toHaveLength(2);
       expect(result.content).toBeDefined();
-      expect(Object.keys(result.content!)).toHaveLength(2);
+      expect(Object.keys(result.content!)).toHaveLength(3); // Now includes README.md content
       expect(result.content!['getting-started.md']).toContain('# Getting Started');
       expect(result.content!['guides/installation.md']).toContain('# Installation');
+      expect(result.content!['guides/README.md']).toContain('# Guides Overview');
     });
 
     it('should build documentation without content', async () => {
@@ -92,7 +96,7 @@ describe('Builder', () => {
       const content = JSON.parse(readFileSync(contentPath, 'utf-8'));
 
       expect(navigation).toHaveLength(2);
-      expect(Object.keys(content)).toHaveLength(2);
+      expect(Object.keys(content)).toHaveLength(3); // Now includes README.md content
     });
 
     it('should write website output files', async () => {

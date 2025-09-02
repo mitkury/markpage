@@ -76,7 +76,21 @@ function bundleMarkdownContent(
             filePath
           );
         }
-      } else if (item.items) {
+      } else if (item.type === 'section' && item.path) {
+        // Bundle content for sections that have a path (README/index.md files)
+        const filePath = join(basePath, item.path);
+        try {
+          const markdownContent = readFileSync(filePath, 'utf-8');
+          content[item.path] = markdownContent;
+        } catch (error) {
+          throw new BuilderError(
+            `Failed to read section markdown file: ${error instanceof Error ? error.message : 'Unknown error'}`,
+            filePath
+          );
+        }
+      }
+      
+      if (item.items) {
         processItems(item.items);
       }
     }
