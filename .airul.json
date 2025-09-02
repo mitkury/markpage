@@ -5,6 +5,7 @@
     "README.md",
     "docs/getting-started.md",
     "docs/how-to-contribute.md",
+    "package.json",
     "docs/for-ai/*"
   ],
   "output": {
