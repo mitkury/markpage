@@ -1,4 +1,4 @@
-This is a context for AI editor/agent about the project. It's generated with a tool Airul (https://github.com/mitkury/airul) out of 5 sources. Feel free to edit .airul.json to change the sources and configure editors. Run `airul gen` to update the context after making changes to .airul.json or the sources. Remember to update TODO-AI.md after major changes in the project, keeping track of completed tasks and new developments.
+This is a context for AI editor/agent about the project. It's generated with a tool Airul (https://github.com/mitkury/airul) out of 6 sources. Feel free to edit .airul.json to change the sources and configure editors. Run `airul gen` to update the context after making changes to .airul.json or the sources. Remember to update TODO-AI.md after major changes in the project, keeping track of completed tasks and new developments.
 
 # From README.md:
 
@@ -260,6 +260,37 @@ npm publish
 ## License
 
 MIT License - see [LICENSE](https://github.com/mitkury/markpage/blob/main/LICENSE) file for details.
+---
+
+# From package.json:
+
+{
+  "name": "markpage-monorepo",
+  "version": "0.0.2",
+  "description": "Monorepo for markpage - markdown content management system",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "npm run copy-readme && npm run build --workspace=markpage",
+    "dev": "npm run dev --workspace=markpage",
+    "test": "npm run test --workspace=@markpage/tests",
+    "test:watch": "npm run test:watch --workspace=@markpage/tests",
+    "test:coverage": "npm run test:coverage --workspace=@markpage/tests",
+
+    "build:website": "npm run build --workspace=@markpage/website",
+    "dev:website": "npm run dev --workspace=@markpage/website",
+    "copy-readme": "cp README.md packages/markpage/README.md",
+    "prepublishOnly": "npm run build && npm run test"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0"
+  },
+  "repository": "https://github.com/mitkury/markpage",
+  "license": "MIT"
+}
 ---
 
 # From docs/for-ai/rules.md:

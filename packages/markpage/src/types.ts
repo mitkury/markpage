@@ -1,21 +1,44 @@
-import { z } from "zod";
+// Simple validation functions
+function validateDocItem(item: any): item is DocItem {
+  return (
+    typeof item === 'object' &&
+    item !== null &&
+    typeof item.name === 'string' &&
+    item.name.length > 0 &&
+    (item.type === 'section' || item.type === 'page') &&
+    typeof item.label === 'string' &&
+    item.label.length > 0 &&
+    (item.collapsed === undefined || typeof item.collapsed === 'boolean') &&
+    (item.url === undefined || typeof item.url === 'string')
+  );
+}
 
-export const DocItemTypeSchema = z.enum(["section", "page"]);
+function validateIndexFile(data: any): data is IndexFile {
+  return (
+    typeof data === 'object' &&
+    data !== null &&
+    Array.isArray(data.items) &&
+    data.items.every(validateDocItem)
+  );
+}
 
-export const DocItemSchema = z.object({
-  name: z.string().min(1),
-  type: DocItemTypeSchema,
-  label: z.string().min(1),
-  collapsed: z.boolean().optional(),
-  url: z.string().url().optional()
-});
+// Export validation functions
+export { validateDocItem, validateIndexFile };
 
-export const IndexSchema = z.object({
-  items: z.array(DocItemSchema)
-});
+// Core types
+export type DocItemType = "section" | "page";
 
-export type DocItem = z.infer<typeof DocItemSchema>;
-export type IndexFile = z.infer<typeof IndexSchema>;
+export interface DocItem {
+  name: string;
+  type: DocItemType;
+  label: string;
+  collapsed?: boolean;
+  url?: string;
+}
+
+export interface IndexFile {
+  items: DocItem[];
+}
 
 // Navigation tree types
 export interface NavigationItem extends DocItem {

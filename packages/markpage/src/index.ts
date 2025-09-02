@@ -9,9 +9,8 @@ export * from './renderer/index.js';
 
 // Re-export commonly used types and functions
 export {
-  DocItemTypeSchema,
-  DocItemSchema,
-  IndexSchema,
+  validateDocItem,
+  validateIndexFile,
   type DocItem,
   type IndexFile,
   type NavigationItem,

@@ -1,6 +1,6 @@
 import { readFileSync, readdirSync, statSync, existsSync } from 'fs';
 import { join, relative } from 'path';
-import { IndexSchema, NavigationItem, DocItem } from '../types.js';
+import { validateIndexFile, NavigationItem, DocItem } from '../types.js';
 
 export class ParserError extends Error {
   constructor(message: string, public filePath?: string) {
@@ -19,16 +19,15 @@ export function parseIndexFile(filePath: string): DocItem[] {
   try {
     const content = readFileSync(filePath, 'utf-8');
     const data = JSON.parse(content);
-    const result = IndexSchema.safeParse(data);
     
-    if (!result.success) {
+    if (!validateIndexFile(data)) {
       throw new ParserError(
-        `Invalid .index.json format: ${result.error.message}`,
+        `Invalid .index.json format: Invalid data structure`,
         filePath
       );
     }
     
-    return result.data.items;
+    return data.items;
   } catch (error) {
     if (error instanceof ParserError) {
       throw error;

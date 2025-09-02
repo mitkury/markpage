@@ -26,10 +26,19 @@ await buildPages('./my-content', {
 });
 ```
 
+## Getting Started
+
+For detailed step-by-step instructions, see the [Getting Started Guide](https://github.com/mitkury/markpage/blob/main/docs/getting-started.md).
+
 ## Examples
 
 - **Test suite** - Comprehensive examples in the [tests directory](https://github.com/mitkury/markpage/tree/main/packages/tests)
 
+## Contributing
+
+👨‍💻 **For contributors: [How to Contribute](https://github.com/mitkury/markpage/blob/main/docs/how-to-contribute.md)**
+
 ## License
 
 MIT License
+
