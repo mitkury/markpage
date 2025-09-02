@@ -1,39 +1,13 @@
 # Getting Started
 
-Welcome to **Markpage** - a tool that builds and manages markdown content with organized navigation.
+Let's get you set up with Markpage in just a few steps.
 
-**What it does**: Point at a directory with markdown files and get navigation structure and content that you can use to render in your app.
+> 📖 **This is the detailed getting started guide. For a quick overview, see the [main README](https://github.com/mitkury/markpage/blob/main/README.md).**
 
-## What is Markpage?
-
-Markpage is a standalone npm package that transforms your markdown content into structured data and navigation. It provides:
-
-- **Distributed Navigation**: Each folder defines its own structure with `.index.json` files
+- **Distributed Navigation**: Each folder can define its own structure with `.index.json` files (optional)
 - **Multiple Output Formats**: App bundles, website navigation, and static HTML sites
-- **Type-Safe**: Full TypeScript support with Zod validation
-- **Framework Agnostic**: Works with any framework or no framework at all
-- **Flexible**: Point to any directory with markdown and `.index.json` files
-- **Comprehensive Testing**: >90% test coverage with comprehensive test suite
-
-## Key Features
-
-### 🗂️ Organized Navigation
-Organize your content with a navigation system. Each folder can define its own structure using `.index.json` files, making it easy to maintain large content sites.
-
-### 📦 Multiple Output Formats
-Generate different outputs for different use cases:
-- **App bundles** for integration into existing applications
-- **Website navigation** for standalone content sites
-- **Static HTML sites** for deployment to any hosting platform
-
-### 🔧 Type-Safe Development
-Built with TypeScript and Zod validation, providing excellent developer experience with full type safety and runtime validation.
-
-### 🎨 Framework Agnostic
-Pure JavaScript/TypeScript utilities that work seamlessly with any framework - React, Vue, Svelte, Angular, or vanilla JS.
-
-### ⚡ Content Management
-Point to any directory with markdown content and `.index.json` files. Customize everything from styling to content processing with custom processors.
+- **Framework Agnostic**: Works with React, Vue, Svelte, Angular, or vanilla JavaScript
+- **Flexible**: Point to any directory with markdown files
 
 ## Quick Start
 
@@ -45,18 +19,22 @@ npm install markpage
 
 ### 2. Create Your Content Structure
 
-Create a directory with your markdown content and `.index.json` files:
+Create a directory with your markdown content. You can optionally add `.index.json` files to organize the navigation:
 
 ```
 my-docs/
-├── .index.json
+├── .index.json          # Optional: defines custom navigation order
 ├── getting-started.md
 └── guides/
-    ├── .index.json
+    ├── .index.json      # Optional: organizes this section
     └── installation.md
 ```
 
-### 3. Define Navigation
+**Without `.index.json` files**: Markdown files are automatically discovered in alphabetical order.
+
+### 3. Define Navigation (Optional)
+
+If you want custom navigation order, create `.index.json` files:
 
 **Root level** (`my-docs/.index.json`):
 ```json
@@ -99,6 +77,20 @@ const navigation = new NavigationTree(navigationData);
 const content = await loadContent('getting-started.md', contentBundle);
 ```
 
+## CLI Usage
+
+### Build for App/Website
+
+```bash
+npx markpage build ./my-docs --output ./src/lib/content
+```
+
+### Generate Static Site
+
+```bash
+npx markpage static ./my-docs --output ./dist
+```
+
 ## Use Cases
 
 ### Content Sites
@@ -116,5 +108,4 @@ Ready to get started? Check out the [Installation](./guides/installation.md) gui
 
 ## Examples
 
-- **This Website**: Built using Markpage itself
-- **Test Suite**: Comprehensive examples in the `packages/tests` directory
+- **Test Suite**: Comprehensive examples in the [tests directory](https://github.com/mitkury/markpage/tree/main/packages/tests)

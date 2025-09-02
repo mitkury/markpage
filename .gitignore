@@ -98,3 +98,6 @@ temp/
 
 # SvelteKit
 .svelte-kit/
+
+# Package README (auto-generated from root)
+packages/markpage/README.md

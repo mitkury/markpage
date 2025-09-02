@@ -1,377 +1,44 @@
 # Markpage
 
-A tool that builds and manages markdown content with organized navigation.
+Markpage helps to render Markdown files on html pages with any framework.
 
-**What it does**: Point at a directory with markdown files and get navigation structure and content that you can use to render in your app.
+You point Markpage at a directory with markdown files and get navigation structure and content that you can use to render in your app.
 
-## Project Structure
+## What it does
 
-This is a monorepo with the following packages:
+Point Markpage at a directory with markdown files and `.index.json` files, and get:
+- **Organized navigation structure** for your content
+- **Multiple output formats** (app bundles, website navigation, static HTML)
+- **Framework-agnostic** utilities that work with React, Vue, Svelte, Angular, or vanilla JavaScript
 
-- **`packages/markpage`** - The main package that gets published to npm
-- **`packages/tests`** - Comprehensive test suite for the package
-- **`packages/website`** - This documentation website
-
-## Features
-
-- **Organized Navigation**: Each folder defines its own structure with `.index.json` files
-- **Multiple Output Formats**: App bundles, website navigation, and static HTML sites
-- **Type-Safe**: Full TypeScript support with Zod validation
-- **Framework Agnostic**: Works with any framework or no framework at all
-- **Content Management**: Point to any directory with markdown and `.index.json` files
-- **Comprehensive Testing**: >90% test coverage with comprehensive test suite
-
-## Development
-
-### Prerequisites
-
-- Node.js 18+
-- npm
-
-### Setup
-
-```bash
-# Install dependencies for all packages
-npm install
-
-# Build the main package
-npm run build
-
-# Run tests
-npm test
-
-
-```
-
-### Package Scripts
-
-- `npm run build` - Build the main markpage package
-- `npm run dev` - Watch mode for the main package
-- `npm test` - Run all tests
-- `npm run test:watch` - Run tests in watch mode
-- `npm run test:coverage` - Run tests with coverage report
-
-
-## Installation
+## Quick Start
 
 ```bash
 npm install markpage
 ```
-
-## Quick Start
-
-### 1. Create Content Structure
-
-Create a directory with your markdown content and `.index.json` files:
-
-```
-my-content/
-├── .index.json
-├── getting-started.md
-└── guides/
-    ├── .index.json
-    └── installation.md
-```
-
-### 2. Define Navigation
-
-**Root level** (`my-content/.index.json`):
-```json
-{
-  "items": [
-    { "name": "getting-started", "type": "page", "label": "Getting Started" },
-    { "name": "guides", "type": "section", "label": "Guides" }
-  ]
-}
-```
-
-**Section level** (`my-content/guides/.index.json`):
-```json
-{
-  "items": [
-    { "name": "installation", "type": "page", "label": "Installation" }
-  ]
-}
-```
-
-### 3. Build Documentation
 
 ```typescript
 import { buildPages } from 'markpage/builder';
 
 await buildPages('./my-content', {
   appOutput: './src/lib/content',
-  websiteOutput: './src/lib/content',
   includeContent: true
 });
 ```
 
-### 4. Use in Your App
+## Getting Started
 
-```typescript
-import { NavigationTree, loadContent } from 'markpage/renderer';
-import navigationData from './src/lib/content/navigation.json';
-import contentBundle from './src/lib/content/content.json';
+For detailed step-by-step instructions, see the [Getting Started Guide](https://github.com/mitkury/markpage/blob/main/docs/getting-started.md).
 
-const navigation = new NavigationTree(navigationData);
-const content = await loadContent('getting-started.md', contentBundle);
-```
+## Examples
 
-## CLI Usage
-
-### Build for App/Website
-
-```bash
-npx markpage build ./my-content --output ./src/lib/content
-```
-
-### Generate Static Site
-
-```bash
-npx markpage static ./my-content --output ./dist
-```
-
-## API Reference
-
-### Builder Module
-
-#### `buildPages(contentPath, options?)`
-
-Builds documentation from a content directory.
-
-```typescript
-import { buildPages } from 'markpage/builder';
-
-const result = await buildPages('./content', {
-  appOutput: './src/lib/content',
-  websiteOutput: './src/lib/content',
-  includeContent: true
-});
-```
-
-#### `generateStaticSite(contentPath, outputPath, options?)`
-
-Generates a complete static HTML site.
-
-```typescript
-import { generateStaticSite } from 'markpage/builder';
-
-const result = await generateStaticSite('./content', './dist', {
-  title: 'My Documentation',
-  baseUrl: 'https://example.com',
-  includeIndex: true
-});
-```
-
-### Renderer Module
-
-#### `NavigationTree`
-
-Manages navigation structure and provides navigation utilities.
-
-```typescript
-import { NavigationTree } from 'markpage/renderer';
-
-const navigation = new NavigationTree(navigationData);
-
-// Find items
-const item = navigation.findItemByPath('guides/installation.md');
-
-// Get breadcrumbs
-const breadcrumbs = navigation.getBreadcrumbs('guides/installation.md');
-
-// Get siblings
-const siblings = navigation.getSiblings('guides/installation.md');
-const nextSibling = navigation.getNextSibling('guides/installation.md');
-const prevSibling = navigation.getPreviousSibling('guides/installation.md');
-```
-#### `ContentLoader`
-
-Manages content loading and processing.
-
-```typescript
-import { ContentLoader } from 'markpage/renderer';
-
-const loader = new ContentLoader(contentBundle);
-
-// Load content
-const content = loader.loadAndProcess('getting-started.md');
-
-// Check availability
-const hasContent = loader.hasContent('guides/installation.md');
-const paths = loader.getAvailablePaths();
-```
-
-#### `loadContent(path, contentBundle, processor?)`
-
-Loads and processes content for a specific path.
-
-```typescript
-import { loadContent } from 'markpage/renderer';
-
-const content = await loadContent('getting-started.md', contentBundle);
-```
-
-### Content Processing
-
-#### Custom Processors
-
-You can provide custom content processors for advanced transformations:
-
-```typescript
-const processor = {
-  process(content: string): string {
-    // Add table of contents
-    return addTableOfContents(content);
-  }
-};
-
-const content = await loadContent('page.md', contentBundle, processor);
-```
-
-#### Utility Functions
-
-```typescript
-import { 
-  extractHeadings, 
-  extractTableOfContents, 
-  addTableOfContents 
-} from 'markpage/renderer';
-
-// Extract headings from markdown
-const headings = extractHeadings(content);
-
-// Generate table of contents
-const toc = extractTableOfContents(content);
-
-// Add table of contents to content
-const contentWithToc = addTableOfContents(content);
-```
-
-## Content Structure
-
-### Index.json Format
-
-Each directory can contain a `.index.json` file that defines the navigation structure:
-
-```json
-{
-  "items": [
-    { "name": "page-name", "type": "page", "label": "Page Label" },
-    { "name": "section-name", "type": "section", "label": "Section Label" }
-  ]
-}
-```
-
-### Item Properties
-
-- `name`: File/directory name (without extension)
-- `type`: Either `"page"` or `"section"`
-- `label`: Display label for navigation
-- `collapsed`: Optional boolean to collapse sections by default
-- `url`: Optional external URL
-
-### File Structure
-
-- Pages: `{name}.md` files
-- Sections: `{name}/` directories with their own `.index.json`
-
-## Use Cases
-
-### Content Sites
-
-```bash
-npx markpage build ./docs --output ./src/lib/docs
-```
-
-### Blog Systems
-
-```bash
-npx markpage build ./blog --output ./src/lib/blog
-```
-
-### Knowledge Bases
-
-```bash
-npx markpage build ./kb --output ./src/lib/kb
-```
-
-### Static Sites
-
-```bash
-npx markpage static ./content --output ./dist
-```
-
-## Integration Examples
-
-### React Integration
-
-```tsx
-// src/components/DocsLayout.tsx
-import React, { useState, useEffect } from 'react';
-import { NavigationTree, loadContent } from 'markpage/renderer';
-import navigationData from '../content/navigation.json';
-import contentBundle from '../content/content.json';
-
-function DocsLayout() {
-  const [navigation] = useState(() => new NavigationTree(navigationData));
-  const [currentPage, setCurrentPage] = useState("getting-started.md");
-  const [pageContent, setPageContent] = useState<string | null>(null);
-  
-  useEffect(() => {
-    if (currentPage && contentBundle) {
-      loadContent(currentPage, contentBundle).then(setPageContent);
-    }
-  }, [currentPage]);
-  
-  return (
-    <div className="docs-layout">
-      <nav className="docs-sidebar">
-        {/* Implement your own navigation */}
-      </nav>
-      <main className="docs-content">
-        {pageContent && <div dangerouslySetInnerHTML={{ __html: pageContent }} />}
-      </main>
-    </div>
-  );
-}
-```
-
-### Svelte Integration
-
-```svelte
-<!-- src/routes/docs/[...slug]/+page.svelte -->
-<script lang="ts">
-  import { NavigationTree, loadContent } from 'markpage/renderer';
-  import navigationData from '$lib/content/navigation.json';
-  import contentBundle from '$lib/content/content.json';
-  
-  export let data;
-  let { content, slug } = data;
-  
-  let navigation = $state(new NavigationTree(navigationData));
-</script>
-
-<div class="docs-layout">
-  <nav class="docs-sidebar">
-    <!-- Implement your own navigation -->
-  </nav>
-  <main class="docs-content">
-    {@html content || 'No content selected'}
-  </main>
-</div>
-```
+- **Test suite** - Comprehensive examples in the [tests directory](https://github.com/mitkury/markpage/tree/main/packages/tests)
 
 ## Contributing
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests for new functionality
-5. Ensure all tests pass
-6. Submit a pull request
+👨‍💻 **For contributors: [How to Contribute](https://github.com/mitkury/markpage/blob/main/docs/how-to-contribute.md)**
 
 ## License
 
-MIT License - see LICENSE file for details.
+MIT License
 
