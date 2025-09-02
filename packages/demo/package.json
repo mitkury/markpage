@@ -1,0 +1,21 @@
+{
+  "name": "@markpage/demo",
+  "version": "0.0.1",
+  "description": "Demo of markpage-svelte functionality",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@markpage/svelte": "file:../markpage-svelte",
+    "markpage": "file:../markpage",
+    "svelte": "^5.0.0"
+  },
+  "devDependencies": {
+    "@sveltejs/vite-plugin-svelte": "^3.0.0",
+    "vite": "^5.0.0",
+    "typescript": "^5.0.0"
+  }
+}
