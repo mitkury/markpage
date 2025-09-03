@@ -55,7 +55,7 @@
 
 		<div class="docs-content">
 			{#if data?.content}
-				<MarkdownRenderer content={data.content} components={components} enableComponents={true} />
+				<MarkdownRenderer content={data.content} components={components} enableComponents={true} ssr={true} />
 			{:else}
 				<div>No content selected</div>
 			{/if}
