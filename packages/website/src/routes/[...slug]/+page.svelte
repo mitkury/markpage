@@ -9,6 +9,13 @@
 	const components = new Map([
 		['TestButton', TestButton]
 	]);
+
+	type NavItem = { name: string; type: 'page' | 'section'; label: string; path?: string; items?: NavItem[] };
+	const navItems = (data.navigation as unknown as NavItem[]) || [];
+
+	function hrefFor(item: NavItem, parentPath = '') {
+		return parentPath ? `/${parentPath}/${item.name}` : `/${item.name}`;
+	}
 </script>
 
 <div class="docs-layout">
@@ -18,20 +25,32 @@
 				<h1>Markpage</h1>
 				<p class="docs-subtitle">Documentation</p>
 			</header>
-			{@html (data.navigation as any[]).map((item: any) => {
-				function render(items: any[], parentPath: string = ''): string {
-					return items.map((it) => {
-						if (it.type === 'section') {
-							const currentPath = parentPath ? `${parentPath}/${it.name}` : it.name;
-							return `<div class=\"nav-section\"><div class=\"nav-section-header\">${it.label}</div>${render(it.items || [], currentPath)}</div>`;
-						}
-						const href = parentPath ? `/${parentPath}/${it.name}` : `/${it.name}`;
-						const isActive = data.contentPath === it.path;
-						return `<a href=\"${href}\" class=\"nav-link ${isActive ? 'active' : ''}\">${it.label}</a>`;
-					}).join('');
-				}
-				return render([item]);
-			}).join('')}
+
+			{#each navItems as item}
+				{#if item.type === 'section'}
+					<div class="nav-section">
+						<div class="nav-section-header">{item.label}</div>
+						{#if item.items}
+							{#each item.items as sub}
+								{#if sub.type === 'section'}
+									<div class="nav-section">
+										<div class="nav-section-header">{sub.label}</div>
+										{#if sub.items}
+											{#each sub.items as sub2}
+												<a href={hrefFor(sub2, `${item.name}/${sub.name}`)} class="nav-link {data.contentPath === sub2.path ? 'active' : ''}">{sub2.label}</a>
+											{/each}
+										{/if}
+									</div>
+								{:else}
+									<a href={hrefFor(sub, item.name)} class="nav-link {data.contentPath === sub.path ? 'active' : ''}">{sub.label}</a>
+								{/if}
+							{/each}
+						{/if}
+					</div>
+				{:else}
+					<a href={hrefFor(item)} class="nav-link {data.contentPath === item.path ? 'active' : ''}">{item.label}</a>
+				{/if}
+			{/each}
 		</nav>
 
 		<div class="docs-content">

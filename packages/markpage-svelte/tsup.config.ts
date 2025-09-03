@@ -8,9 +8,4 @@ export default defineConfig({
   sourcemap: true,
   clean: true,
   external: ['svelte'],
-  esbuildOptions(options) {
-    options.banner = {
-      js: '"use client";',
-    };
-  },
 });

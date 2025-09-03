@@ -58,25 +58,26 @@
 <div class="markdown-renderer">
   {#each parsedContent as item, index}
     {#if item.type === 'text'}
-      <!-- Render text content as markdown -->
-      <div class="markdown-text">
-        {@html markdownToHtml(item.content)}
-      </div>
+      <div class="markdown-text">{item.content}</div>
     {:else}
-      <!-- Dynamic component rendering -->
       {#if components.has(item.content.name)}
         {@const Component = components.get(item.content.name)!}
         {@const node = item.content as ComponentNode}
-        <!-- In Svelte 5, we can render components directly -->
         {#if node.children}
-          <Component {...node.props} on:click={(e) => handleComponentEvent(e, node.name)} on:submit={(e) => handleComponentEvent(e, node.name)} on:change={(e) => handleComponentEvent(e, node.name)} children={createChildrenFunction(node.children)}>
-            <!-- The component will handle rendering children -->
-          </Component>
+          <!-- For SSR demo, also pass children as "text" prop to simple components -->
+          <Component {...node.props} text={node.children}
+            on:click={(e) => handleComponentEvent(e, node.name)}
+            on:submit={(e) => handleComponentEvent(e, node.name)}
+            on:change={(e) => handleComponentEvent(e, node.name)}
+          />
         {:else}
-          <Component {...node.props} on:click={(e) => handleComponentEvent(e, node.name)} on:submit={(e) => handleComponentEvent(e, node.name)} on:change={(e) => handleComponentEvent(e, node.name)} />
+          <Component {...node.props}
+            on:click={(e) => handleComponentEvent(e, node.name)}
+            on:submit={(e) => handleComponentEvent(e, node.name)}
+            on:change={(e) => handleComponentEvent(e, node.name)}
+          />
         {/if}
       {:else}
-        <!-- Fallback for unregistered components -->
         <div class="component-error">
           <strong>Component '{item.content.name}' not found</strong>
           <p>Available components: {Array.from(components.keys()).join(', ')}</p>
@@ -93,9 +94,7 @@
     color: #333;
   }
 
-  .markdown-text {
-    margin-bottom: 1rem;
-  }
+  .markdown-text { margin-bottom: 1rem; white-space: pre-wrap; }
 
   .component-error {
     margin: 1rem 0;
@@ -104,15 +103,5 @@
     border-radius: 4px;
     background-color: #ffebee;
     color: #c62828;
-  }
-
-  .component-error strong {
-    display: block;
-    margin-bottom: 0.5rem;
-  }
-
-  .component-error p {
-    margin: 0;
-    font-size: 0.9rem;
   }
 </style>

@@ -1,10 +1,10 @@
 <script lang="ts">
   let { 
     variant = 'default',
-    children 
+    text = ''
   } = $props<{
     variant?: 'default' | 'primary' | 'success' | 'warning' | 'danger';
-    children: any;
+    text?: string;
   }>();
 
   const variantClasses: Record<string, string> = {
@@ -18,13 +18,8 @@
 
 <button 
   class="test-btn {variantClasses[variant]}"
-  onclick={() => console.log('TestButton clicked!', { variant, children: children?.() })}
 >
-  {#if children}
-    {@render children()}
-  {:else}
-    Test Button
-  {/if}
+  {text || 'Test Button'}
 </button>
 
 <style>
@@ -47,29 +42,9 @@
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
   }
 
-  .test-btn-default {
-    background: #f5f5f5;
-    color: #333;
-    border: 1px solid #ddd;
-  }
-
-  .test-btn-primary {
-    background: #007acc;
-    color: white;
-  }
-
-  .test-btn-success {
-    background: #28a745;
-    color: white;
-  }
-
-  .test-btn-warning {
-    background: #ffc107;
-    color: #212529;
-  }
-
-  .test-btn-danger {
-    background: #dc3545;
-    color: white;
-  }
+  .test-btn-default { background: #f5f5f5; color: #333; border: 1px solid #ddd; }
+  .test-btn-primary { background: #007acc; color: white; }
+  .test-btn-success { background: #28a745; color: white; }
+  .test-btn-warning { background: #ffc107; color: #212529; }
+  .test-btn-danger  { background: #dc3545; color: white; }
 </style>
