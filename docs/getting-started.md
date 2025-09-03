@@ -86,6 +86,10 @@ Markpage supports components in markdown files! Here are some examples:
 <TestButton variant="warning" text="Warning Button" />
 <TestButton variant="danger" text="Danger Button" />
 
+Components without props work too:
+<TestButton />
+<TestButton />
+
 Components are registered upfront and can receive props like `variant` and `text`.
 
 ## CLI Usage
