@@ -77,6 +77,17 @@ const navigation = new NavigationTree(navigationData);
 const content = await loadContent('getting-started.md', contentBundle);
 ```
 
+## Component System
+
+Markpage supports components in markdown files! Here are some examples:
+
+<TestButton variant="primary" text="Primary Button" />
+<TestButton variant="success" text="Success Button" />
+<TestButton variant="warning" text="Warning Button" />
+<TestButton variant="danger" text="Danger Button" />
+
+Components are registered upfront and can receive props like `variant` and `text`.
+
 ## CLI Usage
 
 ### Build for App/Website
