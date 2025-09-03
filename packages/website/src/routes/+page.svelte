@@ -5,7 +5,7 @@
 	
 	onMount(() => {
 		// Redirect to the first page in navigation
-		const firstPage = navigationData.items?.[0];
+		const firstPage = navigationData[0];
 		if (firstPage?.path) {
 			// Extract the name without .md extension for the URL
 			const urlPath = firstPage.path.replace('.md', '');

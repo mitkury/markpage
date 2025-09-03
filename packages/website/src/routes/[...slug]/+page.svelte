@@ -3,10 +3,17 @@
 	import { page } from '$app/state';
 	import navigationData from '$lib/content/navigation.json';
 	import contentData from '$lib/content/content.json';
+	import { MarkdownRenderer } from '@markpage/svelte';
+	import TestButton from '$lib/components/TestButton.svelte';
 	
 	// Build docs from the docs directory
 	let navigation = $state<any>(navigationData);
 	let contentBundle = $state<any>(contentData);
+	
+	// Component registration for markdown components
+	const components = new Map([
+		['TestButton', TestButton]
+	]);
 	
 	// Debug logging
 	console.log('Navigation data:', navigationData);
@@ -146,7 +153,15 @@
 				{#await pageContentPromise}
 					<div>Loading...</div>
 				{:then content}
-					{@html content || 'No content selected'}
+					{#if content}
+						<MarkdownRenderer 
+							content={content}
+							components={components}
+							enableComponents={true}
+						/>
+					{:else}
+						<div>No content selected</div>
+					{/if}
 				{:catch error}
 					<div>Error: {error.message}</div>
 				{/await}
