@@ -2,7 +2,6 @@
   import type { ComponentType } from 'svelte';
   import type { ComponentNode, ParsedContent } from './types.js';
   import { ComponentParser } from './ComponentParser.js';
-  import { onMount } from 'svelte';
   import { createEventDispatcher } from 'svelte';
 
   let { 
@@ -15,26 +14,12 @@
     enableComponents?: boolean;
   }>();
 
-  let parsedContent: ParsedContent[] = $state([]);
-  let parser: ComponentParser;
+  const parser: ComponentParser = new ComponentParser();
   const dispatch = createEventDispatcher();
 
-  onMount(() => {
-    parser = new ComponentParser();
-    updateParsedContent();
+  const parsedContent: ParsedContent[] = $derived.by(() => {
+    return enableComponents ? parser.parse(content) : [{ type: 'text', content }];
   });
-
-  $effect(() => {
-    updateParsedContent();
-  });
-
-  function updateParsedContent() {
-    if (enableComponents && parser) {
-      parsedContent = parser.parse(content);
-    } else {
-      parsedContent = [{ type: 'text', content }];
-    }
-  }
 
   function handleComponentEvent(event: CustomEvent, componentName: string) {
     dispatch('componentEvent', {
