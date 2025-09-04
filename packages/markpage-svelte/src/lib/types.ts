@@ -1,4 +1,4 @@
-import type { ComponentType } from 'svelte';
+import type { Component } from 'svelte';
 import type { NavigationItem } from 'markpage';
 
 // Component node parsed from markdown
@@ -17,7 +17,7 @@ export interface ComponentOptions {
 
 // Registered component information
 export interface RegisteredComponent {
-  component: ComponentType;
+  component: Component;
   options: ComponentOptions;
 }
 
