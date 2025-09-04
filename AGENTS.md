@@ -1,4 +1,4 @@
-This is a context for AI editor/agent about the project. It's generated with a tool Airul (https://github.com/mitkury/airul) out of 6 sources. Feel free to edit .airul.json to change the sources and configure editors. Run `airul gen` to update the context after making changes to .airul.json or the sources. Remember to update TODO-AI.md after major changes in the project, keeping track of completed tasks and new developments.
+This is a context for AI editor/agent about the project. It's generated with a tool Airul (https://github.com/mitkury/airul) out of 6 sources. Edit .airul.json to change sources or enabled outputs. After any change to sources or .airul.json, run `airul gen` to regenerate the context.
 
 # From README.md:
 
@@ -14,6 +14,7 @@ Point Markpage at a directory with markdown files and `.index.json` files, and g
 - **Organized navigation structure** for your content
 - **Multiple output formats** (app bundles, website navigation, static HTML)
 - **Framework-agnostic** utilities that work with React, Vue, Svelte, Angular, or vanilla JavaScript
+- **Component system** for embedding interactive components in markdown (Svelte support included)
 
 ## Quick Start
 
@@ -28,6 +29,28 @@ await buildPages('./my-content', {
   appOutput: './src/lib/content',
   includeContent: true
 });
+```
+
+## Component System
+
+Markpage supports embedding interactive components directly in markdown files, similar to MDX but simpler:
+
+```markdown
+# My Documentation
+
+Here's a regular paragraph.
+
+<MyButton variant="primary" text="Click me" />
+<MyButton /> <!-- Uses default props -->
+```
+
+Components are registered upfront in your framework-specific instance:
+
+```typescript
+import { MarkpageSvelte } from '@markpage/svelte';
+
+const mp = new MarkpageSvelte(navigation, content);
+mp.addComponent('MyButton', MyButtonComponent);
 ```
 
 ## Getting Started
@@ -58,6 +81,7 @@ Let's get you set up with Markpage in just a few steps.
 - **Distributed Navigation**: Each folder can define its own structure with `.index.json` files (optional)
 - **Multiple Output Formats**: App bundles, website navigation, and static HTML sites
 - **Framework Agnostic**: Works with React, Vue, Svelte, Angular, or vanilla JavaScript
+- **Component System**: Embed interactive components directly in markdown files
 - **Flexible**: Point to any directory with markdown files
 
 ## Quick Start
@@ -127,6 +151,21 @@ import contentBundle from './src/lib/content/content.json';
 const navigation = new NavigationTree(navigationData);
 const content = await loadContent('getting-started.md', contentBundle);
 ```
+
+## Component System
+
+Markpage supports components in markdown files! Here are some examples:
+
+<TestButton variant="primary" text="Primary Button" />
+<TestButton variant="success" text="Success Button" />
+<TestButton variant="warning" text="Warning Button" />
+<TestButton variant="danger" text="Danger Button" />
+
+Components without props work too:
+<TestButton />
+<TestButton />
+
+Components are registered upfront and can receive props like `variant` and `text`.
 
 ## CLI Usage
 
@@ -278,7 +317,6 @@ MIT License - see [LICENSE](https://github.com/mitkury/markpage/blob/main/LICENS
     "test": "npm run test --workspace=@markpage/tests",
     "test:watch": "npm run test:watch --workspace=@markpage/tests",
     "test:coverage": "npm run test:coverage --workspace=@markpage/tests",
-
     "build:website": "npm run build --workspace=@markpage/website",
     "dev:website": "npm run dev --workspace=@markpage/website",
     "copy-readme": "cp README.md packages/markpage/README.md",
@@ -289,7 +327,10 @@ MIT License - see [LICENSE](https://github.com/mitkury/markpage/blob/main/LICENS
     "typescript": "^5.0.0"
   },
   "repository": "https://github.com/mitkury/markpage",
-  "license": "MIT"
+  "license": "MIT",
+  "overrides": {
+    "@sveltejs/vite-plugin-svelte": "^4.0.0-next.6"
+  }
 }
 ---
 
