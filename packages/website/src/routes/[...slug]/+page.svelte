@@ -124,6 +124,9 @@
 	.nav-link.active {
 		color: #007acc;
 		font-weight: 500;
+		background: #e3f2fd;
+		padding: 0.5rem 0.75rem;
+		border-radius: 4px;
 	}
 
 	.docs-content {
@@ -169,24 +172,30 @@
 	}
 
 	:global(.markdown-text code) {
-		background: #f8f9fa;
+		background: #f1f3f4;
 		padding: 0.2rem 0.4rem;
 		border-radius: 3px;
 		font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
 		font-size: 0.9em;
+		color: #d73a49;
+		border: 1px solid #e1e4e8;
 	}
 
 	:global(.markdown-text pre) {
-		background: #f8f9fa;
+		background: #f6f8fa;
 		padding: 1rem;
 		border-radius: 6px;
 		overflow-x: auto;
 		margin: 1rem 0;
+		border: 1px solid #e1e4e8;
+		box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 	}
 
 	:global(.markdown-text pre code) {
 		background: none;
 		padding: 0;
+		color: #24292e;
+		border: none;
 	}
 
 	:global(.markdown-text ul, .markdown-text ol) {
