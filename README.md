@@ -58,6 +58,16 @@ Components are registered and used with the `MarkdownRenderer` component:
 />
 ```
 
+### Framework Integrations
+
+- Svelte: `@markpage/svelte` is available on npm.
+
+```bash
+npm install @markpage/svelte
+```
+
+- React: not available yet — feel free to contribute an official `@markpage/react` integration (PRs welcome).
+
 ## Getting Started
 
 For detailed step-by-step instructions, see the [Getting Started Guide](https://github.com/mitkury/markpage/blob/main/docs/getting-started.md).
