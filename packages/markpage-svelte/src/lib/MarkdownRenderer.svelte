@@ -1,26 +1,30 @@
 <script lang="ts">
-  import type { ComponentType } from 'svelte';
+  import type { SvelteComponent } from 'svelte';
   import type { ComponentNode, ParsedContent } from './types.js';
   import { ComponentParser } from './ComponentParser.js';
-  import { createEventDispatcher } from 'svelte';
   import { marked } from 'marked';
 
   let { 
     content = '', 
-    components = new Map<string, ComponentType>(),
+    components = new Map<string, typeof SvelteComponent>(),
     enableComponents = true
   } = $props<{
     content: string;
-    components: Map<string, ComponentType>;
+    components: Map<string, typeof SvelteComponent>;
     enableComponents?: boolean;
   }>();
 
-  const dispatch = createEventDispatcher();
+  // Event dispatcher function
+  function dispatch(event: string, detail?: any) {
+    // For now, we'll use a simple event system
+    // In a real implementation, you might want to use a more sophisticated event system
+    console.log('Component event:', event, detail);
+  }
 
   // Parse markdown to HTML first, then extract components
   let parsedContent = $derived(() => {
-    // First convert markdown to HTML
-    const htmlContent = marked(content);
+    // First convert markdown to HTML (marked returns a string, not a Promise)
+    const htmlContent = marked.parse(content) as string;
     
     if (enableComponents) {
       const parser = new ComponentParser();
@@ -30,10 +34,10 @@
     }
   });
 
-  function handleComponentEvent(event: CustomEvent, componentName: string) {
+  function handleComponentEvent(event: Event, componentName: string) {
     dispatch('componentEvent', {
       component: componentName,
-      event: event.detail
+      event: (event as CustomEvent).detail
     });
   }
 </script>
@@ -43,25 +47,25 @@
     {#if item.type === 'text'}
       <div class="markdown-text">{@html item.content}</div>
     {:else}
-      {#if components.has(item.content.name)}
-        {@const Component = components.get(item.content.name)!}
-        {@const node = item.content as ComponentNode}
+      {@const node = item.content as ComponentNode}
+      {#if components.has(node.name)}
+        {@const Component = components.get(node.name)!}
         {#if node.children}
           <Component {...node.props} text={node.children}
-            on:click={(e) => handleComponentEvent(e, node.name)}
-            on:submit={(e) => handleComponentEvent(e, node.name)}
-            on:change={(e) => handleComponentEvent(e, node.name)}
+            onclick={(e: Event) => handleComponentEvent(e, node.name)}
+            onsubmit={(e: Event) => handleComponentEvent(e, node.name)}
+            onchange={(e: Event) => handleComponentEvent(e, node.name)}
           />
         {:else}
           <Component {...node.props}
-            on:click={(e) => handleComponentEvent(e, node.name)}
-            on:submit={(e) => handleComponentEvent(e, node.name)}
-            on:change={(e) => handleComponentEvent(e, node.name)}
+            onclick={(e: Event) => handleComponentEvent(e, node.name)}
+            onsubmit={(e: Event) => handleComponentEvent(e, node.name)}
+            onchange={(e: Event) => handleComponentEvent(e, node.name)}
           />
         {/if}
       {:else}
         <div class="component-error">
-          <strong>Component '{item.content.name}' not found</strong>
+          <strong>Component '{node.name}' not found</strong>
           <p>Available components: {Array.from(components.keys()).join(', ')}</p>
         </div>
       {/if}
