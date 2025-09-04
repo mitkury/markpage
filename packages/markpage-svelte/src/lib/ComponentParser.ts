@@ -1,8 +1,16 @@
 import type { ComponentNode, ParsedContent } from './types.js';
 
 /**
- * Parser for extracting component-like tags from HTML content
- * produced by a markdown parser.
+ * Parser for extracting component-like tags from HTML content produced by a
+ * markdown parser (e.g. output of `marked.parse`).
+ *
+ * How it works (briefly):
+ * 1) We receive fully-rendered HTML (not raw markdown)
+ * 2) We precompute ranges of <pre>...</pre> and <code>...</code> to avoid
+ *    parsing examples/code as components
+ * 3) A regex scans for capitalized tags (e.g. <TestButton ...>...</TestButton>
+ *    or self-closing <TestButton .../>) outside code ranges
+ * 4) We emit a flat sequence of text and component items, preserving order
  */
 export class ComponentParser {
   private componentRegex = /<([A-Z][a-zA-Z0-9]*)\s*([^>]*?)(?:\/>|>([\s\S]*?)<\/\1>)/g;
