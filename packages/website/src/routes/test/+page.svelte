@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { SimpleMarkdownRenderer } from '@markpage/svelte';
+	import { MarkdownRenderer } from '@markpage/svelte';
 	import TestButton from '$lib/components/TestButton.svelte';
 
 	// Component registry
@@ -20,4 +20,4 @@ More content here.
 
 <h1>Test Page</h1>
 
-<SimpleMarkdownRenderer content={testContent} />
+<MarkdownRenderer content={testContent} components={components} enableComponents={true} />
