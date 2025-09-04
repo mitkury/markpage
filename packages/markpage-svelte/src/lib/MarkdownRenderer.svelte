@@ -7,18 +7,23 @@
   let { 
     content = '', 
     components = new Map<string, Component>(),
-    enableComponents = true
+    enableComponents = true,
+    onComponentEvent
   } = $props<{
     content: string;
     components: Map<string, Component>;
     enableComponents?: boolean;
+    onComponentEvent?: (event: { component: string; event: any }) => void;
   }>();
 
-  // Event dispatcher function - emits events that parent components can listen to
+  // Event dispatcher function - calls the registered event handler from parent
   function dispatch(event: string, detail?: any) {
-    // This logs the event for debugging, but in a real app the parent
-    // would handle these events through their own event listeners
-    console.log('Component event:', event, detail);
+    if (onComponentEvent) {
+      onComponentEvent({
+        component: event,
+        event: detail
+      });
+    }
   }
 
   // Parse markdown to HTML first, then extract components
