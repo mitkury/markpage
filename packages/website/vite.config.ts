@@ -22,10 +22,5 @@ const buildContentPlugin = () => {
 };
 
 export default defineConfig({
-  plugins: [buildContentPlugin(), sveltekit()],
-  resolve: {
-    alias: {
-      '@markpage/svelte': '/workspace/packages/markpage-svelte/src'
-    }
-  }
+  plugins: [buildContentPlugin(), sveltekit()]
 });

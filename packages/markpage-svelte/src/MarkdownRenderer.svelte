@@ -20,7 +20,7 @@
 
   // During SSR, just render text. On client, parse components
   let parsedContent = $derived(() => {
-    if (!ssr && enableComponents) {
+    if (!ssr && enableComponents && typeof window !== 'undefined') {
       const parser = new ComponentParser();
       return parser.parse(content);
     } else {
