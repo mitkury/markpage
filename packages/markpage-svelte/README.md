@@ -19,104 +19,32 @@ npm install @markpage/svelte
 
 ## Quick Start
 
-```typescript
-import { MarkpageSvelte, MarkdownRenderer } from '@markpage/svelte';
-import MyComponent from './MyComponent.svelte';
+```svelte
+<script lang="ts">
+  import { MarkdownRenderer } from '@markpage/svelte';
+  import MyComponent from './MyComponent.svelte';
 
-// Create instance with navigation and content
-const mp = new MarkpageSvelte(navigation, content);
+  const components = new Map([
+    ['MyComponent', MyComponent]
+  ]);
 
-// Register components
-mp.addComponent('MyComponent', MyComponent);
+  const content = `
+  # Example
+  
+  <MyComponent someProp="value" />
+  `;
+</script>
 
-// Use in your Svelte app
-<MarkdownRenderer 
-  content={mp.getContent('features/components')} 
-  components={mp.getRegisteredComponents()} 
-/>
+<MarkdownRenderer content={content} components={components} enableComponents={true} />
 ```
 
 ## API Reference
 
-### MarkpageSvelte
+### Exports
 
-The main class for managing components and content.
-
-#### Constructor
-
-```typescript
-new MarkpageSvelte(
-  navigation: NavigationItem[],
-  content: Record<string, string>,
-  options?: MarkpageSvelteOptions
-)
-```
-
-#### Methods
-
-##### `addComponent(name, component, options?)`
-
-Register a component for use in markdown.
-
-```typescript
-mp.addComponent('Button', ButtonComponent);
-mp.addComponent('Alert', AlertComponent, { 
-  defaultProps: { variant: 'info' } 
-});
-```
-
-##### `removeComponent(name)`
-
-Remove a registered component.
-
-```typescript
-mp.removeComponent('Button');
-```
-
-##### `getComponent(name)`
-
-Get a registered component.
-
-```typescript
-const Button = mp.getComponent('Button');
-```
-
-##### `hasComponent(name)`
-
-Check if a component is registered.
-
-```typescript
-if (mp.hasComponent('Button')) {
-  // Component is available
-}
-```
-
-##### `getRegisteredComponents()`
-
-Get all registered component names.
-
-```typescript
-const components = mp.getRegisteredComponents();
-// ['Button', 'Alert', 'Card']
-```
-
-##### `parseContent(content)`
-
-Parse markdown content and extract components.
-
-```typescript
-const components = mp.parseContent(markdownContent);
-```
-
-##### `hasComponents(content)`
-
-Check if content contains any components.
-
-```typescript
-if (mp.hasComponents(content)) {
-  // Content has components
-}
-```
+- `MarkdownRenderer.svelte` – render markdown with embedded Svelte components
+- `ComponentParser` – parse component tags embedded in markdown
+- Types – `ComponentNode`, `ComponentOptions`, `RegisteredComponent`, `ParsedContent`
 
 ### Component Registration Options
 
@@ -226,58 +154,19 @@ Components are detected when they:
 </div>
 ```
 
-## Configuration Options
+## Options
 
-```typescript
-interface MarkpageSvelteOptions {
-  enableComponents?: boolean;  // Default: true
-  strictMode?: boolean;        // Default: false
-}
-```
+`MarkdownRenderer` props:
 
-### Strict Mode
-
-When enabled, strict mode validates component names:
-
-```typescript
-const mp = new MarkpageSvelte(navigation, content, { 
-  strictMode: true 
-});
-
-// This will throw an error
-mp.addComponent('button', ButtonComponent); // ❌ lowercase
-mp.addComponent('my-component', Component); // ❌ hyphen
-mp.addComponent('Button', ButtonComponent); // ✅ valid
-```
+- `content: string` – HTML string produced by a markdown parser (e.g. `marked.parse`)
+- `components: Map<string, Component>` – registry of Svelte components
+- `enableComponents?: boolean` – default `true`; when false, renders markdown only
+- `onComponentEvent?: (e: { component: string; event: any }) => void` – external event hook
 
 ## SSR Support
 
-The package includes full server-side rendering support for SvelteKit:
-
-```svelte
-<script>
-  import MarkdownRenderer from '@markpage/svelte/MarkdownRenderer.svelte';
-  import MyComponent from './MyComponent.svelte';
-  
-  let { content } = $props();
-  
-  const components = new Map([
-    ['MyComponent', MyComponent]
-  ]);
-</script>
-
-<!-- SSR-safe rendering -->
-<MarkdownRenderer 
-  {content} 
-  {components} 
-  enableComponents={true} 
-  ssr={true} 
-/>
-```
-
-### SvelteKit Integration
-
-For SvelteKit, use the `ssr={true}` prop to ensure components render properly during server-side rendering. The component will render raw markdown during SSR and parse components on the client.
+- Built using `@sveltejs/package` for SvelteKit compatibility
+- Works in SSR; avoid direct browser globals in your components during SSR
 
 ## TypeScript Support
 

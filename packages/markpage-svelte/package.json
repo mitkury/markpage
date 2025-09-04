@@ -11,7 +11,8 @@
     "./package.json": "./package.json"
   },
   "files": [
-    "dist"
+    "dist",
+    "src/lib"
   ],
   "scripts": {
     "build": "svelte-package",
@@ -21,7 +22,7 @@
   },
   "dependencies": {
     "marked": "^16.2.1",
-    "markpage": "file:../markpage"
+    "markpage": "^0.3.4"
   },
   "peerDependencies": {
     "svelte": "^5.0.0"
