@@ -1,41 +1,41 @@
 import type { ComponentNode, ParsedContent } from './types.js';
 
 /**
- * Parser for extracting components from markdown content
+ * Parser for extracting component-like tags from HTML content
+ * produced by a markdown parser.
  */
 export class ComponentParser {
   private componentRegex = /<([A-Z][a-zA-Z0-9]*)\s*([^>]*?)(?:\/>|>([\s\S]*?)<\/\1>)/g;
 
   /**
-   * Parse markdown content and extract components
+   * Parse HTML content and extract components
    */
   parse(content: string): ParsedContent[] {
     const result: ParsedContent[] = [];
     let lastIndex = 0;
-    let inCodeBlock = false;
-    let inInlineCode = false;
-
     // Reset regex state
     this.componentRegex.lastIndex = 0;
+
+    // Detect HTML code regions (<pre>...</pre> and <code>...</code>)
+    // Components inside these regions should be ignored and treated as text
+    const codeRanges: Array<{ start: number; end: number }> = [];
+    const pushRanges = (regex: RegExp) => {
+      let m: RegExpExecArray | null;
+      regex.lastIndex = 0;
+      while ((m = regex.exec(content)) !== null) {
+        codeRanges.push({ start: m.index, end: m.index + m[0].length });
+      }
+    };
+    pushRanges(/<pre[\s\S]*?<\/pre>/gi);
+    pushRanges(/<code[\s\S]*?<\/code>/gi);
+    const isInsideCode = (start: number, end: number) =>
+      codeRanges.some((r) => start >= r.start && end <= r.end);
 
     let match;
     while ((match = this.componentRegex.exec(content)) !== null) {
       const [fullMatch, componentName, propsString, children] = match;
       const start = match.index;
       const end = start + fullMatch.length;
-
-      // Check if we're inside a code block or inline code
-      const beforeMatch = content.slice(0, start);
-      const codeBlockMatches = beforeMatch.match(/```/g);
-      const inlineCodeMatches = beforeMatch.match(/`/g);
-      
-      if (codeBlockMatches) {
-        inCodeBlock = codeBlockMatches.length % 2 === 1; // Odd number means we're inside
-      }
-      
-      if (inlineCodeMatches) {
-        inInlineCode = inlineCodeMatches.length % 2 === 1; // Odd number means we're inside
-      }
 
       // Add text before component
       if (start > lastIndex) {
@@ -45,8 +45,8 @@ export class ComponentParser {
         });
       }
 
-      // Only parse as component if not inside code blocks
-      if (!inCodeBlock && !inInlineCode) {
+      // Only parse as component if not inside code/pre regions
+      if (!isInsideCode(start, end)) {
         // Parse props
         const props = this.parseProps(propsString);
 
