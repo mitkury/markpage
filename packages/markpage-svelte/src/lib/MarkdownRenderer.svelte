@@ -77,25 +77,3 @@
     {/if}
   {/each}
 </div>
-
-<style>
-  .markdown-renderer {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    line-height: 1.6;
-    color: #333;
-  }
-
-  .markdown-text { 
-    margin-bottom: 1rem; 
-    font-family: inherit;
-  }
-
-  .component-error {
-    margin: 1rem 0;
-    padding: 1rem;
-    border: 2px solid #f44336;
-    border-radius: 4px;
-    background-color: #ffebee;
-    color: #c62828;
-  }
-</style>

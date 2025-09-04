@@ -64,5 +64,154 @@
 </div>
 
 <style>
-	/* Keep existing styles in original file (omitted here for brevity) */
+	.docs-layout {
+		display: flex;
+		min-height: 100vh;
+	}
+
+	.docs-sidebar {
+		width: 250px;
+		background: #f8f9fa;
+		border-right: 1px solid #e9ecef;
+		padding: 1rem;
+		overflow-y: auto;
+	}
+
+	.docs-header {
+		margin-bottom: 2rem;
+		padding-bottom: 1rem;
+		border-bottom: 1px solid #e9ecef;
+	}
+
+	.docs-header h1 {
+		margin: 0 0 0.5rem 0;
+		font-size: 1.5rem;
+		color: #333;
+	}
+
+	.docs-subtitle {
+		margin: 0;
+		color: #666;
+		font-size: 0.9rem;
+	}
+
+	.nav-section {
+		margin-bottom: 1.5rem;
+	}
+
+	.nav-section-header {
+		font-weight: 600;
+		color: #333;
+		margin-bottom: 0.5rem;
+		font-size: 0.9rem;
+		text-transform: uppercase;
+		letter-spacing: 0.5px;
+	}
+
+	.nav-link {
+		display: block;
+		padding: 0.5rem 0;
+		color: #666;
+		text-decoration: none;
+		border-radius: 4px;
+		transition: color 0.2s;
+	}
+
+	.nav-link:hover {
+		color: #007acc;
+	}
+
+	.nav-link.active {
+		color: #007acc;
+		font-weight: 500;
+	}
+
+	.docs-content {
+		flex: 1;
+		padding: 2rem;
+		max-width: 800px;
+	}
+
+	/* Markdown content styles */
+	:global(.markdown-renderer) {
+		font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+		line-height: 1.6;
+		color: #333;
+	}
+
+	:global(.markdown-text) { 
+		margin-bottom: 1rem; 
+		font-family: inherit;
+	}
+
+	:global(.markdown-text h1) {
+		font-size: 2rem;
+		margin: 2rem 0 1rem 0;
+		color: #333;
+		border-bottom: 2px solid #e9ecef;
+		padding-bottom: 0.5rem;
+	}
+
+	:global(.markdown-text h2) {
+		font-size: 1.5rem;
+		margin: 1.5rem 0 1rem 0;
+		color: #333;
+	}
+
+	:global(.markdown-text h3) {
+		font-size: 1.25rem;
+		margin: 1.25rem 0 0.75rem 0;
+		color: #333;
+	}
+
+	:global(.markdown-text p) {
+		margin: 1rem 0;
+	}
+
+	:global(.markdown-text code) {
+		background: #f8f9fa;
+		padding: 0.2rem 0.4rem;
+		border-radius: 3px;
+		font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+		font-size: 0.9em;
+	}
+
+	:global(.markdown-text pre) {
+		background: #f8f9fa;
+		padding: 1rem;
+		border-radius: 6px;
+		overflow-x: auto;
+		margin: 1rem 0;
+	}
+
+	:global(.markdown-text pre code) {
+		background: none;
+		padding: 0;
+	}
+
+	:global(.markdown-text ul, .markdown-text ol) {
+		margin: 1rem 0;
+		padding-left: 2rem;
+	}
+
+	:global(.markdown-text li) {
+		margin: 0.5rem 0;
+	}
+
+	:global(.markdown-text blockquote) {
+		border-left: 4px solid #007acc;
+		padding-left: 1rem;
+		margin: 1rem 0;
+		color: #666;
+		font-style: italic;
+	}
+
+	:global(.component-error) {
+		margin: 1rem 0;
+		padding: 1rem;
+		border: 2px solid #f44336;
+		border-radius: 4px;
+		background-color: #ffebee;
+		color: #c62828;
+	}
 </style>
