@@ -1,16 +1,16 @@
 <script lang="ts">
-  import type { SvelteComponent } from 'svelte';
+  import type { Component } from 'svelte';
   import type { ComponentNode, ParsedContent } from './types.js';
   import { ComponentParser } from './ComponentParser.js';
   import { marked } from 'marked';
 
   let { 
     content = '', 
-    components = new Map<string, typeof SvelteComponent>(),
+    components = new Map<string, Component>(),
     enableComponents = true
   } = $props<{
     content: string;
-    components: Map<string, typeof SvelteComponent>;
+    components: Map<string, Component>;
     enableComponents?: boolean;
   }>();
 
