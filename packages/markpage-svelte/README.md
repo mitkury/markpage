@@ -6,6 +6,7 @@ Svelte integration for Markpage with component support in markdown files.
 
 - **Component Registration**: Register Svelte components for use in markdown
 - **Markdown Parsing**: Automatically detect and parse component usage in markdown
+- **SSR Support**: Full server-side rendering support for SvelteKit
 - **Type Safety**: Full TypeScript support for component registration and usage
 - **Flexible Props**: Support for various prop types (strings, numbers, booleans)
 - **Children Support**: Components can contain markdown children content
@@ -19,8 +20,7 @@ npm install @markpage/svelte
 ## Quick Start
 
 ```typescript
-import { MarkpageSvelte } from '@markpage/svelte';
-import { NavigationTree } from 'markpage';
+import { MarkpageSvelte, MarkdownRenderer } from '@markpage/svelte';
 import MyComponent from './MyComponent.svelte';
 
 // Create instance with navigation and content
@@ -30,7 +30,10 @@ const mp = new MarkpageSvelte(navigation, content);
 mp.addComponent('MyComponent', MyComponent);
 
 // Use in your Svelte app
-<mp.Render path="features/components" />
+<MarkdownRenderer 
+  content={mp.getContent('features/components')} 
+  components={mp.getRegisteredComponents()} 
+/>
 ```
 
 ## API Reference
@@ -246,6 +249,35 @@ mp.addComponent('button', ButtonComponent); // ❌ lowercase
 mp.addComponent('my-component', Component); // ❌ hyphen
 mp.addComponent('Button', ButtonComponent); // ✅ valid
 ```
+
+## SSR Support
+
+The package includes full server-side rendering support for SvelteKit:
+
+```svelte
+<script>
+  import MarkdownRenderer from '@markpage/svelte/MarkdownRenderer.svelte';
+  import MyComponent from './MyComponent.svelte';
+  
+  let { content } = $props();
+  
+  const components = new Map([
+    ['MyComponent', MyComponent]
+  ]);
+</script>
+
+<!-- SSR-safe rendering -->
+<MarkdownRenderer 
+  {content} 
+  {components} 
+  enableComponents={true} 
+  ssr={true} 
+/>
+```
+
+### SvelteKit Integration
+
+For SvelteKit, use the `ssr={true}` prop to ensure components render properly during server-side rendering. The component will render raw markdown during SSR and parse components on the client.
 
 ## TypeScript Support
 

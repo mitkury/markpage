@@ -19,14 +19,14 @@
   const dispatch = createEventDispatcher();
 
   // During SSR, just render text. On client, parse components
-  let parsedContent: ParsedContent[] = [];
-  
-  if (!ssr && enableComponents) {
-    const parser = new ComponentParser();
-    parsedContent = parser.parse(content);
-  } else {
-    parsedContent = [{ type: 'text', content }];
-  }
+  let parsedContent = $derived(() => {
+    if (!ssr && enableComponents) {
+      const parser = new ComponentParser();
+      return parser.parse(content);
+    } else {
+      return [{ type: 'text', content }];
+    }
+  });
 
   function handleComponentEvent(event: CustomEvent, componentName: string) {
     dispatch('componentEvent', {
@@ -42,7 +42,7 @@
   </div>
 {:else}
   <div class="markdown-renderer">
-    {#each parsedContent as item, index}
+    {#each parsedContent() as item, index}
       {#if item.type === 'text'}
         <div class="markdown-text">{item.content}</div>
       {:else}

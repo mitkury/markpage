@@ -1,7 +1,7 @@
 <script lang="ts">
   import { MarkpageSvelte } from '@markpage/svelte';
   import { NavigationTree } from 'markpage';
-  import MarkdownRenderer from './MarkdownRenderer.svelte';
+  import MarkdownRenderer from '../markpage-svelte/src/MarkdownRenderer.svelte';
   import Button from './components/Button.svelte';
   import Alert from './components/Alert.svelte';
   import Card from './components/Card.svelte';
