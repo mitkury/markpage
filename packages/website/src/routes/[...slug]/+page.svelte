@@ -2,12 +2,18 @@
 	import type { PageData } from './$types';
 	import { MarkdownRenderer } from '@markpage/svelte';
 	import TestButton from '$lib/components/TestButton.svelte';
+	import Button from '$lib/components/Button.svelte';
+	import Alert from '$lib/components/Alert.svelte';
+	import Card from '$lib/components/Card.svelte';
 
 	let { data } = $props<{ data: PageData }>();
 
 	// Component registry
 	const components = new Map([
-		['TestButton', TestButton]
+		['TestButton', TestButton],
+		['Button', Button],
+		['Alert', Alert],
+		['Card', Card]
 	]);
 
 	type NavItem = { name: string; type: 'page' | 'section'; label: string; path?: string; items?: NavItem[] };

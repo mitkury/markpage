@@ -40,17 +40,26 @@ Markpage supports embedding interactive components directly in markdown files, s
 
 Here's a regular paragraph.
 
-<MyButton variant="primary" text="Click me" />
-<MyButton /> <!-- Uses default props -->
+<TestButton variant="primary" text="Click me" />
+<TestButton /> <!-- Uses default props -->
 ```
 
-Components are registered upfront in your framework-specific instance:
+Components are registered and used with the `MarkdownRenderer` component:
 
-```typescript
-import { MarkpageSvelte } from '@markpage/svelte';
+```svelte
+<script>
+  import { MarkdownRenderer } from '@markpage/svelte';
+  import TestButton from './TestButton.svelte';
+  
+  const components = new Map([
+    ['TestButton', TestButton]
+  ]);
+</script>
 
-const mp = new MarkpageSvelte(navigation, content);
-mp.addComponent('MyButton', MyButtonComponent);
+<MarkdownRenderer 
+  content={markdownContent} 
+  components={components} 
+/>
 ```
 
 ## Getting Started

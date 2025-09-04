@@ -128,12 +128,14 @@ The parser intelligently ignores components inside code blocks:
 
 ## Demo Application
 
-We've created a complete demo application (`@markpage/demo`) that showcases:
+We've created a comprehensive component showcase in the website package that demonstrates:
 
 - **Button Component**: Different variants, sizes, and states
 - **Alert Component**: Info, warning, error, and success variants
 - **Card Component**: Title, subtitle, and markdown children support
-- **Navigation**: Simple page switching to demonstrate different content
+- **TestButton Component**: Simple button with variant support
+- **Live Examples**: Interactive demonstrations within the documentation
+- **Component Integration**: All components working together in a real application
 
 ### Demo Components
 
@@ -259,7 +261,7 @@ The system provides a solid foundation for enhancing markdown content with inter
 ## Files Created
 
 - `packages/markpage-svelte/` - Main package with component parsing and Svelte integration
-- `packages/website/` - Documentation website showcasing the functionality with live examples
+- `packages/website/` - Documentation website showcasing the functionality with live examples and component showcase
 - `docs/markdown-components-proposal.md` - Original proposal document
 - `docs/markdown-components-implementation.md` - This implementation summary
 
