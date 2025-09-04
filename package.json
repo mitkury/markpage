@@ -22,5 +22,8 @@
     "typescript": "^5.0.0"
   },
   "repository": "https://github.com/mitkury/markpage",
-  "license": "MIT"
+  "license": "MIT",
+  "overrides": {
+    "@sveltejs/vite-plugin-svelte": "^4.0.0-next.6"
+  }
 }

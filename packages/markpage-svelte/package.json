@@ -1,0 +1,52 @@
+{
+  "name": "@markpage/svelte",
+  "version": "0.0.1",
+  "description": "Svelte integration for Markpage with component support",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "svelte": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "svelte-package",
+    "dev": "svelte-package --watch",
+    "clean": "rm -rf dist",
+    "prebuild": "npm run clean"
+  },
+  "dependencies": {
+    "marked": "^16.2.1",
+    "markpage": "file:../markpage"
+  },
+  "peerDependencies": {
+    "svelte": "^5.0.0"
+  },
+  "devDependencies": {
+    "@sveltejs/adapter-auto": "^6.1.0",
+    "@sveltejs/kit": "^2.37.0",
+    "@sveltejs/package": "^2.5.0",
+    "@sveltejs/vite-plugin-svelte": "^5.1.1",
+    "@types/node": "^20.0.0",
+    "svelte": "^5.38.6",
+    "typescript": "^5.0.0",
+    "vite": "^5.0.0"
+  },
+  "keywords": [
+    "markpage",
+    "svelte",
+    "markdown",
+    "components",
+    "documentation"
+  ],
+  "author": "Markpage Contributors",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mitkury/markpage"
+  }
+}

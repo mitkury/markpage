@@ -7,6 +7,7 @@ Let's get you set up with Markpage in just a few steps.
 - **Distributed Navigation**: Each folder can define its own structure with `.index.json` files (optional)
 - **Multiple Output Formats**: App bundles, website navigation, and static HTML sites
 - **Framework Agnostic**: Works with React, Vue, Svelte, Angular, or vanilla JavaScript
+- **Component System**: Embed interactive components directly in markdown files
 - **Flexible**: Point to any directory with markdown files
 
 ## Quick Start
@@ -76,6 +77,44 @@ import contentBundle from './src/lib/content/content.json';
 const navigation = new NavigationTree(navigationData);
 const content = await loadContent('getting-started.md', contentBundle);
 ```
+
+## Component System
+
+Markpage supports components in markdown files! Here are some examples:
+
+### TestButton Component
+
+<TestButton variant="primary" text="Primary Button" />
+<TestButton variant="success" text="Success Button" />
+<TestButton variant="warning" text="Warning Button" />
+<TestButton variant="danger" text="Danger Button" />
+
+### Button Component
+
+<Button variant="primary">Primary Button</Button>
+<Button variant="secondary">Secondary Button</Button>
+<Button variant="danger">Danger Button</Button>
+
+### Alert Component
+
+<Alert variant="info">
+  This is an informational alert with **markdown** content inside.
+</Alert>
+
+<Alert variant="success">
+  This is a success message! Components work perfectly.
+</Alert>
+
+### Card Component
+
+<Card title="Component Features" subtitle="What you can do">
+  - Use any markdown syntax inside components
+  - Pass props to customize appearance
+  - Nest components within each other
+  - Maintain full markdown formatting
+</Card>
+
+Components are registered upfront and can receive props like `variant`, `size`, `title`, etc.
 
 ## CLI Usage
 
