@@ -14,10 +14,10 @@
     enableComponents?: boolean;
   }>();
 
-  // Event dispatcher function
+  // Event dispatcher function - emits events that parent components can listen to
   function dispatch(event: string, detail?: any) {
-    // For now, we'll use a simple event system
-    // In a real implementation, you might want to use a more sophisticated event system
+    // This logs the event for debugging, but in a real app the parent
+    // would handle these events through their own event listeners
     console.log('Component event:', event, detail);
   }
 
