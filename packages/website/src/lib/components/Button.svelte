@@ -3,12 +3,14 @@
     variant = 'default',
     size = 'medium',
     disabled = false,
-    children 
+    children,
+    text
   } = $props<{
     variant?: 'default' | 'primary' | 'secondary' | 'danger';
     size?: 'small' | 'medium' | 'large';
     disabled?: boolean;
-    children: any;
+    children?: any;
+    text?: string;
   }>();
 
   const variantClasses = {
@@ -30,7 +32,11 @@
   {disabled}
   onclick={() => !disabled && console.log('Button clicked!')}
 >
-  {@render children()}
+  {#if typeof text === 'string' && text}
+    {@html text}
+  {:else if children}
+    {@render children()}
+  {/if}
 </button>
 
 <style>

@@ -1,10 +1,12 @@
 <script lang="ts">
   let { 
     variant = 'info',
-    children 
+    children,
+    text
   } = $props<{
     variant?: 'info' | 'warning' | 'error' | 'success';
-    children: any;
+    children?: any;
+    text?: string;
   }>();
 
   const variantConfig = {
@@ -20,7 +22,11 @@
 <div class="alert {config.class}">
   <span class="alert-icon">{config.icon}</span>
   <div class="alert-content">
-    {@render children()}
+    {#if typeof text === 'string' && text}
+      {@html text}
+    {:else if children}
+      {@render children()}
+    {/if}
   </div>
 </div>
 

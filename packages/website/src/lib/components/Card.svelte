@@ -2,11 +2,13 @@
   let { 
     title = '',
     subtitle = '',
-    children 
+    children,
+    text
   } = $props<{
     title?: string;
     subtitle?: string;
-    children: any;
+    children?: any;
+    text?: string;
   }>();
 </script>
 
@@ -21,7 +23,11 @@
   {/if}
   
   <div class="card-content">
-    {@render children()}
+    {#if typeof text === 'string' && text}
+      {@html text}
+    {:else if children}
+      {@render children()}
+    {/if}
   </div>
 </div>
 
