@@ -10,7 +10,7 @@ Point Markpage at a directory with markdown files and `.index.json` files, and g
 - **Organized navigation structure** for your content
 - **Multiple output formats** (app bundles, website navigation, static HTML)
 - **Framework-agnostic** utilities that work with React, Vue, Svelte, Angular, or vanilla JavaScript
-- **Component system** for embedding interactive components in markdown (Svelte support included)
+- **Optional component system** for embedding interactive components in markdown (via separate framework packages; Svelte support available)
 
 ## Quick Start
 
@@ -27,9 +27,9 @@ await buildPages('./my-content', {
 });
 ```
 
-## Component System
+## Component System (via @markpage/svelte)
 
-Markpage supports embedding interactive components directly in markdown files, similar to MDX but simpler:
+Component embedding is provided by the separate `@markpage/svelte` package (React version is not available yet — contributions welcome). It lets you embed interactive Svelte components directly in markdown files, similar to MDX but simpler:
 
 ```markdown
 # My Documentation
