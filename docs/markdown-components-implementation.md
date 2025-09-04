@@ -15,36 +15,46 @@ The `ComponentParser` class provides intelligent parsing of markdown content to 
 - **Children Support**: Handles markdown content inside components
 - **Code Block Awareness**: Ignores components inside code blocks (```) and inline code (`)
 
-### 2. MarkpageSvelte Class
+### 2. MarkdownRenderer Component
 
-The main class that manages the entire system:
+The main Svelte component that handles rendering:
 
-- **Component Registration**: `addComponent()`, `removeComponent()`, `getComponent()`
-- **Content Management**: Navigation and content storage
-- **Validation**: Component name validation and prop validation
-- **Parsing**: Content parsing with component extraction
+- **Component Integration**: Accepts a Map of registered components
+- **Markdown Parsing**: Uses `marked` library for HTML conversion
+- **Component Parsing**: Integrates with `ComponentParser` for component extraction
+- **Event Handling**: Supports custom event handlers via `onComponentEvent` prop
+- **SSR Compatible**: Built with SvelteKit for server-side rendering support
 
 ### 3. Svelte Integration
 
-- **MarkdownRenderer Component**: Svelte component for rendering markdown with components
+- **MarkdownRenderer Component**: Pure Svelte component for rendering markdown with components
 - **Type Safety**: Full TypeScript support for all APIs
 - **Svelte 5 Compatible**: Uses modern Svelte 5 syntax and runes
+- **Framework Agnostic**: Can be used in any Svelte application
 
 ## Key Features
 
 ### Component Registration
 
-```typescript
-const mp = new MarkpageSvelte(navigation, content);
+```svelte
+<script>
+  import { MarkdownRenderer } from '@markpage/svelte';
+  import TestButton from './TestButton.svelte';
+  import Alert from './Alert.svelte';
+  
+  // Simple registration
+  const components = new Map([
+    ['TestButton', TestButton],
+    ['Alert', Alert]
+  ]);
+</script>
 
-// Simple registration
-mp.addComponent('Button', ButtonComponent);
-
-// With options
-mp.addComponent('Alert', AlertComponent, {
-  defaultProps: { variant: 'info' },
-  validate: (props) => props.variant ? true : 'Variant is required'
-});
+<MarkdownRenderer 
+  content={markdownContent} 
+  components={components}
+  enableComponents={true}
+  onComponentEvent={(event) => console.log('Component event:', event)}
+/>
 ```
 
 ### Markdown Syntax
@@ -167,25 +177,22 @@ interface ComponentOptions {
 
 ### Basic Setup
 
-```typescript
-import { MarkpageSvelte } from '@markpage/svelte';
-import { NavigationTree } from 'markpage';
-
-const navigation = [/* ... */];
-const content = { /* ... */ };
-
-const mp = new MarkpageSvelte(navigation, content);
-mp.addComponent('Button', ButtonComponent);
-```
-
-### In Svelte
-
 ```svelte
 <script>
   import { MarkdownRenderer } from '@markpage/svelte';
-  import Button from './Button.svelte';
+  import TestButton from './TestButton.svelte';
   
-  const components = new Map([['Button', Button]]);
+  const components = new Map([
+    ['TestButton', TestButton]
+  ]);
+  
+  const markdownContent = `
+    # My Page
+    
+    Here's some content with a component:
+    
+    <TestButton variant="primary" text="Click me" />
+  `;
 </script>
 
 <MarkdownRenderer 
@@ -195,14 +202,39 @@ mp.addComponent('Button', ButtonComponent);
 />
 ```
 
+### With Event Handling
+
+```svelte
+<script>
+  import { MarkdownRenderer } from '@markpage/svelte';
+  import TestButton from './TestButton.svelte';
+  
+  const components = new Map([['TestButton', TestButton]]);
+  
+  function handleComponentEvent(event) {
+    console.log('Component event:', event);
+    // Handle component events here
+  }
+</script>
+
+<MarkdownRenderer 
+  content={markdownContent}
+  components={components}
+  enableComponents={true}
+  onComponentEvent={handleComponentEvent}
+/>
+```
+
 ## Next Steps
 
 ### Immediate Improvements
 
-1. **Markdown Rendering**: Integrate with a markdown parser for proper text rendering
+1. ✅ **Markdown Rendering**: Integrated with `marked` library for proper HTML rendering
 2. **Component Nesting**: Support for components within components
 3. **Error Handling**: Better error messages for invalid components
 4. **Performance**: Optimize parsing for large documents
+5. ✅ **SSR Compatibility**: Built with SvelteKit for server-side rendering support
+6. ✅ **Event System**: Implemented proper event handling with `onComponentEvent` prop
 
 ### Future Enhancements
 
@@ -227,9 +259,21 @@ The system provides a solid foundation for enhancing markdown content with inter
 ## Files Created
 
 - `packages/markpage-svelte/` - Main package with component parsing and Svelte integration
-- `packages/demo/` - Complete demo application showcasing the functionality
+- `packages/website/` - Documentation website showcasing the functionality with live examples
 - `docs/markdown-components-proposal.md` - Original proposal document
 - `docs/markdown-components-implementation.md` - This implementation summary
+
+## Current Status
+
+The implementation is **complete and functional** with:
+
+- ✅ **Component Parsing**: Full support for component detection and props parsing
+- ✅ **Markdown Rendering**: Integration with `marked` library for HTML conversion
+- ✅ **Svelte Integration**: `MarkdownRenderer` component ready for use
+- ✅ **SSR Support**: Built with SvelteKit for server-side rendering compatibility
+- ✅ **Event Handling**: Custom event system for component interactions
+- ✅ **TypeScript Support**: Full type safety throughout the system
+- ✅ **Documentation Website**: Live examples and comprehensive documentation
 
 ## Testing
 
