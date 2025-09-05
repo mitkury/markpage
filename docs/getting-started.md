@@ -114,6 +114,16 @@ Markpage supports components in markdown files! Here are some examples:
   - Maintain full markdown formatting
 </Card>
 
+### Unknown Component Fallback
+
+When a component isn't registered, it's rendered as plain text instead of showing an error:
+
+<UnknownComponent variant="demo" title="This component doesn't exist">
+  This content will be displayed as plain text
+</UnknownComponent>
+
+<AnotherMissingComponent size="large" />
+
 Components are registered upfront and can receive props like `variant`, `size`, `title`, etc.
 
 ## CLI Usage

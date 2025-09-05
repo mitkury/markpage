@@ -72,11 +72,12 @@
           />
         {/if}
       {:else}
-        <div class="component-error">
-          <strong>Component '{node.name}' not found</strong>
-          <p>
-            Available components: {Array.from(components.keys()).join(", ")}
-          </p>
+        <div class="component-fallback">
+          {#if node.children}
+            &lt;{node.name}{Object.entries(node.props).map(([key, value]) => ` ${key}="${value}"`).join('')}&gt;{node.children}&lt;/{node.name}&gt;
+          {:else}
+            &lt;{node.name}{Object.entries(node.props).map(([key, value]) => ` ${key}="${value}"`).join('')} /&gt;
+          {/if}
         </div>
       {/if}
     {/if}
