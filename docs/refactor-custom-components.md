@@ -34,7 +34,7 @@ Props exposed by `Markdown.svelte` (or a higher-level wrapper):
 
 - `components?: Map<string, Component>`: Unified registry for both built-in token overrides and custom MDX-like tags.
 - `onComponentEvent?`: Optional event surface for forwarding DOM/custom events from rendered components.
-- `markedInstance?`: Optional marked instance to use instead of the global. If provided, the component will use this instance (with your extensions) for lexing.
+- `markedInstance?`: Optional `Marked` instance to use instead of a local instance. If provided, the component will use this instance (with your extensions) for lexing.
 
 Behavior:
 - Built-in markdown tokens resolve to: `components.get(type)` → default renderer → fallback warn.
@@ -43,38 +43,24 @@ Behavior:
 
 Marked usage:
 - If `markedInstance` is provided, it will be used (instance-scoped extensions supported).
-- Else, the global `marked` (with any global extensions) is used.
+- Else, a local `Marked` instance is created inside `Markdown.svelte` and configured.
 
-### Core (optional)
-If the core renderer is used directly, you can configure either the global marked or an instance:
+### Core (current state and exports)
+- We now expose a browser-safe subpath for marked via `markpage/marked`.
+- Consumers (including `@markpage/svelte`) should import `Marked`, `Lexer`, and types from `markpage/marked` for clarity and stability.
 
 ```ts
-// Option A: global
-import { marked, Marked } from 'marked';
-import { componentExtension } from 'markpage/renderer/extensions';
-marked.use({ extensions: [componentExtension] });
-
-// Option B: instance
-const md = new Marked();
-md.use({ extensions: [componentExtension] });
-// pass md to the Svelte component as markedInstance
+import { Marked, Lexer, type Tokens, type Token } from 'markpage/marked';
+import { componentExtension } from 'markpage/renderer';
 ```
 
-The public token shape for custom components is:
-```ts
-type ComponentToken = {
-  type: 'component';
-  raw: string;
-  name: string;                         // e.g., 'Button'
-  props: Record<string, unknown>;       // parsed from attributes
-  children?: import('marked').Token[];  // tokens for paired tags
-}
-```
+This keeps `import 'markpage'` browser-safe by not coupling app code to Node-only builder/CLI internals.
 
 ---
 
 ## Summary
 Move Markpage’s component handling from HTML post-processing to a token-first pipeline powered by marked’s lexer/tokenizer. Introduce a custom `component` token that represents MDX-like tags (e.g., `<Button variant="primary" />` or `<Alert>...</Alert>`), enabling safer parsing, better nesting, and framework-agnostic rendering.
+
 ## Goals
 - Parse MDX-like component tags during tokenization, not from HTML.
 - Support both self-closing and paired component tags.
@@ -123,72 +109,43 @@ Token shape (conceptual):
 
 We can ship A for quick wins and migrate to B when stable.
 
-## API Changes
-### Renderer (Svelte)
-- New props in `Markdown.svelte` (and/or a higher-level wrapper):
-  - `components?: Map<string, Component>`
-  - `markedInstance?`
-  - `onComponentEvent?: (e: { component: string; event: any }) => void` (optional)
-- New Svelte component: `markdown-components/MarkdownComponentTag.svelte` to render `component` tokens, including fallbacks when a component is not registered.
+---
 
-### Core (builder/renderer)
-- No breaking changes to `buildPages`.
-- Optionally expose an opt-in flag to enable the extension at parse time if consumers use core rendering utilities.
+## Current state (implemented now)
+- `@markpage/svelte` has a token-based renderer in `markdown/Markdown.svelte` and token components in `markdown/markdown-components/*`.
+- It imports `Marked`/`Lexer` and token types from `markpage/marked` (new subpath) for clarity.
+- The custom component tokenizer (`componentExtension`) is used via `markpage/renderer` and applied to a local `Marked` instance inside `Markdown.svelte` when `markedInstance` is not provided.
+- Vitest config in tests enables the Svelte plugin so `.svelte` under `@markpage/svelte` compiles during tests.
 
-## Security and Determinism
-- Props are JSON-only within braces to avoid code execution (`{ ... }` parsed with `JSON.parse`).
-- String props via quotes remain as-is.
-- No evaluation of JS expressions in phase 1.
+## Gaps to address next
+- Test environment error: Svelte lifecycle (`mount`) unavailable in SSR path. Ensure tests render in a client-like environment (adjust `@testing-library/svelte` usage and/or environment config for Svelte 5 client rendering).
+- Fallback rendering for unknown custom components should be verified (Text fallback `<Tag .../>`).
+- Ensure paired component children flow through `MarkdownTokens` correctly (nesting, multiple children types).
+- Confirm that providing a `markedInstance` with pre-configured `componentExtension` works and bypasses local configuration.
+- Verify type exports through `markpage/marked` in consumer TS projects (types and imports resolve cleanly).
 
-## Migration Plan
-1) Introduce the marked extension.
-2) Implement Option A (placeholder HTML) to keep current Svelte `MarkdownRenderer.svelte` working unchanged.
-3) Add Option B (direct token rendering) in `Markdown.svelte` pipeline; add `component` mapping.
-4) Transition default to Option B once parity is achieved; keep Option A for compatibility for one minor release.
-
-## Testing Strategy
-- Unit tests for tokenizer:
-  - Self-closing and paired tags
-  - Props parsing: quoted, braced JSON, mixed
-  - Nesting of components and markdown
-  - Ignoring inside code blocks and inline code
-  - Escaped sequences not tokenized
-- Renderer tests:
-  - Component found vs fallback rendering
-  - Children content rendered correctly (including nested components)
-  - Event forwarding (click/submit/change) if exposed
-- Integration tests in `@markpage/tests` with sample markdown files.
-
-## Examples
-### Self-closing
-```markdown
-Here is a button: <Button variant="primary" text="Click me" />
-```
-Produces a `component` token: `name=Button`, `props={ variant: "primary", text: "Click me" }`.
-
-### Paired with markdown children
-```markdown
-<Alert variant="warning">
-  ### Heads up
-  This is an important notice with an inline <Badge text="New" />.
-</Alert>
-```
-Produces a `component` token with `children` tokens representing the heading, paragraph, and nested `Badge` component.
-
-## Risks and Mitigations
-- Regex complexity: keep grammar simple (capitalized names, simple props) to reduce ambiguity.
-- Ambiguity with HTML: run the component tokenizer before generic HTML tokenizer; Capitalized names avoid clashes with standard HTML tags.
-- Performance: tokenization remains linear; nested re-lexing is limited to component inner content only.
+## E2E test plan (what to add/fix)
+- Custom components render
+  - Input: `<Button variant="primary">Click</Button>`; Expect: `<button data-variant="primary">Click</button>` with text.
+- Alert component
+  - Input: `<Alert variant="info">Info message</Alert>`; Expect: `<div role="alert" data-variant="info">Info message</div>`.
+- Fallback for unknown component
+  - Input: `<Unknown x="1"/>`; Expect: literal output, not an HTML element (e.g., text containing `<Unknown x="1"/>`).
+- Nested components and markdown children
+  - Input: `<Alert variant="warning">Hello <Button variant="primary"/> world</Alert>`; Expect nested rendering with correct structure and text order.
+- Provided marked instance
+  - Use a `Marked` instance passed via `markedInstance` pre-configured with `componentExtension`; Expect identical rendering pathway and no double-registration errors.
 
 ## Rollout
-- 0.x minor: ship extension off by default + Option A; gather feedback.
-- Next minor: enable by default, keep compatibility flag.
-- Future: consider MDX ecosystem (micromark/mdast) if full MDX is requested.
+- Keep the token path as default in Svelte; maintain back-compat via placeholder approach if necessary.
+- Keep `markpage/marked` as the single public surface for marked usage in Markpage consumers.
 
-## Open Questions
-- Should we allow lowercase custom tags as opt-in?
-- Should `{expr}` support a limited expression grammar (e.g., booleans, numbers without braces)?
-- Event surface: standardize which DOM events are forwarded by default?
+## Risks and Mitigations
+- Regex complexity in tokenizer: keep grammar simple to reduce ambiguity.
+- Ambiguity with HTML: run the component tokenizer before generic HTML tokenizer; Capitalized names avoid clashes with HTML.
+- Test stability: ensure client render path in tests to avoid SSR lifecycle errors.
+
+---
 
 ## Implementation Notes (sketch)
 - marked extension with `level: 'inline'`, `start()` hint via `/<[A-Z]/`, self/paired regex, and `Lexer` recursion for children.
