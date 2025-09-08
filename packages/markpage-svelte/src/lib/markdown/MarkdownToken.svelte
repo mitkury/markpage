@@ -20,7 +20,9 @@
   import MarkdownSpace from "./markdown-components/MarkdownSpace.svelte";
   
 
-  const markdownComponents: Record<string, any> = {
+  import type { BuiltinTokenName } from "./types";
+
+  const markdownComponents: Record<BuiltinTokenName, any> = {
     blockquote: MarkdownBloquote,
     heading: MarkdownHeading,
     list: MarkdownList,
@@ -49,7 +51,8 @@
   let { token, components = new Map<string, any>() } = $props();
 
   const MarkdownComponent = $derived.by(() => {
-    const comp = markdownComponents[token.type];
+    const type = token.type as BuiltinTokenName;
+    const comp = markdownComponents[type];
 
     if (!comp) {
       console.error(
