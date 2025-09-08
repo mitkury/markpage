@@ -68,7 +68,6 @@
 </script>
 
 {#if token.type === 'component'}
-  {(() => { try { console.log('[MarkdownToken component]', token.name, 'hasComp?', components?.has?.(token.name)); } catch (_) {} return ''; })()}
   <MarkdownComponentTag {token} {components} />
 {:else if MarkdownComponent}
   <MarkdownComponent {token}>

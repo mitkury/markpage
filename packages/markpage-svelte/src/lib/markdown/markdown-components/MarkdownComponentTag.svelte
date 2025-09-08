@@ -19,7 +19,6 @@
   }
 
   const Comp = $derived(() => components.get(token.name) ?? null);
-  try { console.log('[MarkdownComponentTag] token', token.name, 'comp?', !!Comp); } catch (_) {}
   function childrenText() {
     if (!token.children) return '';
     try {
@@ -29,20 +28,11 @@
     }
   }
 
-  let htmlOut = $state('');
-  $effect(() => {
-    try {
-      const renderFn = (Comp as any)?.render;
-      htmlOut = typeof renderFn === 'function' ? (renderFn({ ...(token.props ?? {}), children: childrenText(), childrenTokens: token.children })?.html ?? '') : '';
-    } catch (_) {
-      htmlOut = '';
-    }
-  });
 </script>
 
 {#if Comp}
-  {#if htmlOut}
-    {@html htmlOut}
+  {#if typeof (Comp as any).render === 'function'}
+    {@html ((Comp as any).render({ ...(token.props ?? {}), children: childrenText(), childrenTokens: token.children })?.html ?? '')}
   {:else if typeof Comp === 'function'}
     <!-- Svelte component constructor path -->
     <svelte:component
