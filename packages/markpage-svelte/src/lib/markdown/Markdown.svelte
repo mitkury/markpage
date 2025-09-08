@@ -1,7 +1,8 @@
 <script lang="ts">
-  import { Lexer } from "marked";
+  import { Lexer, Marked } from "marked";
   import MarkdownTokens from "./MarkdownTokens.svelte";
   import type { ComponentName } from "./types";
+  import { componentExtension } from "markpage/renderer";
 
   let {
     source,
@@ -19,6 +20,11 @@
       if (markedInstance?.lexer && typeof markedInstance.lexer === "function") {
         return markedInstance.lexer(source);
       }
+      // If no instance provided, use a local Marked instance with componentExtension
+      const md = new Marked();
+      // Cast to any to avoid type mismatch between different marked versions
+      md.use({ extensions: [componentExtension as any] as any });
+      return md.lexer(source);
     } catch (_) {
       // fall back to default lexer
     }

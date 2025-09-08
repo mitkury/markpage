@@ -1,7 +1,7 @@
 import type { PageLoad } from './$types';
 import navigationData from '$lib/content/navigation.json';
 import contentData from '$lib/content/content.json';
-import { loadContent } from 'markpage/renderer';
+// Note: we render markdown in the Svelte component; here we deliver raw markdown
 
 function getContentPathFromUrl(urlPath: string): string | null {
 	const cleanPath = urlPath.replace(/^\/+/, '').replace(/\.md$/, '');
@@ -30,7 +30,7 @@ export const load: PageLoad = async ({ url }) => {
 	const path = getContentPathFromUrl(url.pathname) || (navigationData as any[])?.[0]?.path || null;
 	let content: string | null = null;
 	if (path) {
-		content = (await loadContent(path, contentData as any)) || null;
+		content = (contentData as any)[path] ?? null;
 	}
 	return {
 		navigation: navigationData,

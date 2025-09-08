@@ -15,6 +15,4 @@ export type {
   RenderContext
 } from './types.js';
 
-// Re-export core markpage APIs for convenience
-export * from 'markpage';
-export type * from 'markpage';
+// Note: do not re-export core 'markpage' here to avoid bundling Node APIs in browser

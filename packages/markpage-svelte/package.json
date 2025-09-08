@@ -8,6 +8,11 @@
       "types": "./dist/index.d.ts",
       "svelte": "./dist/index.js"
     },
+    "./server": {
+      "types": "./dist/server.d.ts",
+      "import": "./dist/server.js",
+      "require": "./dist/server.js"
+    },
     "./package.json": "./package.json"
   },
   "files": [
@@ -21,8 +26,7 @@
     "prebuild": "npm run clean"
   },
   "dependencies": {
-    "marked": "^16.2.1",
-    "markpage": "^0.3.4"
+    "markpage": "file:../markpage"
   },
   "peerDependencies": {
     "svelte": "^5.0.0"

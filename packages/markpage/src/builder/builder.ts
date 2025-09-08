@@ -142,15 +142,9 @@ async function writeWebsiteOutput(
   }
 }
 
-export function processMarkdown(
-  content: string,
-  processor?: ContentProcessor
-): string {
-  if (processor) {
-    content = processor.process(content);
-  }
-  
-  return marked(content);
+// Deprecated: markdown rendering is handled at runtime by renderer packages
+export function processMarkdown(content: string, processor?: ContentProcessor): string {
+  return processor ? processor.process(content) : content;
 }
 
 export function generateStaticPages(
@@ -182,8 +176,8 @@ export function generateStaticPages(
         const filePath = join(basePath, item.path);
         try {
           const markdownContent = readFileSync(filePath, 'utf-8');
-          const htmlContent = processMarkdown(markdownContent, options.processor);
-          const fullHtml = generateHTMLPage(htmlContent, item.label, options.pageOptions);
+          const processedMd = processMarkdown(markdownContent, options.processor);
+          const fullHtml = generateHTMLPage(processedMd, item.label, options.pageOptions);
           
           pages.push({
             path: item.path.replace(/\.md$/, '.html'),

@@ -1,4 +1,4 @@
-import { marked } from 'marked';
+import { Marked } from 'marked';
 import { ContentProcessor } from '../types.js';
 
 export class ContentLoader {
@@ -28,7 +28,10 @@ export class ContentLoader {
       content = this.processor.process(content);
     }
 
-    return marked(content);
+    const md = new Marked();
+    // Ensure sync parse result for our pipeline
+    const html = md.parse(content) as string;
+    return html;
   }
 
   hasContent(path: string): boolean {

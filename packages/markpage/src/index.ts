@@ -1,35 +1,10 @@
-// Main exports
+// Root (browser-safe) exports: expose only types and renderer APIs.
 export * from './types.js';
-
-// Builder exports
-export * from './builder/index.js';
-
-// Renderer exports
 export * from './renderer/index.js';
+export * from './extensions/component.js';
 
-// Re-export commonly used types and functions
-export {
-  validateDocItem,
-  validateIndexFile,
-  type DocItem,
-  type IndexFile,
-  type NavigationItem,
-  type BuildOptions,
-  type BuildResult
-} from './types.js';
-
-export {
-  buildPages,
-  generateStaticSite,
-  type StaticSiteOptions,
-  type StaticSiteResult
-} from './builder/index.js';
-
-export {
-  NavigationTree,
-  ContentLoader,
-  loadContent,
-  extractHeadings,
-  extractTableOfContents,
-  addTableOfContents
-} from './renderer/index.js';
+// Note:
+// - Builder and CLI are Node-only and must be imported via subpaths:
+//   import { buildPages } from 'markpage/builder'
+//   import { generateStaticSite } from 'markpage/builder'
+// This keeps `import 'markpage'` safe in browser runtimes.
