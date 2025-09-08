@@ -58,7 +58,7 @@
         {#if node.children}
           <Component
             {...node.props}
-            text={node.children}
+            children={() => node.children}
             onclick={(e: Event) => handleComponentEvent(e, node.name)}
             onsubmit={(e: Event) => handleComponentEvent(e, node.name)}
             onchange={(e: Event) => handleComponentEvent(e, node.name)}
