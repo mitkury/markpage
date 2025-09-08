@@ -78,9 +78,9 @@ const navigation = new NavigationTree(navigationData);
 const content = await loadContent('getting-started.md', contentBundle);
 ```
 
-## Component System
+## Component System (via @markpage/svelte)
 
-Markpage supports components in markdown files! Here are some examples:
+Markpage supports components in markdown files via the `@markpage/svelte` package. Render markdown with the `Markdown` component and provide a `components` map for custom tags or token overrides.
 
 ### TestButton Component
 
@@ -125,6 +125,33 @@ When a component isn't registered, it's rendered as plain text instead of showin
 <AnotherMissingComponent size="large" />
 
 Components are registered upfront and can receive props like `variant`, `size`, `title`, etc.
+
+### Usage in Svelte
+
+```svelte
+<script lang="ts">
+  import { Markdown } from '@markpage/svelte';
+  import Button from './Button.svelte';
+  import Alert from './Alert.svelte';
+
+  const components = new Map([
+    ['Button', Button],
+    ['Alert', Alert]
+  ]);
+
+  const markdown = `
+  ## Examples
+
+  <Button variant="primary">Primary Button</Button>
+
+  <Alert variant="info">
+    This is an informational alert with **markdown** content inside.
+  </Alert>
+  `;
+</script>
+
+<Markdown source={markdown} components={components} />
+```
 
 ## CLI Usage
 
