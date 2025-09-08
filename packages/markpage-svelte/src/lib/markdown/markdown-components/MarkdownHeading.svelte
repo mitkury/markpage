@@ -9,5 +9,6 @@ let { token, children } = $props<{
 </script>
 
 <svelte:element this={`h${token.depth}`}>
-  {@render children()}
+  {@render children?.()}
+  {token.text}
 </svelte:element>

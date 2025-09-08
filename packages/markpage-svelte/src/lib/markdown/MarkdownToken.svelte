@@ -68,7 +68,7 @@
 </script>
 {#if MarkdownComponent}
   <MarkdownComponent {token} {components}>
-    {#if "tokens" in token && token["tokens"]}
+    {#if "tokens" in token && token["tokens"] && token["tokens"].length > 0}
       <MarkdownTokens tokens={token["tokens"]} {components} />
     {/if}
   </MarkdownComponent>
