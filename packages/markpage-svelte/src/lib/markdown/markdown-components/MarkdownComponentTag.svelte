@@ -53,18 +53,19 @@
     return result?.html ?? '';
   })()}
 {:else if typeof Comp === 'function'}
-  {@html (() => {
-    try {
-      const mount = document.createElement('div');
-      const instance = new (Comp as any)({ target: mount, props: { ...(token.props ?? {}), children: childrenText(), childrenTokens: token.children } });
-      const html = mount.innerHTML;
-      try { instance?.$destroy?.(); } catch {}
-      return html;
-    } catch (err) {
-      try { console.warn('MarkdownComponentTag function component mount failed', err); } catch {}
-      return '';
-    }
-  })()}
+  <svelte:component
+    this={Comp}
+    {...token.props}
+    children={childrenText()}
+    onclick={(e: Event) => handle(e, token.name)}
+    onsubmit={(e: Event) => handle(e, token.name)}
+    onchange={(e: Event) => handle(e, token.name)}
+    childrenTokens={token.children}
+  >
+    {#if token.children}
+      <MarkdownTokens tokens={token.children} {components} />
+    {/if}
+  </svelte:component>
 {:else}
   <!-- Fallback to literal text when unknown component -->
   <div class="component-fallback">
