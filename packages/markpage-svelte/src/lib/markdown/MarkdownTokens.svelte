@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { Token } from "marked";
+  import type { Token } from "markpage/marked";
   import MarkdownToken from "./MarkdownToken.svelte";
   import type { ComponentName } from "./types";
 

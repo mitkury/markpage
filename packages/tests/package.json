@@ -12,7 +12,9 @@
   "devDependencies": {
     "@types/node": "^20.0.0",
     "typescript": "^5.0.0",
-    "vitest": "^1.0.0"
+    "vitest": "^1.0.0",
+    "@testing-library/svelte": "^5.0.0",
+    "svelte": "^5.0.0"
   },
   "dependencies": {
     "markpage": "file:../markpage"

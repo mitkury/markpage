@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { Tokens } from "marked";
+  import type { Tokens } from "markpage/marked";
   let { token }: { token: Tokens.Code } = $props();
   let lang = $derived(token.lang || "text");
 </script>

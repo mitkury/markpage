@@ -12,6 +12,11 @@
       "import": "./dist/index.js",
       "require": "./dist/index.cjs"
     },
+    "./marked": {
+      "types": "./dist/marked.d.ts",
+      "import": "./dist/marked.js",
+      "require": "./dist/marked.cjs"
+    },
     "./builder": {
       "types": "./dist/builder/index.d.ts",
       "import": "./dist/builder/index.js",

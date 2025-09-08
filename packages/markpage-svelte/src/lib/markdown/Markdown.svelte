@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Lexer, Marked } from "marked";
+  import { Lexer, Marked } from "markpage/marked";
   import MarkdownTokens from "./MarkdownTokens.svelte";
   import type { ComponentName } from "./types";
   import { componentExtension } from "markpage/renderer";

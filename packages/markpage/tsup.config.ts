@@ -3,6 +3,7 @@ import { defineConfig } from 'tsup';
 export default defineConfig({
   entry: {
     'index': 'src/index.ts',
+    'marked': 'src/marked.ts',
     'builder/index': 'src/builder/index.ts',
     'renderer/index': 'src/renderer/index.ts',
     'renderer/content': 'src/renderer/content.ts',
