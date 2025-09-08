@@ -33,10 +33,6 @@ describe('Svelte Markdown component tokens', () => {
 `;
 
     const { container, findByText } = render(Markdown as any, { props: { source, components } });
-    // debug
-    // @ts-ignore
-    // eslint-disable-next-line no-console
-    console.log('HTML:', container.innerHTML);
 
     // Should render actual elements, not raw tags
     const btn = container.querySelector('button[data-variant="primary"]');

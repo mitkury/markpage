@@ -14,11 +14,10 @@
     markedInstance?: any;
   } = $props();
 
-  let tokens: any = $state(null);
-  $effect(() => {
+  let tokens = $derived.by(() => {
     const md = new Marked();
     md.use({ extensions: [componentExtension as any] as any });
-    tokens = md.lexer(source);
+    return md.lexer(source);
   });
 </script>
 
