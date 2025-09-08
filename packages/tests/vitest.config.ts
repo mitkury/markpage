@@ -2,7 +2,13 @@ import { defineConfig } from 'vitest/config';
 import { svelte } from '@sveltejs/vite-plugin-svelte';
 
 export default defineConfig({
-  plugins: [svelte()],
+  plugins: [
+    svelte({
+      compilerOptions: {
+        generate: 'dom'
+      }
+    })
+  ],
   resolve: {
     conditions: ['svelte', 'browser', 'development']
   },

@@ -32,6 +32,7 @@
 
 {#if Comp}
   {#if typeof (Comp as any).render === 'function'}
+    {(() => { const _h = (Comp as any).render({ ...(token.props ?? {}), children: childrenText(), childrenTokens: token.children })?.html ?? ''; try { console.log('[render html length]', _h.length); } catch(_) {} return ''; })()}
     {@html ((Comp as any).render({ ...(token.props ?? {}), children: childrenText(), childrenTokens: token.children })?.html ?? '')}
   {:else if typeof Comp === 'function'}
     <!-- Svelte component constructor path -->

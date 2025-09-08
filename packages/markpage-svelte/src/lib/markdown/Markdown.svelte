@@ -14,11 +14,11 @@
     markedInstance?: any;
   } = $props();
 
-  let tokens = $derived.by(() => {
-    // Always use a local Marked instance with the component extension
+  let tokens: any = $state(null);
+  $effect(() => {
     const md = new Marked();
     md.use({ extensions: [componentExtension as any] as any });
-    return md.lexer(source);
+    tokens = md.lexer(source);
   });
 </script>
 
