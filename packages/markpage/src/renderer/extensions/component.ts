@@ -52,7 +52,7 @@ function findMatchingClose(src: string, name: string, startIndex: number): numbe
 
 export const componentExtension: TokenizerAndRendererExtension = {
   name: 'component',
-  level: 'inline',
+  level: 'block',
   start(src: string) {
     const i = src.search(/<[A-Z]/);
     return i < 0 ? undefined : i;

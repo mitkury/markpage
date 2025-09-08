@@ -40,21 +40,21 @@ Here's a regular paragraph.
 <TestButton /> <!-- Uses default props -->
 ```
 
-Components are registered and used with the `MarkdownRenderer` component:
+Components are registered and rendered with the `Markdown` component:
 
 ```svelte
 <script>
-  import { MarkdownRenderer } from '@markpage/svelte';
+  import { Markdown } from '@markpage/svelte';
   import TestButton from './TestButton.svelte';
-  
+
   const components = new Map([
     ['TestButton', TestButton]
   ]);
 </script>
 
-<MarkdownRenderer 
-  content={markdownContent} 
-  components={components} 
+<Markdown 
+  source={markdownContent}
+  components={components}
 />
 ```
 

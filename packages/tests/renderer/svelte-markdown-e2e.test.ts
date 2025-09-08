@@ -1,25 +1,12 @@
 import { describe, it, expect } from 'vitest';
 import { render } from '@testing-library/svelte';
 import { Markdown } from '@markpage/svelte';
-
-// Simple test components
-import type { Component } from 'svelte';
-
-const Button: Component = {
-  render: (props: any) => ({
-    html: `<button data-variant="${props?.variant ?? ''}">${props?.children ?? ''}</button>`
-  }) as any
-} as any;
-
-const Alert: Component = {
-  render: (props: any) => ({
-    html: `<div role="alert" data-variant="${props?.variant ?? ''}">${props?.children ?? ''}</div>`
-  }) as any
-} as any;
+import Button from './components/Button.svelte';
+import Alert from './components/Alert.svelte';
 
 describe('Svelte Markdown component tokens', () => {
   it('renders custom components parsed from markdown', async () => {
-    const components = new Map<string, Component>([
+    const components = new Map<string, any>([
       ['Button', Button],
       ['Alert', Alert]
     ]);
