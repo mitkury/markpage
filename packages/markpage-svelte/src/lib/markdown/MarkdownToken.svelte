@@ -66,15 +66,10 @@
     return comp;
   });
 </script>
-
-{#if token.type === 'component'}
-  <MarkdownComponentTag {token} {components} />
-{:else if MarkdownComponent}
-  <MarkdownComponent {token}>
+{#if MarkdownComponent}
+  <MarkdownComponent {token} {components}>
     {#if "tokens" in token && token["tokens"]}
       <MarkdownTokens tokens={token["tokens"]} {components} />
-    {:else}
-      {token.raw}
     {/if}
   </MarkdownComponent>
 {/if}

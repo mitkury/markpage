@@ -2,21 +2,9 @@
   import MarkdownTokens from "../MarkdownTokens.svelte";
   import type { ComponentName } from "../types";
 
-  let {
-    token,
-    components = new Map<ComponentName, any>(),
-    onComponentEvent,
-  }: {
-    token: any;
-    components?: Map<ComponentName, any>;
-    onComponentEvent?: (event: { component: string; event: any }) => void;
-  } = $props();
+  let { token, components = new Map<ComponentName, any>() }: { token: any; components?: Map<ComponentName, any> } = $props();
 
-  function handle(event: Event, name: string) {
-    if (onComponentEvent) {
-      onComponentEvent({ component: name, event });
-    }
-  }
+  function handle(event: Event, name: string) {}
 
   const Comp = $derived(() => components.get(token.name) ?? null);
   function childrenText() {
