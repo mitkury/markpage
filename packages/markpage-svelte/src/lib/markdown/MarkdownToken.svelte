@@ -18,8 +18,7 @@
   import MarkdownStrong from "./markdown-components/MarkdownStrong.svelte";
   import MarkdownImage from "./markdown-components/MarkdownImage.svelte";
   import MarkdownSpace from "./markdown-components/MarkdownSpace.svelte";
-  import MarkdownTeX from "./markdown-components/MarkdownTeX.svelte";
-  import MarkdownTeXBlock from "./markdown-components/MarkdownTeXBlock.svelte";
+  
 
   const markdownComponents: Record<string, any> = {
     blockquote: MarkdownBloquote,
@@ -41,15 +40,13 @@
     strong: MarkdownStrong,
     image: MarkdownImage,
     space: MarkdownSpace,
-    texInline: MarkdownTeX,
-    texBlock: MarkdownTeXBlock,
   };
 </script>
 
 <script lang="ts">
   import MarkdownTokens from "./MarkdownTokens.svelte";
 
-  let { token } = $props();
+  let { token, components = new Map<string, any>() } = $props();
 
   const MarkdownComponent = $derived.by(() => {
     const comp = markdownComponents[token.type];
