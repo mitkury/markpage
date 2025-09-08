@@ -1,22 +1,25 @@
 <script lang="ts">
+  type Variant = 'info' | 'warning' | 'error' | 'success';
+
   let { 
     variant = 'info',
     children,
     text
   } = $props<{
-    variant?: 'info' | 'warning' | 'error' | 'success';
+    variant?: Variant;
     children?: any;
     text?: string;
   }>();
 
-  const variantConfig = {
+  const variantConfig: Record<Variant, { icon: string; class: string }> = {
     info: { icon: 'ℹ️', class: 'alert-info' },
     warning: { icon: '⚠️', class: 'alert-warning' },
     error: { icon: '❌', class: 'alert-error' },
     success: { icon: '✅', class: 'alert-success' }
   };
 
-  const config = variantConfig[variant];
+  const resolvedVariant = (variant ?? 'info') as Variant;
+  const config = variantConfig[resolvedVariant];
 </script>
 
 <div class="alert {config.class}">

@@ -1,5 +1,6 @@
 import { sveltekit } from '@sveltejs/kit/vite';
 import { defineConfig } from 'vite';
+import type { ViteDevServer } from 'vite';
 import { watch } from 'chokidar';
 import path from 'path';
 
@@ -29,7 +30,7 @@ const buildContentPlugin = () => {
   return {
     name: 'build-content',
     buildStart: buildContent,
-    configureServer(server) {
+    configureServer(server: ViteDevServer) {
       // Watch for changes in the docs directory
       const docsPath = path.resolve('../../docs');
       const watcher = watch(docsPath, {
