@@ -1,5 +1,5 @@
-<script>
-  let { children } = $props();
+<script lang="ts">
+  let { token }: { token: any } = $props();
 </script>
 
-{@render children()}
+{token?.text ?? token?.raw ?? ''}

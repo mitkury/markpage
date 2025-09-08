@@ -1,8 +1,14 @@
 <script lang="ts">
   import type { Snippet } from "svelte";
-  let { children } = $props<{ children: Snippet }>();
+  let { token, children }: { token: any; children?: Snippet } = $props();
+  const text = $derived(() => String(token?.text ?? token?.raw ?? ''));
+  const hasChildren = $derived(() => typeof children === 'function');
 </script>
 
 <p>
-  {@render children()}
+  {#if hasChildren}
+    {@render children?.()}
+  {:else}
+    {text}
+  {/if}
 </p>
