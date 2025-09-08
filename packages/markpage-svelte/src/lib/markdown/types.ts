@@ -1,29 +1,6 @@
-export const builtinTokenNames = [
-  'blockquote',
-  'heading',
-  'list',
-  'list_item',
-  'br',
-  'code',
-  'codespan',
-  'table',
-  'html',
-  'paragraph',
-  'link',
-  'text',
-  'def',
-  'del',
-  'em',
-  'hr',
-  'strong',
-  'image',
-  'space',
-] as const;
-
-export type BuiltinTokenName = typeof builtinTokenNames[number];
-
-// Union of built-in token names and any custom component name
-// Using (string & {}) keeps it as an open string while allowing tooling to show the union explicitly
-export type ComponentName = BuiltinTokenName | (string & {});
+// Keep types framework-local to avoid cross-package type resolution issues during dev
+export type BuiltinTokenName = string;
+export type ComponentTokenName = BuiltinTokenName | 'component';
+export type ComponentName = ComponentTokenName | (string & {});
 
 

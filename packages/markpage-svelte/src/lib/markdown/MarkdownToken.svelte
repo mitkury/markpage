@@ -18,11 +18,11 @@
   import MarkdownStrong from "./markdown-components/MarkdownStrong.svelte";
   import MarkdownImage from "./markdown-components/MarkdownImage.svelte";
   import MarkdownSpace from "./markdown-components/MarkdownSpace.svelte";
+  import MarkdownComponentTag from "./markdown-components/MarkdownComponentTag.svelte";
+  import type { BuiltinTokenName } from "./types";
   
 
-  import type { BuiltinTokenName } from "./types";
-
-  const markdownComponents: Record<BuiltinTokenName, any> = {
+  const markdownComponents: Record<string, any> = {
     blockquote: MarkdownBloquote,
     heading: MarkdownHeading,
     list: MarkdownList,
@@ -42,6 +42,7 @@
     strong: MarkdownStrong,
     image: MarkdownImage,
     space: MarkdownSpace,
+    component: MarkdownComponentTag,
   };
 </script>
 
