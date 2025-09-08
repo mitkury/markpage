@@ -1,14 +1,15 @@
 <script lang="ts">
   import { Lexer } from "marked";
   import MarkdownTokens from "./MarkdownTokens.svelte";
+  import type { ComponentName } from "./types";
 
   let {
     source,
-    components = new Map<string, any>(),
+    components = new Map<ComponentName, any>(),
     markedInstance,
   }: {
     source: string;
-    components?: Map<string, any>;
+    components?: Map<ComponentName, any>;
     markedInstance?: any;
   } = $props();
 

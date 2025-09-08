@@ -47,8 +47,9 @@
 
 <script lang="ts">
   import MarkdownTokens from "./MarkdownTokens.svelte";
+  import type { ComponentName } from "./types";
 
-  let { token, components = new Map<string, any>() } = $props();
+  let { token, components = new Map<ComponentName, any>() } = $props();
 
   const MarkdownComponent = $derived.by(() => {
     const type = token.type as BuiltinTokenName;
