@@ -15,7 +15,7 @@
   } = $props();
 
   let tokens = $derived.by(() => {
-    const md = new Marked();
+    const md = markedInstance ?? new Marked();
     md.use({ extensions: [componentExtension as any] as any });
     return md.lexer(source);
   });
