@@ -1,12 +1,12 @@
 <script lang="ts">
-	import { MarkdownRenderer } from '@markpage/svelte';
+	import { Markdown } from '@markpage/svelte';
 	import TestButton from '$lib/components/TestButton.svelte';
 	import Button from '$lib/components/Button.svelte';
 	import Alert from '$lib/components/Alert.svelte';
 	import Card from '$lib/components/Card.svelte';
 
 	// Component registry
-	const components = new Map([
+	const components = new Map<string, any>([
 		['TestButton', TestButton],
 		['Button', Button],
 		['Alert', Alert],
@@ -95,4 +95,4 @@ This page demonstrates all available components in the Markpage Svelte integrati
 
 <h1>Test Page</h1>
 
-<MarkdownRenderer content={testContent} components={components} enableComponents={true} />
+<Markdown source={testContent} components={components} />

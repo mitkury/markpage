@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { PageData } from './$types';
-	import { MarkdownRenderer } from '@markpage/svelte';
+	import { Markdown } from '@markpage/svelte';
 	import TestButton from '$lib/components/TestButton.svelte';
 	import Button from '$lib/components/Button.svelte';
 	import Alert from '$lib/components/Alert.svelte';
@@ -9,7 +9,7 @@
 	let { data } = $props<{ data: PageData }>();
 
 	// Component registry
-	const components = new Map([
+	const components = new Map<string, any>([
 		['TestButton', TestButton],
 		['Button', Button],
 		['Alert', Alert],
@@ -61,7 +61,7 @@
 
 		<div class="docs-content">
 			{#if data?.content}
-				<MarkdownRenderer content={data.content} components={components} enableComponents={true} />
+				<Markdown source={data.content} components={components} />
 			{:else}
 				<div>No content selected</div>
 			{/if}
