@@ -13,8 +13,7 @@
   },
   "dependencies": {
     "@markpage/svelte": "file:../markpage-svelte",
-    "chokidar": "^4.0.3",
-    "markpage": "file:../markpage"
+    "chokidar": "^4.0.3"
   },
   "devDependencies": {
     "@sveltejs/adapter-auto": "^3.0.0",

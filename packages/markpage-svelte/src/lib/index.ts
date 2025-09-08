@@ -14,3 +14,7 @@ export type {
   MarkpageSvelteOptions,
   RenderContext
 } from './types.js';
+
+// Re-export core markpage APIs for convenience
+export * from 'markpage';
+export type * from 'markpage';
