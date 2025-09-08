@@ -67,7 +67,9 @@
   });
 </script>
 
-{#if MarkdownComponent}
+{#if token.type === 'component'}
+  <MarkdownComponentTag {token} {components} />
+{:else if MarkdownComponent}
   <MarkdownComponent {token}>
     {#if "tokens" in token && token["tokens"]}
       <MarkdownTokens tokens={token["tokens"]} />
