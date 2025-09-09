@@ -9,10 +9,6 @@
   const Comp = $derived.by(() => {
     const name = token?.name ?? '';
     if (!components || !name) return null;
-    try {
-      // debug
-      console.log('MarkdownComponentTag lookup', { name, keys: Array.from(components.keys()) });
-    } catch {}
     const direct = components.get(name);
     if (direct) return direct;
     // Fallback: case-insensitive resolution for convenience in tests/usages
@@ -23,17 +19,10 @@
     return null;
   });
   function getRenderer(component: any): null | ((props: any) => { html?: string }) {
-    if (!component) return null;
-    const candidate = (component as any);
-    if (typeof candidate.render === 'function') return candidate.render.bind(candidate);
-    if (candidate && typeof candidate.default?.render === 'function') return candidate.default.render.bind(candidate.default);
+    // In Svelte 5, components are no longer classes with .render() method
+    // We should use <svelte:component> instead
     return null;
   }
-  $effect(() => {
-    try {
-      console.log('MarkdownComponentTag Comp type', { name: token?.name, type: typeof Comp, hasRender: Comp && typeof (Comp as any).render });
-    } catch {}
-  });
   function childrenText() {
     if (!token.children) return '';
     try {
@@ -45,18 +34,10 @@
 
 </script>
 
-{#if getRenderer(Comp)}
-  {@html (() => {
-    const render = getRenderer(Comp)!;
-    const result = render({ ...(token.props ?? {}), children: childrenText(), childrenTokens: token.children });
-    try { console.log('MarkdownComponentTag render html', { name: token.name, html: result?.html }); } catch {}
-    return result?.html ?? '';
-  })()}
-{:else if typeof Comp === 'function'}
-  <svelte:component
-    this={Comp}
+{#if Comp && typeof Comp === 'function'}
+  {@const Component = Comp}
+  <Component
     {...token.props}
-    children={childrenText()}
     onclick={(e: Event) => handle(e, token.name)}
     onsubmit={(e: Event) => handle(e, token.name)}
     onchange={(e: Event) => handle(e, token.name)}
@@ -65,7 +46,7 @@
     {#if token.children}
       <MarkdownTokens tokens={token.children} {components} />
     {/if}
-  </svelte:component>
+  </Component>
 {:else}
   <!-- Fallback to literal text when unknown component -->
   <div class="component-fallback">
