@@ -1,15 +1,14 @@
 import { describe, it, expect } from 'vitest';
 import { render } from '@testing-library/svelte';
-import { Markdown } from '@markpage/svelte';
+import { Markdown, MarkpageOptions } from '@markpage/svelte';
 import Button from './components/Button.svelte';
 import Alert from './components/Alert.svelte';
 
 describe('Svelte Markdown component tokens', () => {
-  it('renders custom components parsed from markdown', async () => {
-    const components = new Map<string, any>([
-      ['Button', Button],
-      ['Alert', Alert]
-    ]);
+  it('renders custom components parsed from markdown using MarkpageOptions API', async () => {
+    const options = new MarkpageOptions()
+      .addCustomComponent('Button', Button)
+      .addCustomComponent('Alert', Alert);
 
     const source = `
 ## Test
@@ -19,7 +18,7 @@ describe('Svelte Markdown component tokens', () => {
 <Alert variant="info">Info message</Alert>
 `;
 
-    const { container, findByText } = render(Markdown as any, { props: { source, components } });
+    const { container, findByText } = render(Markdown as any, { props: { source, options } });
 
     // Should render actual elements, not raw tags
     const btn = container.querySelector('button[data-variant="primary"]');

@@ -304,21 +304,22 @@ const processor = {
 
 ### Rendering custom tokens in Svelte
 
-You can render custom markdown tokens by supplying Svelte components via the `extensionComponents` prop on `Markdown`.
+You can render custom markdown tokens by using the `MarkpageOptions` API to register extensions with their components.
 
 ```svelte
 <script lang="ts">
-  import { Markdown, Marked } from '@markpage/svelte';
+  import { Markdown, Marked, MarkpageOptions } from '@markpage/svelte';
   import MathInline from '$lib/components/MathInline.svelte';
   import MathBlock from '$lib/components/MathBlock.svelte';
 
   // Example: add simple $...$ (inline) and $$...$$ (block) tokenizers
-  function mathExtension() {
+  function mathExtensionWithComponents() {
     return {
       extensions: [
         {
           name: 'math_block',
           level: 'block' as const,
+          component: MathBlock,
           start(src: string) { const i = src.indexOf('$$'); return i < 0 ? undefined : i; },
           tokenizer(src: string) {
             if (!src.startsWith('$$')) return;
@@ -332,6 +333,7 @@ You can render custom markdown tokens by supplying Svelte components via the `ex
         {
           name: 'math_inline',
           level: 'inline' as const,
+          component: MathInline,
           start(src: string) { const i = src.indexOf('$'); return i < 0 ? undefined : i; },
           tokenizer(src: string) {
             if (src.startsWith('$$')) return; // let block handle
@@ -348,39 +350,55 @@ You can render custom markdown tokens by supplying Svelte components via the `ex
   }
 
   const markedInstance = new Marked();
-  markedInstance.use(mathExtension());
+  markedInstance.use(mathExtensionWithComponents());
 
-  const extensionComponents = new Map<string, any>([
-    ['math_inline', MathInline],
-    ['math_block', MathBlock]
-  ]);
+  const options = new MarkpageOptions()
+    .extendMarkdown(mathExtensionWithComponents())
+    .useMarkedInstance(markedInstance);
 
   export let source: string;
 </script>
 
-<Markdown {source} {markedInstance} {extensionComponents} />
+<Markdown {source} {options} />
 ```
 
 Resolution order for a token type `t`:
-- extensionComponents.get(t)
-- built-in markdown component
-- optional `unknownToken` fallback
+- Extension components (from MarkpageOptions)
+- Built-in markdown component
+- Optional `unknownToken` fallback
 
 To override a built-in token (e.g., `codespan`):
 
 ```svelte
 <script lang="ts">
-  import { Markdown } from '@markpage/svelte';
+  import { Markdown, MarkpageOptions } from '@markpage/svelte';
   import OverrideCodeSpan from '$lib/components/OverrideCodeSpan.svelte';
 
-  const extensionComponents = new Map<string, any>([
-    ['codespan', OverrideCodeSpan]
-  ]);
+  const options = new MarkpageOptions()
+    .overrideBuiltinToken('codespan', OverrideCodeSpan);
 
   export let source = 'Inline `code` here';
 </script>
 
-<Markdown {source} {extensionComponents} />
+<Markdown {source} {options} />
+```
+
+Alternatively, you can manually add to the extension components map:
+
+```svelte
+<script lang="ts">
+  import { Markdown, MarkpageOptions } from '@markpage/svelte';
+  import OverrideCodeSpan from '$lib/components/OverrideCodeSpan.svelte';
+
+  const options = new MarkpageOptions();
+  // Manually add the extension component to override built-in codespan
+  const extensionComponents = options.getExtensionComponents();
+  extensionComponents.set('codespan', OverrideCodeSpan);
+
+  export let source = 'Inline `code` here';
+</script>
+
+<Markdown {source} {options} />
 ```
 ```
 

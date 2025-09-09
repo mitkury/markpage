@@ -5,13 +5,13 @@
 
   let {
     tokens,
-    components,
+    components = new Map<ComponentName, any>(),
     extensionComponents = new Map<string, any>(),
     unknownToken,
   }: {
     tokens: Token[] | null;
-    components?: Map<ComponentName, any>;
-    extensionComponents?: Map<string, any>;
+    components: Map<ComponentName, any>;
+    extensionComponents: Map<string, any>;
     unknownToken?: ((token: any) => any) | undefined;
   } = $props();
 </script>

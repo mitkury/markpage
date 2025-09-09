@@ -39,3 +39,6 @@ export interface RenderContext {
   navigation: NavigationItem[];
   content: Record<string, string>;
 }
+
+// Re-export MarkpageOptions
+export { MarkpageOptions, type MarkdownExtension, type MarkdownExtensionSet } from './markdown/MarkpageOptions.js';

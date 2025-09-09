@@ -47,3 +47,6 @@ export type {
   MarkpageSvelteOptions,
   RenderContext
 } from './types.js';
+
+// Export MarkpageOptions class
+export { MarkpageOptions, type MarkdownExtension, type MarkdownExtensionSet } from './types.js';
