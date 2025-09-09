@@ -1,7 +1,6 @@
 <script lang="ts">
   import { newMarked } from "@markpage/svelte";
   import MarkdownTokens from "./MarkdownTokens.svelte";
-  import type { ComponentName } from "./types";
   import type { MarkpageOptions } from "./MarkpageOptions";
 
   let {
@@ -28,17 +27,17 @@
         
         // Apply any registered extensions to the Marked instance
         const extensions = options.getExtensions();
-        for (const extensionSet of extensions) {
+        for (const extensionSet of extensions as { extensions: Array<{ name: string; level: 'inline' | 'block'; start?: (src: string) => number | undefined; tokenizer?: (src: string) => any }> }[]) {
           // Convert our extension format to Marked.js format
           const markedExtension = {
-            extensions: extensionSet.extensions.map(ext => ({
+            extensions: extensionSet.extensions.map((ext) => ({
               name: ext.name,
               level: ext.level,
               start: ext.start,
               tokenizer: ext.tokenizer
             }))
           };
-          md.use(markedExtension);
+          md.use(markedExtension as any);
         }
       }
     } else {

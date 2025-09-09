@@ -58,6 +58,6 @@
     "url": "https://github.com/mitkury/markpage"
   },
   "dependencies": {
-    "markpage": "file:../markpage"
+    "markpage": "^0.3.6"
   }
 }

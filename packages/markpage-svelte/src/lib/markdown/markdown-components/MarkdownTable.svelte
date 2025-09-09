@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { Tokens } from "markpage/marked";
+  import type { Tokens } from "markpage";
   import MarkdownTokens from "../MarkdownTokens.svelte";
 
   let { token }: { token: Tokens.Table } = $props();

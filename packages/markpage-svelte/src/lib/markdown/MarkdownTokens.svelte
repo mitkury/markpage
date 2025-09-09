@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { Token } from "markpage/marked";
+  import type { Token } from "markpage";
   import MarkdownToken from "./MarkdownToken.svelte";
   import type { ComponentName } from "./types";
 
@@ -10,8 +10,8 @@
     unknownToken,
   }: {
     tokens: Token[] | null;
-    components: Map<ComponentName, any>;
-    extensionComponents: Map<string, any>;
+    components?: Map<ComponentName, any>;
+    extensionComponents?: Map<string, any>;
     unknownToken?: ((token: any) => any) | undefined;
   } = $props();
 </script>
