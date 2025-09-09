@@ -48,5 +48,6 @@ export type {
   RenderContext
 } from './types.js';
 
-// Export MarkpageOptions class
-export { MarkpageOptions, type MarkdownExtension, type MarkdownExtensionSet } from './types.js';
+// Export MarkpageOptions directly from its module (avoid barrel indirection)
+export { MarkpageOptions } from './markdown/MarkpageOptions.js';
+export type { MarkdownExtension, MarkdownExtensionSet } from './markdown/MarkpageOptions.js';
