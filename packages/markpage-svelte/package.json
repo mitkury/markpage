@@ -22,8 +22,8 @@
     "src/lib"
   ],
   "scripts": {
-    "build": "node ./node_modules/.bin/svelte-package || npx --yes tsup",
-    "dev": "node ./node_modules/.bin/svelte-package --watch || npx --yes tsup --watch",
+    "build": "node ./node_modules/.bin/svelte-package",
+    "dev": "node ./node_modules/.bin/svelte-package --watch",
     "clean": "rm -rf dist",
     "prebuild": "npm run clean",
     "dev:local": "npm run link:local && npm run dev",
@@ -41,7 +41,6 @@
     "@sveltejs/vite-plugin-svelte": "^5.1.1",
     "@types/node": "^20.0.0",
     "svelte": "^5.38.6",
-    "tsup": "^8.5.0",
     "typescript": "^5.0.0",
     "vite": "^6.0.0"
   },
