@@ -1,8 +1,8 @@
 <script lang="ts">
-  import { Lexer, Marked } from "markpage/marked";
+  import { Lexer, Marked } from "@markpage/svelte";
   import MarkdownTokens from "./MarkdownTokens.svelte";
   import type { ComponentName } from "./types";
-  import { componentExtension } from "markpage/renderer";
+  import { componentExtension } from "@markpage/svelte";
 
   let {
     source,

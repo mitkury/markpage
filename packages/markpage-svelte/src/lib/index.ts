@@ -24,7 +24,9 @@ export {
   extractTableOfContents,
   addTableOfContents,
   builtinTokenNames,
-  componentExtension
+  componentExtension,
+  Marked,
+  Lexer
 } from 'markpage';
 
 // Type exports specific to @markpage/svelte
