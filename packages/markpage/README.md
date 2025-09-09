@@ -1,8 +1,8 @@
 # Markpage
 
-Markpage helps to render Markdown files on html pages with any framework.
+Markpage helps you render Markdown files as HTML pages with any framework.
 
-You point Markpage at a directory with markdown files and get navigation structure and content that you can use to render in your app.
+Point Markpage at a directory with markdown files and get organized navigation structure and content that you can use to render in your app.
 
 ## What it does
 
@@ -26,6 +26,7 @@ await buildPages('./my-content', {
   includeContent: true
 });
 ```
+
 
 ## Component System (via @markpage/svelte)
 
@@ -70,7 +71,32 @@ npm install @markpage/svelte
 
 ## Getting Started
 
-For detailed step-by-step instructions, see the [Getting Started Guide](https://github.com/mitkury/markpage/blob/main/docs/getting-started.md).
+For detailed step-by-step instructions, see the [Getting Started Guide](docs/getting-started.md).
+
+## CLI Usage
+
+### Build for App/Website
+
+```bash
+npx markpage build ./my-docs --output ./src/lib/content
+```
+
+### Generate Static Site
+
+```bash
+npx markpage static ./my-docs --output ./dist
+```
+
+## Use Cases
+
+### Content Sites
+Perfect for documentation, blogs, knowledge bases, and any markdown-based content.
+
+### Websites
+Create websites with organized content and easy navigation management.
+
+### Static Sites
+Generate complete static HTML sites for deployment to any hosting platform.
 
 ## Examples
 
@@ -78,7 +104,7 @@ For detailed step-by-step instructions, see the [Getting Started Guide](https://
 
 ## Contributing
 
-👨‍💻 **For contributors: [How to Contribute](https://github.com/mitkury/markpage/blob/main/docs/how-to-contribute.md)**
+👨‍💻 **Want to contribute? See our [How to Contribute](docs/how-to-contribute.md) guide.**
 
 ## License
 

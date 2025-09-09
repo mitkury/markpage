@@ -1,4 +1,7 @@
 <script lang="ts">
+  type Variant = 'default' | 'primary' | 'secondary' | 'danger';
+  type Size = 'small' | 'medium' | 'large';
+
   let { 
     variant = 'default',
     size = 'medium',
@@ -6,21 +9,21 @@
     children,
     text
   } = $props<{
-    variant?: 'default' | 'primary' | 'secondary' | 'danger';
-    size?: 'small' | 'medium' | 'large';
+    variant?: Variant;
+    size?: Size;
     disabled?: boolean;
     children?: any;
     text?: string;
   }>();
 
-  const variantClasses = {
+  const variantClasses: Record<Variant, string> = {
     default: 'btn-default',
     primary: 'btn-primary',
     secondary: 'btn-secondary',
     danger: 'btn-danger'
   };
 
-  const sizeClasses = {
+  const sizeClasses: Record<Size, string> = {
     small: 'btn-small',
     medium: 'btn-medium',
     large: 'btn-large'
@@ -28,7 +31,7 @@
 </script>
 
 <button 
-  class="btn {variantClasses[variant]} {sizeClasses[size]}"
+  class="btn {variantClasses[(variant ?? 'default') as Variant]} {sizeClasses[(size ?? 'medium') as Size]}"
   {disabled}
   onclick={() => !disabled && console.log('Button clicked!')}
 >

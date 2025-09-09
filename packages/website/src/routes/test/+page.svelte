@@ -95,4 +95,4 @@ This page demonstrates all available components in the Markpage Svelte integrati
 
 <h1>Test Page</h1>
 
-<Markdown source={testContent} components={components} markedInstance={md} />
+<Markdown source={testContent} components={components} />
