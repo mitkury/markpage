@@ -25,8 +25,21 @@
       } else {
         // Create default instance and apply extensions from options
         md = newMarked();
-        // Note: Extensions would need to be applied here if we stored them in options
-        // For now, we rely on the user to provide a pre-configured Marked instance
+        
+        // Apply any registered extensions to the Marked instance
+        const extensions = options.getExtensions();
+        for (const extensionSet of extensions) {
+          // Convert our extension format to Marked.js format
+          const markedExtension = {
+            extensions: extensionSet.extensions.map(ext => ({
+              name: ext.name,
+              level: ext.level,
+              start: ext.start,
+              tokenizer: ext.tokenizer
+            }))
+          };
+          md.use(markedExtension);
+        }
       }
     } else {
       // No options provided, use default instance

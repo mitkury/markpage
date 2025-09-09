@@ -16,6 +16,7 @@ export interface MarkdownExtensionSet {
 export class MarkpageOptions {
   private components = new Map<string, Component>();
   private extensionComponents = new Map<string, Component>();
+  private markedExtensions: MarkdownExtensionSet[] = [];
   private markedInstance?: Marked;
   private markedFactory?: () => Marked;
 
@@ -34,6 +35,10 @@ export class MarkpageOptions {
     const extensionSets = Array.isArray(extensions) ? extensions : [extensions];
     
     for (const extensionSet of extensionSets) {
+      // Store the extension set for applying to Marked instances
+      this.markedExtensions.push(extensionSet);
+      
+      // Store the components for rendering
       for (const extension of extensionSet.extensions) {
         this.extensionComponents.set(extension.name, extension.component);
       }
@@ -101,9 +106,6 @@ export class MarkpageOptions {
    * Get all registered extensions for applying to a Marked instance
    */
   getExtensions(): MarkdownExtensionSet[] {
-    // This would need to be stored when extendMarkdown is called
-    // For now, we'll return an empty array as the extensions are applied
-    // by the user when they create their Marked instance
-    return [];
+    return this.markedExtensions;
   }
 }

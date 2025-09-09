@@ -224,6 +224,57 @@ The `@markpage/svelte` package now uses the `MarkpageOptions` API for configurin
 <Markdown {source} {options} />
 ```
 
+### Automatic Extension Application
+
+You can also let MarkpageOptions automatically apply extensions to a default Marked instance:
+
+```svelte
+<script lang="ts">
+  import { Markdown, MarkpageOptions } from '@markpage/svelte';
+  import Button from './Button.svelte';
+  import MathInline from './MathInline.svelte';
+  import MathBlock from './MathBlock.svelte';
+
+  function mathExtensionWithComponents() {
+    return {
+      extensions: [
+        {
+          name: 'math_inline',
+          level: 'inline' as const,
+          component: MathInline,
+          start(src: string) {
+            const i = src.indexOf('$');
+            return i < 0 ? undefined : i;
+          },
+          tokenizer(src: string) {
+            if (src.startsWith('$$')) return; // let block handle
+            if (!src.startsWith('$')) return;
+            const end = src.indexOf('$', 1);
+            if (end === -1) return;
+            const raw = src.slice(0, end + 1);
+            const text = src.slice(1, end).trim();
+            return { type: 'math_inline', raw, text } as any;
+          }
+        }
+      ]
+    };
+  }
+
+  // No need to create or configure a Marked instance
+  // Extensions are automatically applied to a default instance
+  const options = new MarkpageOptions()
+    .addCustomComponent('Button', Button)
+    .extendMarkdown(mathExtensionWithComponents());
+
+  const source = `
+    <Button variant="primary">Click me</Button>
+    Here is math: $a+b=c$
+  `;
+</script>
+
+<Markdown {source} {options} />
+```
+
 ### API Methods
 
 - `addCustomComponent(name, component)`: Register a custom component for use as a tag in markdown
