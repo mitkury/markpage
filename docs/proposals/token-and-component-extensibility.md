@@ -103,10 +103,11 @@ await buildPages('./docs', {
 <Markdown {source} {extensionComponents} />
 ```
 
-#### Minimal Svelte changes
-- `Markdown.svelte` and `MarkdownToken.svelte`:
-  - Accept `extensionComponents?: Map<string, any>` and optional `unknownToken?: (token:any)=>any` via props.
-  - In `MarkdownToken.svelte`, resolve component with the precedence defined above.
+#### Implemented Svelte changes
+- `Markdown.svelte`, `MarkdownTokens.svelte`, `MarkdownToken.svelte` now support:
+  - `extensionComponents?: Map<string, any>` — custom token type to Svelte component mapping
+  - `unknownToken?: (token: any) => any` — optional fallback component factory
+  - Resolution order: `extensionComponents` → built-ins → `unknownToken`
 
 - #### API Summary
 - Core
@@ -116,10 +117,9 @@ await buildPages('./docs', {
   - `Markdown` props: `components?: Map<ComponentName, any>`, `extensionComponents?: Map<string, any>`, `unknownToken?: (token:any)=>any`
 
 #### Testing
-- Add tests in `@markpage/tests` that:
-  - Verify tokens `math_inline` and `math_block` appear from the plugin
-  - Verify Svelte renderer uses `extensionComponents` over built-ins
-  - Ensure no regressions for built-in tokens and `<Component />` tags
+- Added tests in `@markpage/tests`:
+  - `svelte-markdown-extension.test.ts` validates `math_inline` and `math_block` custom tokens render via `extensionComponents`
+  - `svelte-markdown-override.test.ts` verifies overriding a built-in token (`codespan`) via `extensionComponents`
 
 #### Open Questions
 - Should we ship default math components behind an optional peer dep (`katex`)? Proposal: provide components in `@markpage/plugin-math-svelte` to avoid forcing a renderer choice.
