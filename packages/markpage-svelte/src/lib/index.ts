@@ -1,3 +1,5 @@
+import { Marked, componentExtension } from 'markpage';
+
 // Svelte component exports
 export { default as Markdown } from './markdown/Markdown.svelte';
 
@@ -28,6 +30,13 @@ export {
   Marked,
   Lexer
 } from 'markpage';
+
+// Convenience: create a Marked instance with the component extension applied
+export function newMarked() {
+  const md = new Marked();
+  md.use({ extensions: [componentExtension as any] as any } as any);
+  return md;
+}
 
 // Type exports specific to @markpage/svelte
 export type {

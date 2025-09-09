@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Marked, componentExtension } from "@markpage/svelte";
+  import { newMarked } from "@markpage/svelte";
   import MarkdownTokens from "./MarkdownTokens.svelte";
   import type { ComponentName } from "./types";
 
@@ -18,8 +18,7 @@
   } = $props();
 
   let tokens = $derived.by(() => {
-    const md = markedInstance ?? new Marked();
-    md.use({ extensions: [componentExtension as any] as any });
+    const md = markedInstance ?? newMarked();
     return md.lexer(source);
   });
 </script>
