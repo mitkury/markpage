@@ -1,5 +1,6 @@
 import { defineConfig } from 'vitest/config';
 import { svelte } from '@sveltejs/vite-plugin-svelte';
+import path from 'path';
 
 export default defineConfig({
   plugins: [
@@ -10,7 +11,10 @@ export default defineConfig({
     })
   ],
   resolve: {
-    conditions: ['svelte', 'browser', 'development']
+    conditions: ['svelte', 'browser', 'development'],
+    alias: {
+      '@markpage/svelte': path.resolve(__dirname, '../markpage-svelte/src/lib/index.ts')
+    }
   },
   test: {
     globals: true,

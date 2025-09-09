@@ -22,8 +22,8 @@
     "src/lib"
   ],
   "scripts": {
-    "build": "svelte-package",
-    "dev": "svelte-package --watch",
+    "build": "node ./node_modules/.bin/svelte-package",
+    "dev": "node ./node_modules/.bin/svelte-package --watch",
     "clean": "rm -rf dist",
     "prebuild": "npm run clean",
     "dev:local": "npm run link:local && npm run dev",
@@ -32,17 +32,17 @@
     "unlink:local": "npm unlink markpage && npm install markpage@^0.3.6"
   },
   "peerDependencies": {
-    "svelte": "^5.0.0"
+    "svelte": "^5.38.6"
   },
   "devDependencies": {
-    "@sveltejs/adapter-auto": "^6.1.0",
+    "@sveltejs/adapter-auto": "^3.0.0",
     "@sveltejs/kit": "^2.37.0",
     "@sveltejs/package": "^2.5.0",
     "@sveltejs/vite-plugin-svelte": "^5.1.1",
     "@types/node": "^20.0.0",
     "svelte": "^5.38.6",
     "typescript": "^5.0.0",
-    "vite": "^5.0.0"
+    "vite": "^6.0.0"
   },
   "keywords": [
     "markpage",
@@ -58,6 +58,6 @@
     "url": "https://github.com/mitkury/markpage"
   },
   "dependencies": {
-    "markpage": "^0.3.6"
+    "markpage": "file:../markpage"
   }
 }

@@ -35,8 +35,8 @@
   ],
   "scripts": {
     "prebuild": "rm -rf dist && cp ../../README.md .",
-    "build": "tsup",
-    "dev": "tsup --watch",
+    "build": "vite build",
+    "dev": "vite build --watch",
     "pretest": "npm run build",
     "test": "vitest",
     "prepublishOnly": "npm run build"
@@ -46,10 +46,12 @@
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
-    "tsup": "^8.5.0",
+    "vite": "^6.0.0",
+    "vite-plugin-dts": "^4.2.2",
     "typescript": "^5.0.0",
     "vitest": "^1.0.0"
   },
+  "sideEffects": false,
   "bin": {
     "markpage": "bin/markpage.js"
   },
