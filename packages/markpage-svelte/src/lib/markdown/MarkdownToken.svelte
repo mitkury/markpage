@@ -53,7 +53,7 @@
   let { token, components = new Map<ComponentName, any>() } = $props();
 
   const MarkdownComponent = $derived.by(() => {
-    const type = token.type as BuiltinTokenName;
+    const type = token.type as string;
     const comp = markdownComponents[type];
 
     if (!comp) {

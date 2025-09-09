@@ -3,7 +3,11 @@
   import MarkdownToken from "./MarkdownToken.svelte";
   import type { ComponentName } from "./types";
 
-  let { tokens, components }: { tokens: Token[] | null; components?: Map<ComponentName, any> } = $props();
+  let {
+    tokens,
+    components,
+  }: { tokens: Token[] | null; components?: Map<ComponentName, any> } =
+    $props();
 </script>
 
 {#if tokens}

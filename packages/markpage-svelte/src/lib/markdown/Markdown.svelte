@@ -1,8 +1,7 @@
 <script lang="ts">
-  import { Lexer, Marked } from "@markpage/svelte";
+  import { Marked, componentExtension } from "@markpage/svelte";
   import MarkdownTokens from "./MarkdownTokens.svelte";
   import type { ComponentName } from "./types";
-  import { componentExtension } from "@markpage/svelte";
 
   let {
     source,
@@ -21,6 +20,6 @@
   });
 </script>
 
-<div class="markdown">
+<div class="markpage">
   <MarkdownTokens {tokens} {components} />
 </div>
