@@ -30,7 +30,51 @@ The existing architecture already supports everything we need:
 
 ### The Fix
 
-Replace the plain `Lexer` with a `Marked` instance that has the component extension applied:
+There are several approaches to fix this, ordered by efficiency:
+
+#### **Option 1: Cached Marked Instance (Recommended)**
+Create a cached Marked instance at module level to avoid repeated instantiation:
+
+```typescript
+// At module level - create once, reuse many times
+const cachedMarked = new Marked();
+cachedMarked.use({ extensions: [componentExtension] });
+
+// In tokenizer (line 79-80):
+// Instead of:
+const lexer = new Lexer();
+const children = lexer.inlineTokens(inner);
+
+// Use:
+const children = cachedMarked.lexer(inner);
+```
+
+#### **Option 2: Pass Marked Instance as Context (Most Elegant)**
+Modify the extension system to pass the Marked instance as context:
+
+```typescript
+// Update extension interface to accept Marked instance
+export const componentExtension: TokenizerAndRendererExtension = {
+  name: 'component',
+  level: 'block',
+  start(src: string) { /* ... */ },
+  tokenizer(src: string, marked?: Marked) { // Add marked parameter
+    // ... existing logic ...
+    if (endIndex > -1) {
+      const raw = src.slice(0, endIndex);
+      const inner = src.slice(innerStart, endIndex - (`</${name}>`.length));
+      
+      // Use passed marked instance or fallback to cached
+      const markedInstance = marked || cachedMarked;
+      const children = markedInstance.lexer(inner);
+      return { type: 'component', raw, name, props: parseProps(attrs), children } as any;
+    }
+  },
+};
+```
+
+#### **Option 3: Simple New Instance (Fallback)**
+If the above options are too complex, the simple approach still works:
 
 ```typescript
 // Instead of:
@@ -43,7 +87,13 @@ tempMarked.use({ extensions: [componentExtension] });
 const children = tempMarked.lexer(inner);
 ```
 
-This single change will enable nested components because:
+### **Performance Considerations**
+
+- **Option 1 (Cached)**: Most efficient - creates instance once, reuses many times
+- **Option 2 (Context)**: Most elegant - passes existing instance, no duplication
+- **Option 3 (New Instance)**: Simplest - but creates new instance each time (less efficient)
+
+All approaches will enable nested components because:
 
 - ✅ **Leverages existing architecture**: Uses the same pattern as other inline tokens
 - ✅ **Minimal change**: Only one line needs to be modified
@@ -53,22 +103,32 @@ This single change will enable nested components because:
 
 ## Implementation
 
-### Single File Change
+### Recommended Approach: Cached Marked Instance
 
 The fix requires modifying only one file: `/packages/markpage/src/extensions/component.ts`
 
-**Current code (line 79-80):**
+**Step 1: Add cached instance at module level**
 ```typescript
-const lexer = new Lexer();
-const children = lexer.inlineTokens(inner);
+// At the top of the file, after imports
+const cachedMarked = new Marked();
+cachedMarked.use({ extensions: [componentExtension] });
 ```
 
-**New code:**
+**Step 2: Update tokenizer (line 79-80)**
 ```typescript
-const tempMarked = new Marked();
-tempMarked.use({ extensions: [componentExtension] });
-const children = tempMarked.lexer(inner);
+// Current code:
+const lexer = new Lexer();
+const children = lexer.inlineTokens(inner);
+
+// New code:
+const children = cachedMarked.lexer(inner);
 ```
+
+This approach:
+- ✅ **Most efficient**: Creates instance once, reuses many times
+- ✅ **Minimal memory usage**: No duplication of Marked instances
+- ✅ **Simple implementation**: Only 2 lines of code changes
+- ✅ **No breaking changes**: Doesn't affect the extension interface
 
 ### Why This Works
 
