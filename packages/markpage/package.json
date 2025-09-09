@@ -35,8 +35,8 @@
   ],
   "scripts": {
     "prebuild": "rm -rf dist && cp ../../README.md .",
-    "build": "tsup",
-    "dev": "tsup --watch",
+    "build": "npx --yes esbuild src/index.ts src/marked.ts src/builder/index.ts src/renderer/index.ts src/renderer/content.ts src/renderer/navigation.ts src/builder/builder.ts src/builder/parser.ts src/types.ts --bundle --platform=node --target=node18 --sourcemap --outdir=dist --format=esm --external:marked && npx --yes esbuild src/index.ts src/marked.ts src/builder/index.ts src/renderer/index.ts src/renderer/content.ts src/renderer/navigation.ts src/builder/builder.ts src/builder/parser.ts src/types.ts --bundle --platform=node --target=node18 --sourcemap --outdir=dist --format=cjs --out-extension:.js=.cjs --external:marked",
+    "dev": "npm run build && chokidar 'src/**/*.ts' -c 'npm run build'",
     "pretest": "npm run build",
     "test": "vitest",
     "prepublishOnly": "npm run build"
@@ -46,10 +46,12 @@
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
-    "tsup": "^8.5.0",
+    "chokidar": "^4.0.0",
+    "esbuild": "^0.21.5",
     "typescript": "^5.0.0",
     "vitest": "^1.0.0"
   },
+  "sideEffects": false,
   "bin": {
     "markpage": "bin/markpage.js"
   },

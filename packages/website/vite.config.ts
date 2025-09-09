@@ -62,5 +62,11 @@ const buildContentPlugin = () => {
 };
 
 export default defineConfig({
-  plugins: [buildContentPlugin(), sveltekit()]
+  plugins: [buildContentPlugin(), sveltekit()],
+  resolve: {
+    alias: [
+      { find: '@markpage/svelte/server', replacement: path.resolve(__dirname, '../markpage-svelte/src/lib/server.ts') },
+      { find: /@markpage\/svelte$/u, replacement: path.resolve(__dirname, '../markpage-svelte/src/lib/index.ts') }
+    ]
+  }
 });

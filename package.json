@@ -8,7 +8,7 @@
   ],
   "scripts": {
     "build": "npm run build:pkgs && npm run build:website",
-    "build:pkgs": "npm run copy-readme && npm run build --workspace=markpage && npm run build --workspace=@markpage/svelte",
+    "build:pkgs": "npm run copy-readme && npm run build --workspace=markpage",
     "dev": "npm run dev --workspace=markpage",
     "test": "npm run build:pkgs && npm run test --workspace=@markpage/tests",
     "test:watch": "npm run test:watch --workspace=@markpage/tests",
@@ -20,11 +20,11 @@
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
-    "typescript": "^5.0.0"
+    "typescript": "^5.0.0",
+    "tsup": "^8.5.0",
+    "@sveltejs/package": "^2.5.0"
   },
   "repository": "https://github.com/mitkury/markpage",
   "license": "MIT",
-  "overrides": {
-    "@sveltejs/vite-plugin-svelte": "^4.0.0-next.6"
-  }
+  "overrides": {}
 }
