@@ -221,23 +221,6 @@ Here is math: $a+b=c$
       expect(math?.textContent).toContain('a+b=c');
     });
 
-    it('options take precedence over legacy props', async () => {
-      const options = new MarkpageOptions()
-        .addCustomComponent('Button', Button);
-
-      const legacyComponents = new Map([['Button', Alert]]);
-
-      const source = '<Button variant="primary">Click me</Button>';
-
-      const { container } = render(Markdown as any, { 
-        props: { source, options, components: legacyComponents } 
-      });
-
-      // Should use the component from options, not legacy props
-      const button = container.querySelector('button[data-variant="primary"]');
-      expect(button).toBeTruthy();
-      expect(button?.textContent).toContain('Click me');
-    });
   });
 
   describe('chaining', () => {

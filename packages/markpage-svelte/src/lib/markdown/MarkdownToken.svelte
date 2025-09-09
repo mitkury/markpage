@@ -57,8 +57,8 @@
     unknownToken,
   }: {
     token: any;
-    components?: Map<ComponentName, any>;
-    extensionComponents?: Map<string, any>;
+    components: Map<ComponentName, any>;
+    extensionComponents: Map<string, any>;
     unknownToken?: ((token: any) => any) | undefined;
   } = $props();
 

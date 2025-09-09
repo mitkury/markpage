@@ -6,21 +6,7 @@ import OverrideCodeSpan from './components/OverrideCodeSpan.svelte';
 // Using Svelte component to override built-in codespan
 
 describe('Override built-in token with extensionComponents', () => {
-  it('uses extensionComponents for built-in token type with legacy props', async () => {
-    const source = 'Inline `code` here';
-
-    const extensionComponents = new Map<string, any>([
-      ['codespan', OverrideCodeSpan]
-    ]);
-
-    const { container } = render(Markdown as any, { props: { source, extensionComponents } });
-
-    const overridden = container.querySelector('code[data-overridden="true"]');
-    expect(overridden).toBeTruthy();
-    expect(overridden?.textContent).toBe('code');
-  });
-
-  it('uses extensionComponents for built-in token type with new MarkpageOptions API', async () => {
+  it('uses extensionComponents for built-in token type with MarkpageOptions API', async () => {
     const source = 'Inline `code` here';
 
     const options = new MarkpageOptions();

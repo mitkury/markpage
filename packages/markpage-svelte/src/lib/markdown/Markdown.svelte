@@ -7,16 +7,10 @@
   let {
     source,
     options,
-    components = new Map<ComponentName, any>(),
-    markedInstance,
-    extensionComponents = new Map<string, any>(),
     unknownToken,
   }: {
     source: string;
     options?: MarkpageOptions;
-    components?: Map<ComponentName, any>;
-    markedInstance?: any;
-    extensionComponents?: Map<string, any>;
     unknownToken?: ((token: any) => any) | undefined;
   } = $props();
 
@@ -35,30 +29,20 @@
         // For now, we rely on the user to provide a pre-configured Marked instance
       }
     } else {
-      // Fallback to legacy props
-      md = markedInstance ?? newMarked();
+      // No options provided, use default instance
+      md = newMarked();
     }
     
     return md.lexer(source);
   });
 
-  // Resolve components and extension components with options taking precedence
+  // Get components and extension components from options
   let resolvedComponents = $derived(() => {
-    if (options) {
-      const optionsComponents = options.getComponents();
-      // Merge with legacy components prop (options takes precedence)
-      return new Map([...components, ...optionsComponents]);
-    }
-    return components;
+    return options ? options.getComponents() : new Map();
   });
 
   let resolvedExtensionComponents = $derived(() => {
-    if (options) {
-      const optionsExtensionComponents = options.getExtensionComponents();
-      // Merge with legacy extensionComponents prop (options takes precedence)
-      return new Map([...extensionComponents, ...optionsExtensionComponents]);
-    }
-    return extensionComponents;
+    return options ? options.getExtensionComponents() : new Map();
   });
 </script>
 

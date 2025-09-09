@@ -48,37 +48,7 @@ function mathExtension() {
 // Using Svelte components from the test components directory
 
 describe('Svelte Markdown extensionComponents rendering', () => {
-  it('renders custom math tokens using legacy extensionComponents', async () => {
-    const markedInstance = new Marked();
-    markedInstance.use(mathExtension());
-
-    const extensionComponents = new Map<string, any>([
-      ['math_inline', MathInline],
-      ['math_block', MathBlock]
-    ]);
-
-    const source = `
-Here is inline math $a+b=c$.
-
-$$
-E = mc^2
-$$
-`;
-
-    const { container } = render(Markdown as any, {
-      props: { source, markedInstance, extensionComponents }
-    });
-
-    const inline = container.querySelector('span[data-math="inline"]');
-    expect(inline).toBeTruthy();
-    expect(inline?.textContent).toContain('a+b=c');
-
-    const block = container.querySelector('div[data-math="block"]');
-    expect(block).toBeTruthy();
-    expect(block?.textContent).toContain('E = mc^2');
-  });
-
-  it('renders custom math tokens using new MarkpageOptions API', async () => {
+  it('renders custom math tokens using MarkpageOptions API', async () => {
     function mathExtensionWithComponents() {
       return {
         extensions: [
