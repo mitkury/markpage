@@ -64,6 +64,7 @@ describe('Nested Custom Components', () => {
       options
     });
 
+    
     // Check that card is rendered
     const card = container.querySelector('.card');
     expect(card).toBeTruthy();

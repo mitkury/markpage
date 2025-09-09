@@ -54,6 +54,61 @@ function findMatchingClose(src: string, name: string, startIndex: number): numbe
 export function createComponentExtension(markedInstance?: Marked): TokenizerAndRendererExtension {
   return {
     name: 'component',
+    level: 'block',
+    start(src: string) {
+      // Only process components that are at the start of a line (block-level)
+      const i = src.search(/^<[A-Z]/m);
+      return i < 0 ? undefined : i;
+    },
+    tokenizer(src: string) {
+      let m = SELF.exec(src);
+      if (m) {
+        const raw = m[0];
+        const name = m[1] as string;
+        const attrs = m[2] ?? '';
+        return { type: 'component', raw, name, props: parseProps(attrs) } as any;
+      }
+
+      m = OPEN.exec(src);
+      if (m) {
+        const openRaw = m[0];
+        const name = m[1] as string;
+        const attrs = m[2] ?? '';
+        const innerStart = openRaw.length;
+        const endIndex = findMatchingClose(src, name, innerStart);
+        if (endIndex > -1) {
+          const raw = src.slice(0, endIndex);
+          const inner = src.slice(innerStart, endIndex - (`</${name}>`.length));
+          
+          // Use the provided Marked instance to parse nested content
+          let children: any[];
+          if (markedInstance) {
+            // Use the existing Marked instance to parse nested content
+            // This ensures that nested components are also parsed correctly
+            const nestedTokens = markedInstance.lexer(inner);
+            // Extract inline tokens from the parsed result
+            if (nestedTokens.length > 0 && nestedTokens[0] && nestedTokens[0].type === 'paragraph') {
+              const paragraphToken = nestedTokens[0] as any;
+              children = paragraphToken.tokens || [];
+            } else {
+              children = [];
+            }
+          } else {
+            // Fallback: create a new lexer without extensions
+            const lexer = new Lexer();
+            children = lexer.inlineTokens(inner);
+          }
+          return { type: 'component', raw, name, props: parseProps(attrs), children } as any;
+        }
+      }
+    },
+  };
+}
+
+// Create an inline component extension for components within inline text
+export function createInlineComponentExtension(markedInstance?: Marked): TokenizerAndRendererExtension {
+  return {
+    name: 'inline-component',
     level: 'inline',
     start(src: string) {
       const i = src.search(/<[A-Z]/);
@@ -79,18 +134,24 @@ export function createComponentExtension(markedInstance?: Marked): TokenizerAndR
           const raw = src.slice(0, endIndex);
           const inner = src.slice(innerStart, endIndex - (`</${name}>`.length));
           
-          // Use the provided Marked instance or create a new one with component extension
-          let lexer: Lexer;
+          // Use the provided Marked instance to parse nested content
+          let children: any[];
           if (markedInstance) {
-            // Create a lexer from the existing Marked instance to preserve extensions
-            lexer = new Lexer();
+            // Use the existing Marked instance to parse nested content
+            // This ensures that nested components are also parsed correctly
+            const nestedTokens = markedInstance.lexer(inner);
+            // Extract inline tokens from the parsed result
+            if (nestedTokens.length > 0 && nestedTokens[0] && nestedTokens[0].type === 'paragraph') {
+              const paragraphToken = nestedTokens[0] as any;
+              children = paragraphToken.tokens || [];
+            } else {
+              children = [];
+            }
           } else {
-            // Fallback: create a new lexer
-            lexer = new Lexer();
+            // Fallback: create a new lexer without extensions
+            const lexer = new Lexer();
+            children = lexer.inlineTokens(inner);
           }
-          
-          // Parse the inner content as inline tokens
-          const children = lexer.inlineTokens(inner);
           return { type: 'component', raw, name, props: parseProps(attrs), children } as any;
         }
       }

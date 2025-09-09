@@ -15,7 +15,6 @@ describe('Simple Nested Test', () => {
       options
     });
 
-    console.log('Container HTML:', container.innerHTML);
     
     const buttons = container.querySelectorAll('button');
     expect(buttons).toHaveLength(1);
