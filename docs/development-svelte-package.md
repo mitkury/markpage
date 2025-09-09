@@ -1,6 +1,6 @@
 # Development Guide for @markpage/svelte
 
-This guide explains how to develop the `@markpage/svelte` package, including how to work with local and published versions of the `markpage` dependency.
+This guide explains how to develop the `@markpage/svelte` package, including how to work with local and published versions of the `markpage` dependency and the new MarkpageOptions API.
 
 ## Overview
 
@@ -148,3 +148,90 @@ When publishing the `@markpage/svelte` package:
 4. Publish: `npm publish`
 
 The published package will automatically install the correct version of `markpage` as a dependency.
+
+## MarkpageOptions API
+
+The `@markpage/svelte` package now uses the `MarkpageOptions` API for configuring the Markdown component. This provides a clean, fluent interface for setting up custom components and markdown extensions.
+
+### Basic Usage
+
+```svelte
+<script lang="ts">
+  import { Markdown, MarkpageOptions } from '@markpage/svelte';
+  import Button from './Button.svelte';
+  import Alert from './Alert.svelte';
+
+  const options = new MarkpageOptions()
+    .addCustomComponent('Button', Button)
+    .addCustomComponent('Alert', Alert);
+
+  const source = `
+    <Button variant="primary">Click me</Button>
+    <Alert variant="info">This is an alert</Alert>
+  `;
+</script>
+
+<Markdown {source} {options} />
+```
+
+### Advanced Configuration
+
+```svelte
+<script lang="ts">
+  import { Markdown, MarkpageOptions, Marked } from '@markpage/svelte';
+  import MathInline from './MathInline.svelte';
+  import MathBlock from './MathBlock.svelte';
+
+  function mathExtensionWithComponents() {
+    return {
+      extensions: [
+        {
+          name: 'math_inline',
+          level: 'inline' as const,
+          component: MathInline,
+          start(src: string) { 
+            const i = src.indexOf('$'); 
+            return i < 0 ? undefined : i; 
+          },
+          tokenizer(src: string) {
+            if (src.startsWith('$$')) return;
+            if (!src.startsWith('$')) return;
+            const end = src.indexOf('$', 1);
+            if (end === -1) return;
+            const raw = src.slice(0, end + 1);
+            const text = src.slice(1, end).trim();
+            return { type: 'math_inline', raw, text } as any;
+          }
+        }
+      ]
+    };
+  }
+
+  const markedInstance = new Marked();
+  markedInstance.use(mathExtensionWithComponents());
+
+  const options = new MarkpageOptions()
+    .addCustomComponent('Button', Button)
+    .extendMarkdown(mathExtensionWithComponents())
+    .useMarkedInstance(markedInstance);
+
+  const source = `
+    <Button variant="primary">Click me</Button>
+    Here is math: $a+b=c$
+  `;
+</script>
+
+<Markdown {source} {options} />
+```
+
+### API Methods
+
+- `addCustomComponent(name, component)`: Register a custom component for use as a tag in markdown
+- `extendMarkdown(extensions)`: Register markdown extensions with their associated components
+- `useMarkedInstance(instance)`: Use a specific Marked instance for parsing
+- `useMarkedFactory(factory)`: Use a factory function to create Marked instances
+- `getComponents()`: Get the map of registered custom components
+- `getExtensionComponents()`: Get the map of registered extension components
+- `getMarked()`: Get the configured Marked instance
+
+All methods return `this` for method chaining, allowing for fluent configuration.

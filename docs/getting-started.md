@@ -129,14 +129,13 @@ Components are registered upfront and can receive props like `variant`, `size`, 
 
 ```svelte
 <script lang="ts">
-  import { Markdown } from '@markpage/svelte';
+  import { Markdown, MarkpageOptions } from '@markpage/svelte';
   import Button from './Button.svelte';
   import Alert from './Alert.svelte';
 
-  const components = new Map([
-    ['Button', Button],
-    ['Alert', Alert]
-  ]);
+  const options = new MarkpageOptions()
+    .addCustomComponent('Button', Button)
+    .addCustomComponent('Alert', Alert);
 
   const markdown = `
   ## Examples
@@ -149,7 +148,7 @@ Components are registered upfront and can receive props like `variant`, `size`, 
   `;
 </script>
 
-<Markdown source={markdown} components={components} />
+<Markdown source={markdown} {options} />
 ```
 
 ## CLI Usage

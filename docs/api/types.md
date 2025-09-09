@@ -516,6 +516,171 @@ function validatePlugin(plugin: unknown): Plugin {
 }
 ```
 
+## Svelte Package Types
+
+### MarkpageOptions
+
+Configuration class for the Markdown component in `@markpage/svelte`.
+
+```typescript
+class MarkpageOptions {
+  addCustomComponent(name: string, component: Component): this;
+  extendMarkdown(extensions: MarkdownExtensionSet | MarkdownExtensionSet[]): this;
+  useMarkedInstance(instance: Marked): this;
+  useMarkedFactory(factory: () => Marked): this;
+  getComponents(): Map<string, Component>;
+  getExtensionComponents(): Map<string, Component>;
+  getMarked(): Marked;
+}
+```
+
+**Methods:**
+- `addCustomComponent(name, component)`: Register a custom component for use as a tag in markdown
+- `extendMarkdown(extensions)`: Register markdown extensions with their associated components
+- `useMarkedInstance(instance)`: Use a specific Marked instance for parsing
+- `useMarkedFactory(factory)`: Use a factory function to create Marked instances
+- `getComponents()`: Get the map of registered custom components
+- `getExtensionComponents()`: Get the map of registered extension components
+- `getMarked()`: Get the configured Marked instance
+
+### MarkdownExtension
+
+Represents a markdown extension with an associated component.
+
+```typescript
+interface MarkdownExtension {
+  name: string;
+  level: 'block' | 'inline';
+  component: Component;
+  start(src: string): number | undefined;
+  tokenizer(src: string): any;
+}
+```
+
+**Properties:**
+- `name` (string): Name of the token type
+- `level` ('block' | 'inline'): Whether the extension is block or inline level
+- `component` (Component): Svelte component to render the token
+- `start(src: string): number | undefined`: Function to find the start position of the token
+- `tokenizer(src: string): any`: Function to parse the token from source
+
+### MarkdownExtensionSet
+
+Collection of markdown extensions.
+
+```typescript
+interface MarkdownExtensionSet {
+  extensions: MarkdownExtension[];
+}
+```
+
+**Properties:**
+- `extensions` (MarkdownExtension[]): Array of markdown extensions
+
+### ComponentName
+
+Type for component names in the markdown system.
+
+```typescript
+type ComponentName = string;
+```
+
+### ComponentNode
+
+Represents a component node parsed from markdown.
+
+```typescript
+interface ComponentNode {
+  name: string;
+  props: Record<string, any>;
+  children?: string;
+  position: { start: number; end: number };
+}
+```
+
+**Properties:**
+- `name` (string): Component name
+- `props` (Record<string, any>): Component props
+- `children` (string, optional): Component children content
+- `position` (object): Start and end positions in source
+
+### ComponentOptions
+
+Options for component registration.
+
+```typescript
+interface ComponentOptions {
+  defaultProps?: Record<string, any>;
+  validate?: (props: Record<string, any>) => boolean | string;
+}
+```
+
+**Properties:**
+- `defaultProps` (Record<string, any>, optional): Default props for the component
+- `validate` (function, optional): Validation function for component props
+
+### RegisteredComponent
+
+Information about a registered component.
+
+```typescript
+interface RegisteredComponent {
+  component: Component;
+  options: ComponentOptions;
+}
+```
+
+**Properties:**
+- `component` (Component): The Svelte component
+- `options` (ComponentOptions): Component configuration options
+
+### ParsedContent
+
+Result of parsing content.
+
+```typescript
+interface ParsedContent {
+  type: 'text' | 'component';
+  content: string | ComponentNode;
+}
+```
+
+**Properties:**
+- `type` ('text' | 'component'): Type of parsed content
+- `content` (string | ComponentNode): The parsed content
+
+### MarkpageSvelteOptions
+
+Options for the MarkpageSvelte instance.
+
+```typescript
+interface MarkpageSvelteOptions {
+  enableComponents?: boolean;
+  strictMode?: boolean;
+}
+```
+
+**Properties:**
+- `enableComponents` (boolean, optional): Whether to enable component parsing
+- `strictMode` (boolean, optional): Whether to use strict parsing mode
+
+### RenderContext
+
+Context for component rendering.
+
+```typescript
+interface RenderContext {
+  path: string;
+  navigation: NavigationItem[];
+  content: Record<string, string>;
+}
+```
+
+**Properties:**
+- `path` (string): Current content path
+- `navigation` (NavigationItem[]): Navigation structure
+- `content` (Record<string, string>): Available content
+
 ## Related
 
 - [Builder API](./builder.md) - Content building and generation
