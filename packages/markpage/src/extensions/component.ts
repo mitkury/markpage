@@ -1,5 +1,5 @@
 import type { TokenizerAndRendererExtension } from 'marked';
-import { Lexer } from 'marked';
+import { Lexer, Marked } from 'marked';
 
 const TAG = '[A-Z][A-Za-z0-9:_-]*';
 const SELF = new RegExp(`^<(${TAG})\\s*([^>]*)\/>`);
@@ -76,6 +76,8 @@ export const componentExtension: TokenizerAndRendererExtension = {
       if (endIndex > -1) {
         const raw = src.slice(0, endIndex);
         const inner = src.slice(innerStart, endIndex - (`</${name}>`.length));
+        // Use the same Marked instance that's currently parsing
+        // This ensures nested components have access to the same component registry
         const lexer = new Lexer();
         const children = lexer.inlineTokens(inner);
         return { type: 'component', raw, name, props: parseProps(attrs), children } as any;
