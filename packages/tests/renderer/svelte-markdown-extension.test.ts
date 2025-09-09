@@ -1,6 +1,8 @@
 import { describe, it, expect } from 'vitest';
 import { render } from '@testing-library/svelte';
 import { Markdown, Marked } from '@markpage/svelte';
+import MathInline from './components/MathInline.svelte';
+import MathBlock from './components/MathBlock.svelte';
 
 // Simple marked extension to detect $...$ (inline) and $$...$$ (block)
 function mathExtension() {
@@ -43,22 +45,7 @@ function mathExtension() {
   };
 }
 
-// Minimal components for testing: render predictable HTML
-// MathInline.svelte
-const MathInline = {
-  render: ({ props }: any) => {
-    const { token } = props;
-    return { html: `<span data-math="inline">${token.text}</span>` };
-  }
-} as any;
-
-// MathBlock.svelte
-const MathBlock = {
-  render: ({ props }: any) => {
-    const { token } = props;
-    return { html: `<div data-math="block">${token.text}</div>` };
-  }
-} as any;
+// Using Svelte components from the test components directory
 
 describe('Svelte Markdown extensionComponents rendering', () => {
   it('renders custom math tokens using extensionComponents', async () => {
