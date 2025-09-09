@@ -2,12 +2,13 @@
   import type { Tokens } from "markpage/marked";
   import type { Snippet } from "svelte";
 
-  let { token, children } = $props<{
+  let {
+    token,
+    children,
+  }: {
     token: Tokens.Link;
     children: Snippet;
-  }>();
+  } = $props();
 </script>
 
-<a class="anchor" target="_blank" href={token.href} title={token.title}
-  >{@render children()}</a
->
+<a href={token.href} title={token.title}>{@render children()}</a>
