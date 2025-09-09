@@ -10,7 +10,6 @@ export default defineConfig({
     'renderer/navigation': 'src/renderer/navigation.ts',
     'builder/builder': 'src/builder/builder.ts',
     'builder/parser': 'src/builder/parser.ts',
-    'builder/static-generator': 'src/builder/static-generator.ts',
     'types': 'src/types.ts'
   },
   format: ['esm', 'cjs'],

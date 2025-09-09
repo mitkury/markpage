@@ -1,8 +1,6 @@
 #!/usr/bin/env node
 
-import { buildPages, generateStaticSite } from '../dist/builder/index.js';
-import { writeFileSync, mkdirSync } from 'fs';
-import { join } from 'path';
+import { buildPages } from '../dist/builder/index.js';
 
 const args = process.argv.slice(2);
 const command = args[0];
@@ -12,9 +10,6 @@ async function main() {
     switch (command) {
       case 'build':
         await handleBuild();
-        break;
-      case 'static':
-        await handleStatic();
         break;
       case '--help':
       case '-h':
@@ -52,26 +47,6 @@ async function handleBuild() {
   console.log(`✓ Output written to ${outputPath}`);
 }
 
-async function handleStatic() {
-  const contentPath = args[1];
-  const outputPath = args[3] || './dist/static';
-  
-  if (!contentPath) {
-    console.error('Error: Content path is required');
-    console.error('Usage: markpage static <content-path> --output <output-path>');
-    process.exit(1);
-  }
-  
-  console.log(`Generating static site from ${contentPath}...`);
-  
-  const result = await generateStaticSite(contentPath, outputPath, {
-    title: 'Documentation',
-    includeIndex: true
-  });
-  
-  console.log(`✓ Generated ${result.pages.length} static pages`);
-  console.log(`✓ Output written to ${outputPath}`);
-}
 
 function showHelp() {
   console.log(`
@@ -82,12 +57,10 @@ Usage:
 
 Commands:
   build <content-path> --output <output-path>  Build documentation for app/website
-  static <content-path> --output <output-path> Generate static HTML site
   --help, -h                                   Show this help message
 
 Examples:
   markpage build ./docs --output ./src/lib/content
-  markpage static ./docs --output ./dist
   markpage build ./blog --output ./src/blog
 `);
 }

@@ -23,12 +23,11 @@
 </script>
 
 {#if Comp && typeof Comp === 'function'}
-  {@const Component = Comp}
-  <Component {...token.props} childrenTokens={token.children}>
+  <Comp {...token.props} childrenTokens={token.children}>
     {#if token.children}
       <MarkdownTokens tokens={token.children} {components} />
     {/if}
-  </Component>
+  </Comp>
 {:else}
   <div class="component-fallback">
     &lt;{token.name}{Object.entries(token.props ?? {}).map(([k, v]) => ` ${k}="${String(v)}"`).join('')}{token.children ? `&gt;...&lt;/${token.name}&gt;` : ` /&gt;`}

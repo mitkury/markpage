@@ -4,18 +4,9 @@ This is a context for AI editor/agent about the project. It's generated with a t
 
 # Markpage
 
-Markpage helps to render Markdown files on html pages with any framework.
+Markpage helps you render Markdown files as HTML pages with any framework.
 
-You point Markpage at a directory with markdown files and get navigation structure and content that you can use to render in your app.
-
-## Monorepo structure
-
-This repository contains multiple packages:
-
-- `packages/markpage` – core builder, renderer and types
-- `packages/markpage-svelte` – Svelte integration (components in markdown)
-- `packages/website` – documentation site built with SvelteKit and Markpage
-- `packages/tests` – test suite covering builder/renderer and Svelte integration
+Point Markpage at a directory with markdown files and get organized navigation structure and content that you can use to render in your app.
 
 ## What it does
 
@@ -40,19 +31,6 @@ await buildPages('./my-content', {
 });
 ```
 
-### Scripts (root)
-
-Useful root scripts for local development:
-
-- `npm test` – builds local packages and runs the test suite (`packages/tests`)
-- `npm run build` – builds local packages then the documentation website
-- `npm run dev:website` – starts the SvelteKit docs website (auto-builds content from `./docs`)
-- `npm run build:website` – production build of the website
-
-Inside `packages/website`:
-
-- `npm run check` – Svelte type checks (`svelte-check`) for the website
-- `npm run preview` – preview production build locally
 
 ## Component System (via @markpage/svelte)
 
@@ -99,32 +77,30 @@ npm install @markpage/svelte
 
 For detailed step-by-step instructions, see the [Getting Started Guide](docs/getting-started.md).
 
-## Developing locally
+## CLI Usage
 
-1) Install dependencies
-
-```bash
-npm ci
-```
-
-2) Run tests (kept green)
+### Build for App/Website
 
 ```bash
-npm test
+npx markpage build ./my-docs --output ./src/lib/content
 ```
 
-3) Run the website (auto-builds docs from `./docs`)
+### Generate Static Site
 
 ```bash
-npm run dev:website
+npx markpage static ./my-docs --output ./dist
 ```
 
-4) Build and preview the website
+## Use Cases
 
-```bash
-npm run build:website
-npm --workspace=@markpage/website run preview
-```
+### Content Sites
+Perfect for documentation, blogs, knowledge bases, and any markdown-based content.
+
+### Websites
+Create websites with organized content and easy navigation management.
+
+### Static Sites
+Generate complete static HTML sites for deployment to any hosting platform.
 
 ## Examples
 
@@ -132,7 +108,7 @@ npm --workspace=@markpage/website run preview
 
 ## Contributing
 
-👨‍💻 **For contributors: [How to Contribute](https://github.com/mitkury/markpage/blob/main/docs/how-to-contribute.md)**
+👨‍💻 **Want to contribute? See our [How to Contribute](docs/how-to-contribute.md) guide.**
 
 ## License
 
@@ -341,6 +317,7 @@ This document is for contributors who want to work on the Markpage project.
 This is a monorepo with the following packages:
 
 - **`packages/markpage`** - The main package that gets published to npm
+- **`packages/markpage-svelte`** - Svelte integration package (components in markdown)
 - **`packages/tests`** - Comprehensive test suite for the package
 - **`packages/website`** - This documentation website
 
@@ -353,10 +330,10 @@ This is a monorepo with the following packages:
 
 ```bash
 # Install dependencies for all packages
-npm install
+npm ci
 
-# Build the main package
-npm run build
+# Build all packages
+npm run build:pkgs
 
 # Run tests
 npm test
@@ -364,11 +341,19 @@ npm test
 
 ## Package Scripts
 
-- `npm run build` - Build the main markpage package
-- `npm run dev` - Watch mode for the main package
-- `npm test` - Run all tests
+### Root Scripts
+- `npm run build` - Build all packages and the website
+- `npm run build:pkgs` - Build markpage and markpage-svelte packages
+- `npm test` - Build packages and run all tests
 - `npm run test:watch` - Run tests in watch mode
 - `npm run test:coverage` - Run tests with coverage report
+- `npm run dev:website` - Start the documentation website
+- `npm run build:website` - Build the documentation website
+
+### Individual Package Scripts
+- `npm run dev --workspace=markpage` - Watch mode for the main package
+- `npm run build --workspace=@markpage/svelte` - Build the Svelte package
+- `npm run check --workspace=@markpage/website` - Run Svelte type checks
 
 ## Development Workflow
 
@@ -377,27 +362,42 @@ npm test
 The main package uses [tsup](https://github.com/egoist/tsup) for building:
 
 ```bash
-cd packages/markpage
-npm run build
+# Build all packages
+npm run build:pkgs
+
+# Or build individual packages
+npm run build --workspace=markpage
+npm run build --workspace=@markpage/svelte
 ```
 
 ### Testing
 
-Tests are run using Vitest:
+Tests are run using Vitest and must be kept green:
 
 ```bash
+# Run all tests (builds packages first)
 npm test
+
+# Watch mode for development
 npm run test:watch
+
+# Coverage report
 npm run test:coverage
 ```
 
 ### Website Development
 
-The documentation website is built with SvelteKit:
+The documentation website is built with SvelteKit and auto-builds content from `./docs`:
 
 ```bash
-cd packages/website
-npm run dev
+# Start dev server (auto-builds content)
+npm run dev:website
+
+# Build for production
+npm run build:website
+
+# Preview production build
+npm --workspace=@markpage/website run preview
 ```
 
 ## Contributing
@@ -412,16 +412,21 @@ npm run dev
 ## Code Style
 
 - TypeScript for all source code
-- ESLint for linting
-- Prettier for code formatting
-- Comprehensive test coverage (>90%)
+- Svelte 5 with runes mode for components
+- Comprehensive test coverage (keep tests green)
+- Follow existing patterns and conventions
 
 ## Package Publishing
 
-The main package is published from `packages/markpage/`:
+Packages are published from their respective directories:
 
 ```bash
+# Main package
 cd packages/markpage
+npm publish
+
+# Svelte integration
+cd packages/markpage-svelte
 npm publish
 ```
 

@@ -8,7 +8,7 @@ Point Markpage at a directory with markdown files and get organized navigation s
 
 Point Markpage at a directory with markdown files and `.index.json` files, and get:
 - **Organized navigation structure** for your content
-- **Multiple output formats** (app bundles, website navigation, static HTML)
+- **Multiple output formats** (app bundles, website navigation)
 - **Framework-agnostic** utilities that work with React, Vue, Svelte, Angular, or vanilla JavaScript
 - **Optional component system** for embedding interactive components in markdown (via separate framework packages; Svelte support available)
 
@@ -81,11 +81,6 @@ For detailed step-by-step instructions, see the [Getting Started Guide](docs/get
 npx markpage build ./my-docs --output ./src/lib/content
 ```
 
-### Generate Static Site
-
-```bash
-npx markpage static ./my-docs --output ./dist
-```
 
 ## Use Cases
 
@@ -95,8 +90,6 @@ Perfect for documentation, blogs, knowledge bases, and any markdown-based conten
 ### Websites
 Create websites with organized content and easy navigation management.
 
-### Static Sites
-Generate complete static HTML sites for deployment to any hosting platform.
 
 ## Examples
 

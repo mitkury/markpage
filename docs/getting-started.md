@@ -5,7 +5,7 @@ Let's get you set up with Markpage in just a few steps.
 > 📖 **This is the detailed getting started guide. For a quick overview, see the [main README](https://github.com/mitkury/markpage/blob/main/README.md).**
 
 - **Distributed Navigation**: Each folder can define its own structure with `.index.json` files (optional)
-- **Multiple Output Formats**: App bundles, website navigation, and static HTML sites
+- **Multiple Output Formats**: App bundles, website navigation
 - **Framework Agnostic**: Works with React, Vue, Svelte, Angular, or vanilla JavaScript
 - **Flexible**: Point to any directory with markdown files
 
@@ -160,11 +160,6 @@ Components are registered upfront and can receive props like `variant`, `size`, 
 npx markpage build ./my-docs --output ./src/lib/content
 ```
 
-### Generate Static Site
-
-```bash
-npx markpage static ./my-docs --output ./dist
-```
 
 ## Use Cases
 
@@ -174,8 +169,6 @@ Perfect for documentation, blogs, knowledge bases, and any markdown-based conten
 ### Websites
 Create websites with organized content and easy navigation management.
 
-### Static Sites
-Generate complete static HTML sites for deployment to any hosting platform.
 
 ## What's Next?
 
