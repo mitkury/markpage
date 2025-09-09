@@ -10,156 +10,73 @@ Currently, custom components work perfectly when used standalone, but fail when 
 
 ## Root Cause Analysis
 
-### Current Architecture
-
-The component system uses a single `componentExtension` that is registered as `level: 'block'` in `/packages/markpage/src/extensions/component.ts`. This means:
-
-1. **Block-level only**: Components are only processed at the document block level
-2. **No inline processing**: When components appear inside list items, paragraphs, or other elements, they're treated as regular text
-3. **No recursive parsing**: Component children aren't recursively processed for nested components
-
-### Specific Issues
-
-1. **Tokenizer Level Mismatch**: 
-   ```typescript
-   // Current: Only block level
-   level: 'block'
-   ```
-   This means `<Button>Click me</Button>` inside `- List item with <Button>Click me</Button>` is never tokenized as a component.
-
-2. **Content Parsing Limitation**:
-   ```typescript
-   // Line 80 in component.ts
-   const children = lexer.inlineTokens(inner);
-   ```
-   This doesn't apply the component extension to nested content.
-
-3. **Single Extension Registration**:
-   ```typescript
-   // newMarked() only registers block-level extension
-   md.use({ extensions: [componentExtension as any] as any } as any);
-   ```
-
-## Proposed Solution
-
-### 1. Dual-Level Component Extensions
-
-Create both block and inline versions of the component extension:
+The issue is in the component tokenizer in `/packages/markpage/src/extensions/component.ts`. When parsing component children, it uses a plain `Lexer` that doesn't have the component extension applied:
 
 ```typescript
-// Block-level component extension (existing)
-export const componentBlockExtension: TokenizerAndRendererExtension = {
-  name: 'component-block',
-  level: 'block',
-  // ... existing logic
-};
-
-// New: Inline-level component extension
-export const componentInlineExtension: TokenizerAndRendererExtension = {
-  name: 'component-inline', 
-  level: 'inline',
-  start(src: string) {
-    const i = src.search(/<[A-Z]/);
-    return i < 0 ? undefined : i;
-  },
-  tokenizer(src: string) {
-    // Same logic as block extension but for inline context
-    // ... tokenizer implementation
-  }
-};
+// Line 80 in component.ts - THE PROBLEM
+const lexer = new Lexer();
+const children = lexer.inlineTokens(inner);
 ```
 
-### 2. Enhanced Component Tokenizer
+This means that when a component contains other components (like `<Alert><Button>Click me</Button></Alert>`), the inner `<Button>` is never tokenized as a component - it's just treated as regular text.
 
-Modify the component tokenizer to handle nested components properly:
+## The Simple Solution
+
+The existing architecture already supports everything we need:
+
+1. **Inline tokens work**: `MarkdownText.svelte` shows that tokens can contain other tokens (`token.tokens`)
+2. **Component children work**: `MarkdownComponentTag.svelte` already renders `token.children` using `MarkdownTokens`
+3. **The only missing piece**: The tokenizer needs to apply the component extension when parsing children
+
+### The Fix
+
+Replace the plain `Lexer` with a `Marked` instance that has the component extension applied:
 
 ```typescript
-function parseComponentChildren(inner: string, lexer: Lexer): any[] {
-  // Create a temporary marked instance with component extensions
-  const tempMarked = new Marked();
-  tempMarked.use({ extensions: [componentBlockExtension, componentInlineExtension] });
-  
-  // Parse with component support
-  return tempMarked.lexer(inner);
-}
+// Instead of:
+const lexer = new Lexer();
+const children = lexer.inlineTokens(inner);
+
+// Use:
+const tempMarked = new Marked();
+tempMarked.use({ extensions: [componentExtension] });
+const children = tempMarked.lexer(inner);
 ```
 
-### 3. Updated Extension Registration
+This single change will enable nested components because:
 
-Modify `newMarked()` to register both extensions:
+- ✅ **Leverages existing architecture**: Uses the same pattern as other inline tokens
+- ✅ **Minimal change**: Only one line needs to be modified
+- ✅ **No new extensions needed**: Reuses the existing component extension
+- ✅ **Backward compatible**: Doesn't break anything existing
+- ✅ **Recursive support**: Components can be nested multiple levels deep
 
+## Implementation
+
+### Single File Change
+
+The fix requires modifying only one file: `/packages/markpage/src/extensions/component.ts`
+
+**Current code (line 79-80):**
 ```typescript
-export function newMarked() {
-  const md = new Marked();
-  md.use({ 
-    extensions: [
-      componentBlockExtension as any,
-      componentInlineExtension as any
-    ] as any 
-  } as any);
-  return md;
-}
+const lexer = new Lexer();
+const children = lexer.inlineTokens(inner);
 ```
 
-### 4. Recursive Component Processing
-
-Ensure that when parsing component children, the component extensions are applied:
-
+**New code:**
 ```typescript
-// In component tokenizer
-if (m) {
-  const openRaw = m[0];
-  const name = m[1] as string;
-  const attrs = m[2] ?? '';
-  const innerStart = openRaw.length;
-  const endIndex = findMatchingClose(src, name, innerStart);
-  if (endIndex > -1) {
-    const raw = src.slice(0, endIndex);
-    const inner = src.slice(innerStart, endIndex - (`</${name}>`.length));
-    
-    // Use enhanced parsing that supports nested components
-    const children = parseComponentChildren(inner, lexer);
-    return { type: 'component', raw, name, props: parseProps(attrs), children } as any;
-  }
-}
+const tempMarked = new Marked();
+tempMarked.use({ extensions: [componentExtension] });
+const children = tempMarked.lexer(inner);
 ```
 
-## Implementation Plan
+### Why This Works
 
-### Phase 1: Create Inline Component Extension
-- [ ] Create `componentInlineExtension` in `/packages/markpage/src/extensions/component.ts`
-- [ ] Implement inline-level tokenizer logic
-- [ ] Add proper start function for inline context
+1. **Inline tokens are already supported**: The rendering system already handles `token.tokens` arrays
+2. **Component children are already supported**: `MarkdownComponentTag` already renders `token.children`
+3. **The only missing piece**: The tokenizer needs to apply the component extension when parsing children
 
-### Phase 2: Enhance Content Parsing
-- [ ] Create `parseComponentChildren()` function
-- [ ] Modify component tokenizer to use enhanced parsing
-- [ ] Ensure recursive component processing
-
-### Phase 3: Update Extension Registration
-- [ ] Modify `newMarked()` to register both extensions
-- [ ] Update `MarkpageOptions` to handle dual extensions
-- [ ] Ensure backward compatibility
-
-### Phase 4: Testing and Validation
-- [ ] Create comprehensive tests for nested scenarios
-- [ ] Test components in lists, paragraphs, and other components
-- [ ] Verify existing functionality still works
-- [ ] Performance testing for deeply nested components
-
-## Alternative Approaches Considered
-
-### Option A: Single Extension with Dynamic Level
-- **Pros**: Simpler architecture
-- **Cons**: Marked.js doesn't support dynamic level switching, would require complex workarounds
-
-### Option B: Preprocessing Approach
-- **Pros**: Could work with existing architecture
-- **Cons**: Would break markdown parsing order, complex to implement correctly
-
-### Option C: Custom Tokenizer Integration
-- **Pros**: Full control over parsing
-- **Cons**: Would require rewriting significant portions of the markdown pipeline
+This approach is much simpler than creating dual-level extensions because the existing architecture already supports everything we need - we just need to fix the tokenizer to properly parse nested components.
 
 ## Expected Outcomes
 
@@ -169,7 +86,7 @@ After implementing this solution:
 2. **Deep Nesting Support**: Components can be nested multiple levels deep
 3. **Backward Compatibility**: Existing standalone components continue to work
 4. **Performance**: Minimal impact on parsing performance
-5. **Maintainability**: Clean separation between block and inline processing
+5. **Maintainability**: Simple, single-line fix that leverages existing architecture
 
 ## Testing Strategy
 
@@ -205,19 +122,8 @@ After implementing this solution:
    - Components with complex props in nested contexts
    - Very deep nesting (performance test)
 
-## Risks and Mitigation
-
-### Risk 1: Performance Impact
-- **Mitigation**: Benchmark parsing performance, optimize if needed
-
-### Risk 2: Breaking Changes
-- **Mitigation**: Comprehensive testing, gradual rollout
-
-### Risk 3: Complex Edge Cases
-- **Mitigation**: Extensive test coverage, careful implementation
-
 ## Conclusion
 
-This proposal addresses the core issue of nested component rendering by implementing dual-level component extensions. The solution is backward-compatible, maintainable, and provides the foundation for robust nested component support.
+This simple solution addresses the core issue of nested component rendering with a minimal, single-line change. The fix leverages the existing architecture that already supports inline tokens and component children, requiring only that the tokenizer properly applies the component extension when parsing nested content.
 
-The implementation can be done incrementally, with each phase building on the previous one, allowing for testing and validation at each step.
+The solution is backward-compatible, maintainable, and provides robust nested component support without the complexity of dual-level extensions.
