@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { PageData } from './$types';
-	import { Markdown } from '@markpage/svelte';
+	import { Markdown, MarkpageOptions } from '@markpage/svelte';
 	import type { NavigationItem, NavigationTree } from '@markpage/svelte/server';
 	import TestButton from '$lib/components/TestButton.svelte';
 	import Button from '$lib/components/Button.svelte';
@@ -9,13 +9,12 @@
 
 	let { data } = $props<{ data: PageData }>();
 
-	// Component registry
-	const components = new Map<string, any>([
-		['TestButton', TestButton],
-		['Button', Button],
-		['Alert', Alert],
-		['Card', Card]
-	]);
+	// Create MarkpageOptions instance with custom components
+	const markpageOptions = new MarkpageOptions()
+		.addCustomComponent('TestButton', TestButton)
+		.addCustomComponent('Button', Button)
+		.addCustomComponent('Alert', Alert)
+		.addCustomComponent('Card', Card);
 
 	const navItems = data.navigation || [];
 
@@ -61,7 +60,7 @@
 
 		<div class="docs-content">
 			{#if data?.content}
-				<Markdown source={data.content} components={components} />
+				<Markdown source={data.content} options={markpageOptions} />
 			{:else}
 				<div>No content selected</div>
 			{/if}
