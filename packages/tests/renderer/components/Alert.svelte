@@ -1,7 +1,11 @@
 <script lang="ts">
-  export let variant: string = '';
-  export let children: string = '';
+  import type { Snippet } from "svelte";
+  let { variant = '', children }: { variant?: string; children?: Snippet } = $props();
 </script>
 
-<div role="alert" data-variant={variant}>{children}</div>
+<div role="alert" data-variant={variant}>
+  {#if children}
+    {@render children()}
+  {/if}
+</div>
 
