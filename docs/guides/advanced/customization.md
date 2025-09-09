@@ -374,6 +374,22 @@ To override a built-in token (e.g., `codespan`):
   import { Markdown, MarkpageOptions } from '@markpage/svelte';
   import OverrideCodeSpan from '$lib/components/OverrideCodeSpan.svelte';
 
+  const options = new MarkpageOptions()
+    .overrideBuiltinToken('codespan', OverrideCodeSpan);
+
+  export let source = 'Inline `code` here';
+</script>
+
+<Markdown {source} {options} />
+```
+
+Alternatively, you can manually add to the extension components map:
+
+```svelte
+<script lang="ts">
+  import { Markdown, MarkpageOptions } from '@markpage/svelte';
+  import OverrideCodeSpan from '$lib/components/OverrideCodeSpan.svelte';
+
   const options = new MarkpageOptions();
   // Manually add the extension component to override built-in codespan
   const extensionComponents = options.getExtensionComponents();

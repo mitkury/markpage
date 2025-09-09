@@ -537,6 +537,7 @@ class MarkpageOptions {
 **Methods:**
 - `addCustomComponent(name, component)`: Register a custom component for use as a tag in markdown
 - `extendMarkdown(extensions)`: Register markdown extensions with their associated components
+- `overrideBuiltinToken(name, component)`: Override a built-in markdown token with a custom component
 - `useMarkedInstance(instance)`: Use a specific Marked instance for parsing
 - `useMarkedFactory(factory)`: Use a factory function to create Marked instances
 - `getComponents()`: Get the map of registered custom components

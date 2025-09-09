@@ -43,6 +43,14 @@ export class MarkpageOptions {
   }
 
   /**
+   * Override a built-in markdown token with a custom component
+   */
+  overrideBuiltinToken(name: string, component: Component): this {
+    this.extensionComponents.set(name, component);
+    return this;
+  }
+
+  /**
    * Use a specific Marked instance
    */
   useMarkedInstance(instance: Marked): this {

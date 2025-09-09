@@ -228,6 +228,7 @@ The `@markpage/svelte` package now uses the `MarkpageOptions` API for configurin
 
 - `addCustomComponent(name, component)`: Register a custom component for use as a tag in markdown
 - `extendMarkdown(extensions)`: Register markdown extensions with their associated components
+- `overrideBuiltinToken(name, component)`: Override a built-in markdown token with a custom component
 - `useMarkedInstance(instance)`: Use a specific Marked instance for parsing
 - `useMarkedFactory(factory)`: Use a factory function to create Marked instances
 - `getComponents()`: Get the map of registered custom components
@@ -235,3 +236,21 @@ The `@markpage/svelte` package now uses the `MarkpageOptions` API for configurin
 - `getMarked()`: Get the configured Marked instance
 
 All methods return `this` for method chaining, allowing for fluent configuration.
+
+### Overriding Built-in Tokens
+
+You can override any built-in markdown token (like `codespan`, `heading`, `paragraph`, etc.) using the `overrideBuiltinToken` method:
+
+```svelte
+<script lang="ts">
+  import { Markdown, MarkpageOptions } from '@markpage/svelte';
+  import CustomCodeSpan from './CustomCodeSpan.svelte';
+
+  const options = new MarkpageOptions()
+    .overrideBuiltinToken('codespan', CustomCodeSpan);
+
+  const source = 'Inline `code` here';
+</script>
+
+<Markdown {source} {options} />
+```
