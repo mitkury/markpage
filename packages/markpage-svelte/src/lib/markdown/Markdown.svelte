@@ -7,10 +7,14 @@
     source,
     components = new Map<ComponentName, any>(),
     markedInstance,
+    extensionComponents = new Map<string, any>(),
+    unknownToken,
   }: {
     source: string;
     components?: Map<ComponentName, any>;
     markedInstance?: any;
+    extensionComponents?: Map<string, any>;
+    unknownToken?: ((token: any) => any) | undefined;
   } = $props();
 
   let tokens = $derived.by(() => {
@@ -21,5 +25,5 @@
 </script>
 
 <div class="markpage">
-  <MarkdownTokens {tokens} {components} />
+  <MarkdownTokens {tokens} {components} {extensionComponents} {unknownToken} />
 </div>

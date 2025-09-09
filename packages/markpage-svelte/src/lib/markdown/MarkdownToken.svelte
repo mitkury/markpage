@@ -50,16 +50,38 @@
   import MarkdownTokens from "./MarkdownTokens.svelte";
   import type { ComponentName } from "./types";
 
-  let { token, components = new Map<ComponentName, any>() } = $props();
+  let {
+    token,
+    components = new Map<ComponentName, any>(),
+    extensionComponents = new Map<string, any>(),
+    unknownToken,
+  }: {
+    token: any;
+    components?: Map<ComponentName, any>;
+    extensionComponents?: Map<string, any>;
+    unknownToken?: ((token: any) => any) | undefined;
+  } = $props();
 
   const MarkdownComponent = $derived.by(() => {
     const type = token.type as string;
+    // 1) Prefer extension-provided component for custom tokens
+    const extComp = extensionComponents?.get(type);
+    if (extComp) return extComp;
+
+    // 2) Fallback to built-in components
     const comp = markdownComponents[type];
 
     if (!comp) {
-      console.error(
-        `No markdown component found for token type: ${token.type}`,
-      );
+      // 3) Optional unknown token fallback
+      if (unknownToken) {
+        try {
+          const maybe = unknownToken(token);
+          if (maybe) return maybe as any;
+        } catch (err) {
+          console.error('unknownToken handler threw', err);
+        }
+      }
+      console.error(`No markdown component found for token type: ${token.type}`);
       return null;
     }
 
@@ -69,7 +91,7 @@
 {#if MarkdownComponent}
   <MarkdownComponent {token} {components}>
     {#if "tokens" in token && token["tokens"] && token["tokens"].length > 0}
-      <MarkdownTokens tokens={token["tokens"]} {components} />
+      <MarkdownTokens tokens={token["tokens"]} {components} {extensionComponents} {unknownToken} />
     {/if}
   </MarkdownComponent>
 {/if}

@@ -6,12 +6,18 @@
   let {
     tokens,
     components,
-  }: { tokens: Token[] | null; components?: Map<ComponentName, any> } =
-    $props();
+    extensionComponents = new Map<string, any>(),
+    unknownToken,
+  }: {
+    tokens: Token[] | null;
+    components?: Map<ComponentName, any>;
+    extensionComponents?: Map<string, any>;
+    unknownToken?: ((token: any) => any) | undefined;
+  } = $props();
 </script>
 
 {#if tokens}
   {#each tokens as token}
-    <MarkdownToken {token} {components} />
+    <MarkdownToken {token} {components} {extensionComponents} {unknownToken} />
   {/each}
 {/if}
