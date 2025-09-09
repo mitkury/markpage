@@ -76,10 +76,49 @@ export const componentExtension: TokenizerAndRendererExtension = {
       if (endIndex > -1) {
         const raw = src.slice(0, endIndex);
         const inner = src.slice(innerStart, endIndex - (`</${name}>`.length));
-        // Use the same Marked instance that's currently parsing
-        // This ensures nested components have access to the same component registry
-        const lexer = new Lexer();
-        const children = lexer.inlineTokens(inner);
+        // Use a Marked instance with component extension to parse nested components
+        // This ensures that components within components are properly tokenized
+        const tempMarked = new Marked();
+        tempMarked.use({ 
+          extensions: [{
+            name: 'component',
+            level: 'inline',
+            start: (src: string) => {
+              const i = src.search(/<[A-Z]/);
+              return i < 0 ? undefined : i;
+            },
+            tokenizer: (src: string) => {
+              // Use the same tokenizer logic but without recursion
+              let m = SELF.exec(src);
+              if (m) {
+                const raw = m[0];
+                const name = m[1] as string;
+                const attrs = m[2] ?? '';
+                return { type: 'component', raw, name, props: parseProps(attrs) } as any;
+              }
+
+              m = OPEN.exec(src);
+              if (m) {
+                const openRaw = m[0];
+                const name = m[1] as string;
+                const attrs = m[2] ?? '';
+                const innerStart = openRaw.length;
+                const endIndex = findMatchingClose(src, name, innerStart);
+                if (endIndex > -1) {
+                  const raw = src.slice(0, endIndex);
+                  const inner = src.slice(innerStart, endIndex - (`</${name}>`.length));
+                  // For nested components, just use plain lexer to avoid infinite recursion
+                  const lexer = new Lexer();
+                  const children = lexer.inlineTokens(inner);
+                  return { type: 'component', raw, name, props: parseProps(attrs), children } as any;
+                }
+              }
+            }
+          }]
+        });
+        const children = tempMarked.lexer(inner).flatMap(token => 
+          token.type === 'paragraph' ? token.tokens || [] : [token]
+        );
         return { type: 'component', raw, name, props: parseProps(attrs), children } as any;
       }
     }
