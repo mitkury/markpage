@@ -30,7 +30,6 @@
     {/if}
   </Component>
 {:else}
-  <!-- Fallback to literal text when unknown component -->
   <div class="component-fallback">
     &lt;{token.name}{Object.entries(token.props ?? {}).map(([k, v]) => ` ${k}="${String(v)}"`).join('')}{token.children ? `&gt;...&lt;/${token.name}&gt;` : ` /&gt;`}
   </div>

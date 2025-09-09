@@ -9,6 +9,9 @@ let { token, children } = $props<{
 </script>
 
 <svelte:element this={`h${token.depth}`}>
-  {@render children?.()}
-  {token.text}
+  {#if children}
+    {@render children()}
+  {:else}
+    {token.text}
+  {/if}
 </svelte:element>

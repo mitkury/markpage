@@ -7,7 +7,6 @@ Let's get you set up with Markpage in just a few steps.
 - **Distributed Navigation**: Each folder can define its own structure with `.index.json` files (optional)
 - **Multiple Output Formats**: App bundles, website navigation, and static HTML sites
 - **Framework Agnostic**: Works with React, Vue, Svelte, Angular, or vanilla JavaScript
-- **Component System**: Embed interactive components directly in markdown files
 - **Flexible**: Point to any directory with markdown files
 
 ## Quick Start
