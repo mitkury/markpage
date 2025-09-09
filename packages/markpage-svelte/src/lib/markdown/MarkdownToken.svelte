@@ -89,7 +89,7 @@
   });
 </script>
 {#if MarkdownComponent}
-  <MarkdownComponent {token} {components}>
+  <MarkdownComponent {token} {components} {extensionComponents} {unknownToken}>
     {#if "tokens" in token && token["tokens"] && token["tokens"].length > 0}
       <MarkdownTokens tokens={token["tokens"]} {components} {extensionComponents} {unknownToken} />
     {/if}

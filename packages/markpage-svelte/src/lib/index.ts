@@ -1,4 +1,4 @@
-import { Marked, componentExtension } from 'markpage';
+import { Marked, componentExtension, createComponentExtension } from 'markpage';
 
 // Svelte component exports
 export { default as Markdown } from './markdown/Markdown.svelte';
@@ -27,6 +27,7 @@ export {
   addTableOfContents,
   builtinTokenNames,
   componentExtension,
+  createComponentExtension,
   Marked,
   Lexer
 } from 'markpage';

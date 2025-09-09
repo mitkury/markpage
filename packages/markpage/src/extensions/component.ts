@@ -50,38 +50,53 @@ function findMatchingClose(src: string, name: string, startIndex: number): numbe
   }
 }
 
-export const componentExtension: TokenizerAndRendererExtension = {
-  name: 'component',
-  level: 'block',
-  start(src: string) {
-    const i = src.search(/<[A-Z]/);
-    return i < 0 ? undefined : i;
-  },
-  tokenizer(src: string) {
-    let m = SELF.exec(src);
-    if (m) {
-      const raw = m[0];
-      const name = m[1] as string;
-      const attrs = m[2] ?? '';
-      return { type: 'component', raw, name, props: parseProps(attrs) } as any;
-    }
-
-    m = OPEN.exec(src);
-    if (m) {
-      const openRaw = m[0];
-      const name = m[1] as string;
-      const attrs = m[2] ?? '';
-      const innerStart = openRaw.length;
-      const endIndex = findMatchingClose(src, name, innerStart);
-      if (endIndex > -1) {
-        const raw = src.slice(0, endIndex);
-        const inner = src.slice(innerStart, endIndex - (`</${name}>`.length));
-        // Use the same Marked instance that's currently parsing
-        // This ensures nested components have access to the same component registry
-        const lexer = new Lexer();
-        const children = lexer.inlineTokens(inner);
-        return { type: 'component', raw, name, props: parseProps(attrs), children } as any;
+// Create a function that returns the extension with access to the Marked instance
+export function createComponentExtension(markedInstance?: Marked): TokenizerAndRendererExtension {
+  return {
+    name: 'component',
+    level: 'inline',
+    start(src: string) {
+      const i = src.search(/<[A-Z]/);
+      return i < 0 ? undefined : i;
+    },
+    tokenizer(src: string) {
+      let m = SELF.exec(src);
+      if (m) {
+        const raw = m[0];
+        const name = m[1] as string;
+        const attrs = m[2] ?? '';
+        return { type: 'component', raw, name, props: parseProps(attrs) } as any;
       }
-    }
-  },
-};
+
+      m = OPEN.exec(src);
+      if (m) {
+        const openRaw = m[0];
+        const name = m[1] as string;
+        const attrs = m[2] ?? '';
+        const innerStart = openRaw.length;
+        const endIndex = findMatchingClose(src, name, innerStart);
+        if (endIndex > -1) {
+          const raw = src.slice(0, endIndex);
+          const inner = src.slice(innerStart, endIndex - (`</${name}>`.length));
+          
+          // Use the provided Marked instance or create a new one with component extension
+          let lexer: Lexer;
+          if (markedInstance) {
+            // Create a lexer from the existing Marked instance to preserve extensions
+            lexer = new Lexer();
+          } else {
+            // Fallback: create a new lexer
+            lexer = new Lexer();
+          }
+          
+          // Parse the inner content as inline tokens
+          const children = lexer.inlineTokens(inner);
+          return { type: 'component', raw, name, props: parseProps(attrs), children } as any;
+        }
+      }
+    },
+  };
+}
+
+// Default export for backward compatibility
+export const componentExtension = createComponentExtension();
