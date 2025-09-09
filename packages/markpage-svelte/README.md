@@ -196,39 +196,6 @@ import type {
 - No runtime compilation overhead
 - Efficient component lookup using Map
 
-## Development
-
-This package is part of the Markpage monorepo. For development, you can switch between using the local `markpage` package and the published version:
-
-### Using Local Markpage (for development)
-
-```bash
-# Use local markpage version
-npm run dev:local
-
-# Or manually link
-npm run link:local
-npm run dev
-```
-
-### Using Published Markpage (for testing)
-
-```bash
-# Use published markpage version
-npm run dev:published
-
-# Or manually unlink and reinstall
-npm run unlink:local
-npm run dev
-```
-
-### Development Scripts
-
-- `npm run dev:local` - Start development with local markpage
-- `npm run dev:published` - Start development with published markpage
-- `npm run link:local` - Link to local markpage package
-- `npm run unlink:local` - Unlink and reinstall published markpage
-
 ## Contributing
 
 This package is part of the Markpage monorepo. See the main [README](../../README.md) for contribution guidelines.
