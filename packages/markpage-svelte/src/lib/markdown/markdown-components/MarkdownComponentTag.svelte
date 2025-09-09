@@ -23,7 +23,7 @@
 </script>
 
 {#if Comp && typeof Comp === 'function'}
-  <Comp {...token.props} childrenTokens={token.children}>
+  <Comp {...token.props}>
     {#if token.children}
       <MarkdownTokens tokens={token.children} {components} />
     {/if}

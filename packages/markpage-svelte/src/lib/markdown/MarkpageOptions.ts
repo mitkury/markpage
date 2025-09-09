@@ -1,5 +1,6 @@
 import type { Component } from 'svelte';
 import type { Marked } from 'marked';
+import { newMarked } from '../index';
 
 export interface MarkdownExtension {
   name: string;
@@ -97,9 +98,8 @@ export class MarkpageOptions {
       return this.markedFactory();
     }
     
-    // Return undefined to indicate no custom Marked instance is configured
-    // The Markdown component will handle creating a default instance
-    return undefined as any;
+    // Create a default Marked instance with component extension
+    return newMarked();
   }
 
   /**
