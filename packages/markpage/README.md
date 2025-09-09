@@ -4,6 +4,15 @@ Markpage helps to render Markdown files on html pages with any framework.
 
 You point Markpage at a directory with markdown files and get navigation structure and content that you can use to render in your app.
 
+## Monorepo structure
+
+This repository contains multiple packages:
+
+- `packages/markpage` – core builder, renderer and types
+- `packages/markpage-svelte` – Svelte integration (components in markdown)
+- `packages/website` – documentation site built with SvelteKit and Markpage
+- `packages/tests` – test suite covering builder/renderer and Svelte integration
+
 ## What it does
 
 Point Markpage at a directory with markdown files and `.index.json` files, and get:
@@ -26,6 +35,20 @@ await buildPages('./my-content', {
   includeContent: true
 });
 ```
+
+### Scripts (root)
+
+Useful root scripts for local development:
+
+- `npm test` – builds local packages and runs the test suite (`packages/tests`)
+- `npm run build` – builds local packages then the documentation website
+- `npm run dev:website` – starts the SvelteKit docs website (auto-builds content from `./docs`)
+- `npm run build:website` – production build of the website
+
+Inside `packages/website`:
+
+- `npm run check` – Svelte type checks (`svelte-check`) for the website
+- `npm run preview` – preview production build locally
 
 ## Component System (via @markpage/svelte)
 
@@ -70,7 +93,34 @@ npm install @markpage/svelte
 
 ## Getting Started
 
-For detailed step-by-step instructions, see the [Getting Started Guide](https://github.com/mitkury/markpage/blob/main/docs/getting-started.md).
+For detailed step-by-step instructions, see the [Getting Started Guide](docs/getting-started.md).
+
+## Developing locally
+
+1) Install dependencies
+
+```bash
+npm ci
+```
+
+2) Run tests (kept green)
+
+```bash
+npm test
+```
+
+3) Run the website (auto-builds docs from `./docs`)
+
+```bash
+npm run dev:website
+```
+
+4) Build and preview the website
+
+```bash
+npm run build:website
+npm --workspace=@markpage/website run preview
+```
 
 ## Examples
 
