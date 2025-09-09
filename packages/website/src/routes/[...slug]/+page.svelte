@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type { PageData } from './$types';
 	import { Markdown } from '@markpage/svelte';
+	import type { NavigationItem, NavigationTree } from '@markpage/svelte/server';
 	import TestButton from '$lib/components/TestButton.svelte';
 	import Button from '$lib/components/Button.svelte';
 	import Alert from '$lib/components/Alert.svelte';
@@ -16,10 +17,9 @@
 		['Card', Card]
 	]);
 
-	type NavItem = { name: string; type: 'page' | 'section'; label: string; path?: string; items?: NavItem[] };
-	const navItems = (data.navigation as unknown as NavItem[]) || [];
+	const navItems = data.navigation || [];
 
-	function hrefFor(item: NavItem, parentPath = '') {
+	function hrefFor(item: NavigationItem, parentPath = '') {
 		return parentPath ? `/${parentPath}/${item.name}` : `/${item.name}`;
 	}
 </script>
