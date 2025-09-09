@@ -4,45 +4,27 @@
 
   let { token, components = new Map<ComponentName, any>() }: { token: any; components?: Map<ComponentName, any> } = $props();
 
-  function handle(event: Event, name: string) {}
-
   const Comp = $derived.by(() => {
     const name = token?.name ?? '';
     if (!components || !name) return null;
+    
+    // Direct lookup
     const direct = components.get(name);
     if (direct) return direct;
-    // Fallback: case-insensitive resolution for convenience in tests/usages
+    
+    // Fallback: case-insensitive resolution for convenience
     const lower = String(name).toLowerCase();
     for (const [key, value] of components) {
       if (String(key).toLowerCase() === lower) return value;
     }
     return null;
   });
-  function getRenderer(component: any): null | ((props: any) => { html?: string }) {
-    // In Svelte 5, components are no longer classes with .render() method
-    // We should use <svelte:component> instead
-    return null;
-  }
-  function childrenText() {
-    if (!token.children) return '';
-    try {
-      return token.children.map((t: any) => String(t.text ?? t.raw ?? '')).join('');
-    } catch (_) {
-      return '';
-    }
-  }
 
 </script>
 
 {#if Comp && typeof Comp === 'function'}
   {@const Component = Comp}
-  <Component
-    {...token.props}
-    onclick={(e: Event) => handle(e, token.name)}
-    onsubmit={(e: Event) => handle(e, token.name)}
-    onchange={(e: Event) => handle(e, token.name)}
-    childrenTokens={token.children}
-  >
+  <Component {...token.props} childrenTokens={token.children}>
     {#if token.children}
       <MarkdownTokens tokens={token.children} {components} />
     {/if}
@@ -53,4 +35,18 @@
     &lt;{token.name}{Object.entries(token.props ?? {}).map(([k, v]) => ` ${k}="${String(v)}"`).join('')}{token.children ? `&gt;...&lt;/${token.name}&gt;` : ` /&gt;`}
   </div>
 {/if}
+
+<style>
+  .component-fallback {
+    display: inline-block;
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 4px;
+    padding: 0.25rem 0.5rem;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    font-size: 0.875rem;
+    color: #6c757d;
+    margin: 0.25rem 0;
+  }
+</style>
 
