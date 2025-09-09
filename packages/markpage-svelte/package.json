@@ -1,6 +1,6 @@
 {
   "name": "@markpage/svelte",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Svelte integration for Markpage with component support",
   "type": "module",
   "exports": {
@@ -25,10 +25,14 @@
     "build": "svelte-package",
     "dev": "svelte-package --watch",
     "clean": "rm -rf dist",
-    "prebuild": "npm run clean"
+    "prebuild": "npm run clean",
+    "dev:local": "npm run link:local && npm run dev",
+    "dev:published": "npm run unlink:local && npm run dev",
+    "link:local": "npm link markpage",
+    "unlink:local": "npm unlink markpage && npm install markpage@^0.3.6"
   },
   "dependencies": {
-    "markpage": "file:../markpage"
+    "markpage": "^0.3.6"
   },
   "peerDependencies": {
     "svelte": "^5.0.0"
