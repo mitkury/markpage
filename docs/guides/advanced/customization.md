@@ -243,7 +243,7 @@ Create different layouts for different types of content:
 
 ### Syntax Extensions
 
-Extend markdown syntax with custom processors:
+Extend markdown syntax with custom processors or token components:
 
 ```typescript
 const markdownExtensions = {
@@ -299,6 +299,89 @@ const processor = {
 		return processed;
 	}
 };
+
+```
+
+### Rendering custom tokens in Svelte
+
+You can render custom markdown tokens by supplying Svelte components via the `extensionComponents` prop on `Markdown`.
+
+```svelte
+<script lang="ts">
+  import { Markdown, Marked } from '@markpage/svelte';
+  import MathInline from '$lib/components/MathInline.svelte';
+  import MathBlock from '$lib/components/MathBlock.svelte';
+
+  // Example: add simple $...$ (inline) and $$...$$ (block) tokenizers
+  function mathExtension() {
+    return {
+      extensions: [
+        {
+          name: 'math_block',
+          level: 'block' as const,
+          start(src: string) { const i = src.indexOf('$$'); return i < 0 ? undefined : i; },
+          tokenizer(src: string) {
+            if (!src.startsWith('$$')) return;
+            const end = src.indexOf('$$', 2);
+            if (end === -1) return;
+            const raw = src.slice(0, end + 2);
+            const text = src.slice(2, end).trim();
+            return { type: 'math_block', raw, text } as any;
+          }
+        },
+        {
+          name: 'math_inline',
+          level: 'inline' as const,
+          start(src: string) { const i = src.indexOf('$'); return i < 0 ? undefined : i; },
+          tokenizer(src: string) {
+            if (src.startsWith('$$')) return; // let block handle
+            if (!src.startsWith('$')) return;
+            const end = src.indexOf('$', 1);
+            if (end === -1) return;
+            const raw = src.slice(0, end + 1);
+            const text = src.slice(1, end).trim();
+            return { type: 'math_inline', raw, text } as any;
+          }
+        }
+      ]
+    };
+  }
+
+  const markedInstance = new Marked();
+  markedInstance.use(mathExtension());
+
+  const extensionComponents = new Map<string, any>([
+    ['math_inline', MathInline],
+    ['math_block', MathBlock]
+  ]);
+
+  export let source: string;
+</script>
+
+<Markdown {source} {markedInstance} {extensionComponents} />
+```
+
+Resolution order for a token type `t`:
+- extensionComponents.get(t)
+- built-in markdown component
+- optional `unknownToken` fallback
+
+To override a built-in token (e.g., `codespan`):
+
+```svelte
+<script lang="ts">
+  import { Markdown } from '@markpage/svelte';
+  import OverrideCodeSpan from '$lib/components/OverrideCodeSpan.svelte';
+
+  const extensionComponents = new Map<string, any>([
+    ['codespan', OverrideCodeSpan]
+  ]);
+
+  export let source = 'Inline `code` here';
+</script>
+
+<Markdown {source} {extensionComponents} />
+```
 ```
 
 ## Custom Build Process

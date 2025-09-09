@@ -509,6 +509,54 @@ const contentWithToc = addTableOfContents(content, toc);
 ```
 
 ### Custom Content Processing
+### Svelte Markdown: custom and overridden token components
+
+Render markdown in Svelte with custom token components via `extensionComponents` and optional `unknownToken` fallback:
+
+```svelte
+<script lang="ts">
+  import { Markdown, Marked } from '@markpage/svelte';
+  import MathInline from '$lib/components/MathInline.svelte';
+  import MathBlock from '$lib/components/MathBlock.svelte';
+
+  function mathExtension() {
+    return {
+      extensions: [
+        { name: 'math_block', level: 'block', start: (s: string) => s.indexOf('$$') ?? undefined, tokenizer(src: string) {
+          if (!src.startsWith('$$')) return; const end = src.indexOf('$$', 2); if (end === -1) return; const raw = src.slice(0, end + 2); const text = src.slice(2, end).trim(); return { type: 'math_block', raw, text } as any; } },
+        { name: 'math_inline', level: 'inline', start: (s: string) => s.indexOf('$') ?? undefined, tokenizer(src: string) {
+          if (src.startsWith('$$')) return; if (!src.startsWith('$')) return; const end = src.indexOf('$', 1); if (end === -1) return; const raw = src.slice(0, end + 1); const text = src.slice(1, end).trim(); return { type: 'math_inline', raw, text } as any; } }
+      ]
+    };
+  }
+
+  const markedInstance = new Marked();
+  markedInstance.use(mathExtension());
+
+  const extensionComponents = new Map<string, any>([
+    ['math_inline', MathInline],
+    ['math_block', MathBlock]
+  ]);
+
+  const source = 'Here is inline $a+b=c$ and a block:\n\n$$\nE=mc^2\n$$';
+</script>
+
+<Markdown {source} {markedInstance} {extensionComponents} />
+```
+
+Override a built-in token (e.g., `codespan`):
+
+```svelte
+<script lang="ts">
+  import { Markdown } from '@markpage/svelte';
+  import OverrideCodeSpan from '$lib/components/OverrideCodeSpan.svelte';
+
+  const extensionComponents = new Map<string, any>([['codespan', OverrideCodeSpan]]);
+  const source = 'Inline `code` here';
+</script>
+
+<Markdown {source} {extensionComponents} />
+```
 
 ```typescript
 import { loadContent } from 'markpage/renderer';
