@@ -1,6 +1,6 @@
 {
   "name": "markpage-monorepo",
-  "version": "0.0.2",
+  "version": "0.1.0",
   "description": "Monorepo for markpage - markdown content management system",
   "private": true,
   "workspaces": [
