@@ -92,18 +92,28 @@ export function createComponentExtension(markedInstance?: Marked): TokenizerAndR
           
           const inner = src.slice(innerStart, endIndex - (`</${name}>`.length));
           
-          // Parse nested content safely - use simpler approach to avoid parser state corruption
+          // Parse nested content safely - use simple markdown parsing to avoid parser state corruption
           let children: any[];
           if (inner.trim()) {
-            // Instead of using the main marked instance (which corrupts parsing state),
-            // create basic inline tokens manually or use a simple lexer
-            const trimmedInner = inner.trim();
-            if (trimmedInner) {
-              // For now, treat the content as a single text token
-              // This preserves the content and avoids parser corruption
-              children = [{ type: 'text', raw: inner, text: trimmedInner }];
-            } else {
-              children = [];
+            try {
+              // Use a simple approach: create a new Marked instance with basic extensions only
+              const { Marked } = require('marked');
+              const nestedMarked = new Marked();
+              
+              // Only use basic markdown extensions, no custom component extensions
+              // This prevents recursion and parser state corruption
+              const nestedTokens = nestedMarked.lexer(inner);
+              
+              // Flatten nested tokens into children array
+              children = nestedTokens.flatMap((token: any) => {
+                if (token.type === 'paragraph' && token.tokens) {
+                  return token.tokens;
+                }
+                return [token];
+              });
+            } catch (error) {
+              // Fallback to simple text token if parsing fails
+              children = [{ type: 'text', raw: inner, text: inner.trim() }];
             }
           } else {
             children = [];
@@ -151,18 +161,28 @@ export function createInlineComponentExtension(markedInstance?: Marked): Tokeniz
           
           const inner = src.slice(innerStart, endIndex - (`</${name}>`.length));
           
-          // Parse nested content safely - use simpler approach to avoid parser state corruption
+          // Parse nested content safely - use simple markdown parsing to avoid parser state corruption
           let children: any[];
           if (inner.trim()) {
-            // Instead of using the main marked instance (which corrupts parsing state),
-            // create basic inline tokens manually or use a simple lexer
-            const trimmedInner = inner.trim();
-            if (trimmedInner) {
-              // For now, treat the content as a single text token
-              // This preserves the content and avoids parser corruption
-              children = [{ type: 'text', raw: inner, text: trimmedInner }];
-            } else {
-              children = [];
+            try {
+              // Use a simple approach: create a new Marked instance with basic extensions only
+              const { Marked } = require('marked');
+              const nestedMarked = new Marked();
+              
+              // Only use basic markdown extensions, no custom component extensions
+              // This prevents recursion and parser state corruption
+              const nestedTokens = nestedMarked.lexer(inner);
+              
+              // Flatten nested tokens into children array
+              children = nestedTokens.flatMap((token: any) => {
+                if (token.type === 'paragraph' && token.tokens) {
+                  return token.tokens;
+                }
+                return [token];
+              });
+            } catch (error) {
+              // Fallback to simple text token if parsing fails
+              children = [{ type: 'text', raw: inner, text: inner.trim() }];
             }
           } else {
             children = [];
