@@ -53,16 +53,12 @@ describe('Section Content Bundling', () => {
 
   it('should bundle content for sections with README files', async () => {
     // Debug: Check if files exist
-    console.log('Files in contentDir:', readdirSync(contentDir));
-    console.log('Files in guidesDir:', readdirSync(join(contentDir, 'guides')));
     
     const result = await buildPages(contentDir, {
       appOutput: outputDir,
       includeContent: true
     });
 
-    console.log('Navigation result:', JSON.stringify(result.navigation, null, 2));
-    console.log('Content keys:', Object.keys(result.content || {}));
 
     expect(result.content).toBeDefined();
     // Should include the README content for the guides section

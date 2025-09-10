@@ -17,29 +17,8 @@
     let md;
     
     if (options) {
-      // Use options to get Marked instance
-      const optionsMarked = options.getMarked();
-      if (optionsMarked) {
-        md = optionsMarked;
-      } else {
-        // Create default instance and apply extensions from options
-        md = newMarked();
-        
-        // Apply any registered extensions to the Marked instance
-        const extensions = options.getExtensions();
-        for (const extensionSet of extensions as { extensions: Array<{ name: string; level: 'inline' | 'block'; start?: (src: string) => number | undefined; tokenizer?: (src: string) => any }> }[]) {
-          // Convert our extension format to Marked.js format
-          const markedExtension = {
-            extensions: extensionSet.extensions.map((ext) => ({
-              name: ext.name,
-              level: ext.level,
-              start: ext.start,
-              tokenizer: ext.tokenizer
-            }))
-          };
-          md.use(markedExtension as any);
-        }
-      }
+      // Use options to get Marked instance (this now creates a default instance with extensions)
+      md = options.getMarked();
     } else {
       // No options provided, use default instance
       md = newMarked();

@@ -1,4 +1,4 @@
-import { Marked, componentExtension } from 'markpage';
+import { Marked, componentExtension, createComponentExtension, createInlineComponentExtension } from 'markpage';
 
 // Svelte component exports
 export { default as Markdown } from './markdown/Markdown.svelte';
@@ -27,6 +27,8 @@ export {
   addTableOfContents,
   builtinTokenNames,
   componentExtension,
+  createComponentExtension,
+  createInlineComponentExtension,
   Marked,
   Lexer
 } from 'markpage';
@@ -34,7 +36,10 @@ export {
 // Convenience: create a Marked instance with the component extension applied
 export function newMarked() {
   const md = new Marked();
-  md.use({ extensions: [componentExtension as any] as any } as any);
+  // Create both block and inline component extensions with access to the Marked instance
+  const blockExt = createComponentExtension(md);
+  const inlineExt = createInlineComponentExtension(md);
+  md.use({ extensions: [blockExt as any, inlineExt as any] as any } as any);
   return md;
 }
 

@@ -1,5 +1,6 @@
 import type { Component } from 'svelte';
 import type { Marked } from 'marked';
+import { newMarked } from '../index.js';
 
 export interface MarkdownExtension {
   name: string;
@@ -97,9 +98,23 @@ export class MarkpageOptions {
       return this.markedFactory();
     }
     
-    // Return undefined to indicate no custom Marked instance is configured
-    // The Markdown component will handle creating a default instance
-    return undefined as any;
+    // Create a default instance with component extension already applied
+    const defaultMarked = newMarked();
+    
+    // Apply any additional registered extensions to the default instance
+    for (const extensionSet of this.markedExtensions) {
+      const markedExtension = {
+        extensions: extensionSet.extensions.map((ext) => ({
+          name: ext.name,
+          level: ext.level,
+          start: ext.start,
+          tokenizer: ext.tokenizer
+        }))
+      };
+      defaultMarked.use(markedExtension as any);
+    }
+    
+    return defaultMarked;
   }
 
   /**

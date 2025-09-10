@@ -2,7 +2,7 @@
   import MarkdownTokens from "../MarkdownTokens.svelte";
   import type { ComponentName } from "../types";
 
-  let { token, components = new Map<ComponentName, any>() }: { token: any; components?: Map<ComponentName, any> } = $props();
+  let { token, components = new Map<ComponentName, any>(), extensionComponents = new Map<string, any>(), unknownToken }: { token: any; components?: Map<ComponentName, any>; extensionComponents?: Map<string, any>; unknownToken?: ((token: any) => any) | undefined } = $props();
 
   const Comp = $derived.by(() => {
     const name = token?.name ?? '';
@@ -23,9 +23,9 @@
 </script>
 
 {#if Comp && typeof Comp === 'function'}
-  <Comp {...token.props} childrenTokens={token.children}>
+  <Comp {...token.props}>
     {#if token.children}
-      <MarkdownTokens tokens={token.children} {components} />
+      <MarkdownTokens tokens={token.children} {components} {extensionComponents} {unknownToken} />
     {/if}
   </Comp>
 {:else}

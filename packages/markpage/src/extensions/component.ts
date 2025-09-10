@@ -30,7 +30,8 @@ function parseProps(attrs: string): Record<string, unknown> {
 
 function findMatchingClose(src: string, name: string, startIndex: number): number {
   const openTag = new RegExp(`<${name}(?:\s[^>]*)?>`, 'g');
-  const closeTag = new RegExp(`</${name}>`, 'g');
+  // Handle both regular closing tags and HTML-encoded closing tags
+  const closeTag = new RegExp(`(?:</${name}>|&lt;/${name}&gt;)`, 'g');
   openTag.lastIndex = startIndex;
   closeTag.lastIndex = startIndex;
 
@@ -50,38 +51,153 @@ function findMatchingClose(src: string, name: string, startIndex: number): numbe
   }
 }
 
-export const componentExtension: TokenizerAndRendererExtension = {
-  name: 'component',
-  level: 'block',
-  start(src: string) {
-    const i = src.search(/<[A-Z]/);
-    return i < 0 ? undefined : i;
-  },
-  tokenizer(src: string) {
-    let m = SELF.exec(src);
-    if (m) {
-      const raw = m[0];
-      const name = m[1] as string;
-      const attrs = m[2] ?? '';
-      return { type: 'component', raw, name, props: parseProps(attrs) } as any;
-    }
-
-    m = OPEN.exec(src);
-    if (m) {
-      const openRaw = m[0];
-      const name = m[1] as string;
-      const attrs = m[2] ?? '';
-      const innerStart = openRaw.length;
-      const endIndex = findMatchingClose(src, name, innerStart);
-      if (endIndex > -1) {
-        const raw = src.slice(0, endIndex);
-        const inner = src.slice(innerStart, endIndex - (`</${name}>`.length));
-        // Use the same Marked instance that's currently parsing
-        // This ensures nested components have access to the same component registry
-        const lexer = new Lexer();
-        const children = lexer.inlineTokens(inner);
-        return { type: 'component', raw, name, props: parseProps(attrs), children } as any;
+// Create a function that returns the extension with access to the Marked instance
+export function createComponentExtension(markedInstance?: Marked): TokenizerAndRendererExtension {
+  return {
+    name: 'component',
+    level: 'block',
+    start(src: string) {
+      // Process components that are at the start of a line or indented (block-level)
+      const i = src.search(/^\s*<[A-Z]/m);
+      return i < 0 ? undefined : i;
+    },
+    tokenizer(src: string) {
+      let m = SELF.exec(src);
+      if (m) {
+        const raw = m[0];
+        const name = m[1] as string;
+        const attrs = m[2] ?? '';
+        return { type: 'component', raw, name, props: parseProps(attrs) } as any;
       }
-    }
-  },
-};
+
+      m = OPEN.exec(src);
+      if (m) {
+        const openRaw = m[0];
+        const name = m[1] as string;
+        const attrs = m[2] ?? '';
+        const innerStart = openRaw.length;
+        const endIndex = findMatchingClose(src, name, innerStart);
+        if (endIndex > -1) {
+          // For block-level components, we need to consume the entire line including trailing newlines
+          // Find the end of the line after the component
+          let lineEnd = endIndex;
+          while (lineEnd < src.length && src[lineEnd] !== '\n') {
+            lineEnd++;
+          }
+          // Include the newline if it exists
+          if (lineEnd < src.length && src[lineEnd] === '\n') {
+            lineEnd++;
+          }
+          const raw = src.slice(0, lineEnd);
+          
+          const inner = src.slice(innerStart, endIndex - (`</${name}>`.length));
+          
+          // Parse nested content safely - use simple markdown parsing to avoid parser state corruption
+          let children: any[];
+          if (inner.trim()) {
+            try {
+              // Use a simple approach: create a new Marked instance with basic extensions only
+              const { Marked } = require('marked');
+              const nestedMarked = new Marked();
+              
+              // Only use basic markdown extensions, no custom component extensions
+              // This prevents recursion and parser state corruption
+              const nestedTokens = nestedMarked.lexer(inner);
+              
+              // Flatten nested tokens into children array
+              children = nestedTokens.flatMap((token: any) => {
+                if (token.type === 'paragraph' && token.tokens) {
+                  return token.tokens;
+                }
+                return [token];
+              });
+            } catch (error) {
+              // Fallback to simple text token if parsing fails
+              children = [{ type: 'text', raw: inner, text: inner.trim() }];
+            }
+          } else {
+            children = [];
+          }
+          const token = { type: 'component', raw, name, props: parseProps(attrs), children } as any;
+          return token;
+        } else {
+          // No matching close tag found - treat as self-closing component
+          const raw = openRaw;
+          return { type: 'component', raw, name, props: parseProps(attrs) } as any;
+        }
+      }
+    },
+  };
+}
+
+// Create an inline component extension for components within inline text
+export function createInlineComponentExtension(markedInstance?: Marked): TokenizerAndRendererExtension {
+  return {
+    name: 'inline-component',
+    level: 'inline',
+    start(src: string) {
+      const i = src.search(/<[A-Z]/);
+      return i < 0 ? undefined : i;
+    },
+    tokenizer(src: string) {
+      let m = SELF.exec(src);
+      if (m) {
+        const raw = m[0];
+        const name = m[1] as string;
+        const attrs = m[2] ?? '';
+        return { type: 'component', raw, name, props: parseProps(attrs) } as any;
+      }
+
+      m = OPEN.exec(src);
+      if (m) {
+        const openRaw = m[0];
+        const name = m[1] as string;
+        const attrs = m[2] ?? '';
+        const innerStart = openRaw.length;
+        const endIndex = findMatchingClose(src, name, innerStart);
+        if (endIndex > -1) {
+          // For inline components, only consume up to the closing tag
+          const raw = src.slice(0, endIndex + (`</${name}>`.length));
+          
+          const inner = src.slice(innerStart, endIndex - (`</${name}>`.length));
+          
+          // Parse nested content safely - use simple markdown parsing to avoid parser state corruption
+          let children: any[];
+          if (inner.trim()) {
+            try {
+              // Use a simple approach: create a new Marked instance with basic extensions only
+              const { Marked } = require('marked');
+              const nestedMarked = new Marked();
+              
+              // Only use basic markdown extensions, no custom component extensions
+              // This prevents recursion and parser state corruption
+              const nestedTokens = nestedMarked.lexer(inner);
+              
+              // Flatten nested tokens into children array
+              children = nestedTokens.flatMap((token: any) => {
+                if (token.type === 'paragraph' && token.tokens) {
+                  return token.tokens;
+                }
+                return [token];
+              });
+            } catch (error) {
+              // Fallback to simple text token if parsing fails
+              children = [{ type: 'text', raw: inner, text: inner.trim() }];
+            }
+          } else {
+            children = [];
+          }
+          const token = { type: 'component', raw, name, props: parseProps(attrs), children } as any;
+          return token;
+        } else {
+          // No matching close tag found - treat as self-closing component
+          const raw = openRaw;
+          return { type: 'component', raw, name, props: parseProps(attrs) } as any;
+        }
+      }
+    },
+  };
+}
+
+// Default export for backward compatibility
+export const componentExtension = createComponentExtension();

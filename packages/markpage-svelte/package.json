@@ -22,8 +22,8 @@
     "src/lib"
   ],
   "scripts": {
-    "build": "node ./node_modules/.bin/svelte-package",
-    "dev": "node ./node_modules/.bin/svelte-package --watch",
+    "build": "npx svelte-package",
+    "dev": "npx svelte-package --watch",
     "clean": "rm -rf dist",
     "prebuild": "npm run clean",
     "dev:local": "npm run link:local && npm run dev",
