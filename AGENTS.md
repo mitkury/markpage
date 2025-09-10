@@ -34,7 +34,7 @@ await buildPages('./my-content', {
 
 ## Component System (via @markpage/svelte)
 
-Component embedding is provided by the separate `@markpage/svelte` package (React version is not available yet — contributions welcome). It lets you embed interactive Svelte components directly in markdown files, similar to MDX but simpler:
+Component embedding is provided by the separate `@markpage/svelte` package. It lets you embed interactive Svelte components directly in markdown files:
 
 ```markdown
 # My Documentation
@@ -64,17 +64,22 @@ Components are registered and rendered with the `Markdown` component:
 
 ### Framework Integrations
 
-- Svelte: `@markpage/svelte` is available on npm.
+- **Svelte**: `@markpage/svelte` is available on npm.
 
 ```bash
 npm install @markpage/svelte
 ```
 
-- React: not available yet — feel free to contribute an official `@markpage/react` integration (PRs welcome).
+- **React**: not available yet — feel free to contribute an official `@markpage/react` integration (PRs welcome).
 
 ## Getting Started
 
 For detailed step-by-step instructions, see the [Getting Started Guide](docs/getting-started.md).
+
+## Advanced Features
+
+- **[Custom Components](docs/custom-components.md)** - Create and use custom Svelte components in markdown
+- **[Token Overrides](docs/token-overrides.md)** - Override built-in markdown tokens and create extensions
 
 ## CLI Usage
 
@@ -113,14 +118,17 @@ MIT License
 
 Let's get you set up with Markpage in just a few steps.
 
-> 📖 **This is the detailed getting started guide. For a quick overview, see the [main README](https://github.com/mitkury/markpage/blob/main/README.md).**
+> 📖 **This is the core getting started guide. For advanced features, see the [Custom Components](custom-components.md) and [Token Overrides](token-overrides.md) guides.**
 
-- **Distributed Navigation**: Each folder can define its own structure with `.index.json` files (optional)
-- **Multiple Output Formats**: App bundles, website navigation
-- **Framework Agnostic**: Works with React, Vue, Svelte, Angular, or vanilla JavaScript
-- **Flexible**: Point to any directory with markdown files
+## What is Markpage?
 
-## Quick Start
+Markpage helps you render Markdown files as HTML pages with any framework. It provides:
+
+- **Organized navigation structure** for your content
+- **Framework-agnostic** utilities that work with React, Vue, Svelte, Angular, or vanilla JavaScript
+- **Component system** for embedding interactive components in markdown (via `@markpage/svelte`)
+
+## Core Usage
 
 ### 1. Install the Package
 
@@ -130,22 +138,110 @@ npm install markpage
 
 ### 2. Create Your Content Structure
 
-Create a directory with your markdown content. You can optionally add `.index.json` files to organize the navigation:
+Create a directory with your markdown content:
 
 ```
 my-docs/
-├── .index.json          # Optional: defines custom navigation order
 ├── getting-started.md
+├── installation.md
 └── guides/
-    ├── .index.json      # Optional: organizes this section
-    └── installation.md
+    ├── basic-usage.md
+    └── advanced-features.md
 ```
 
-**Without `.index.json` files**: Markdown files are automatically discovered in alphabetical order.
+### 3. Build Your Documentation
 
-### 3. Define Navigation (Optional)
+```typescript
+import { buildPages } from 'markpage/builder';
 
-If you want custom navigation order, create `.index.json` files:
+await buildPages('./my-docs', {
+  appOutput: './src/lib/content',
+  includeContent: true
+});
+```
+
+### 4. Use in Your App
+
+```typescript
+import { NavigationTree, loadContent } from 'markpage/renderer';
+import navigationData from './src/lib/content/navigation.json';
+import contentBundle from './src/lib/content/content.json';
+
+const navigation = new NavigationTree(navigationData);
+const content = await loadContent('getting-started.md', contentBundle);
+```
+
+## Svelte Integration
+
+For Svelte apps, use the `@markpage/svelte` package to render markdown with components:
+
+### 1. Install the Svelte Package
+
+```bash
+npm install @markpage/svelte
+```
+
+### 2. Basic Markdown Rendering
+
+```svelte
+<script>
+  import { Markdown } from '@markpage/svelte';
+
+  const source = `
+# Hello World
+
+This is **bold** text and this is *italic*.
+
+- List item 1
+- List item 2
+
+[Visit our website](https://example.com)
+  `;
+</script>
+
+<Markdown {source} />
+```
+
+### 3. With Custom Components
+
+```svelte
+<script>
+  import { Markdown, MarkpageOptions } from '@markpage/svelte';
+  import Button from './Button.svelte';
+
+  const options = new MarkpageOptions()
+    .addCustomComponent('Button', Button);
+
+  const source = `
+# My Documentation
+
+Here's a regular paragraph.
+
+<Button variant="primary">Click me</Button>
+  `;
+</script>
+
+<Markdown {source} {options} />
+```
+
+## Navigation Structure
+
+### Automatic Discovery
+
+By default, Markpage automatically discovers markdown files in alphabetical order:
+
+```
+my-docs/
+├── getting-started.md    # 1st
+├── installation.md       # 2nd
+└── guides/
+    ├── basic-usage.md    # 3rd
+    └── advanced.md       # 4th
+```
+
+### Custom Navigation (Optional)
+
+Create `.index.json` files to define custom navigation order:
 
 **Root level** (`my-docs/.index.json`):
 ```json
@@ -161,105 +257,10 @@ If you want custom navigation order, create `.index.json` files:
 ```json
 {
   "items": [
-    { "name": "installation", "type": "page", "label": "Installation" }
+    { "name": "basic-usage", "type": "page", "label": "Basic Usage" },
+    { "name": "advanced", "type": "page", "label": "Advanced Features" }
   ]
 }
-```
-
-### 4. Build Your Documentation
-
-```typescript
-import { buildPages } from 'markpage/builder';
-
-await buildPages('./my-docs', {
-  appOutput: './src/lib/content',
-  includeContent: true
-});
-```
-
-### 5. Use in Your App
-
-```typescript
-import { NavigationTree, loadContent } from 'markpage/renderer';
-import navigationData from './src/lib/content/navigation.json';
-import contentBundle from './src/lib/content/content.json';
-
-const navigation = new NavigationTree(navigationData);
-const content = await loadContent('getting-started.md', contentBundle);
-```
-
-## Component System (via @markpage/svelte)
-
-Markpage supports components in markdown files via the `@markpage/svelte` package. Render markdown with the `Markdown` component and provide a `components` map for custom tags or token overrides.
-
-### TestButton Component
-
-<TestButton variant="primary" text="Primary Button" />
-<TestButton variant="success" text="Success Button" />
-<TestButton variant="warning" text="Warning Button" />
-<TestButton variant="danger" text="Danger Button" />
-
-### Button Component
-
-<Button variant="primary">Primary Button</Button>
-<Button variant="secondary">Secondary Button</Button>
-<Button variant="danger">Danger Button</Button>
-
-### Alert Component
-
-<Alert variant="info">
-  This is an informational alert with **markdown** content inside.
-</Alert>
-
-<Alert variant="success">
-  This is a success message! Components work perfectly.
-</Alert>
-
-### Card Component
-
-<Card title="Component Features" subtitle="What you can do">
-  - Use any markdown syntax inside components
-  - Pass props to customize appearance
-  - Nest components within each other
-  - Maintain full markdown formatting
-</Card>
-
-### Unknown Component Fallback
-
-When a component isn't registered, it's rendered as plain text instead of showing an error:
-
-<UnknownComponent variant="demo" title="This component doesn't exist">
-  This content will be displayed as plain text
-</UnknownComponent>
-
-<AnotherMissingComponent size="large" />
-
-Components are registered upfront and can receive props like `variant`, `size`, `title`, etc.
-
-### Usage in Svelte
-
-```svelte
-<script lang="ts">
-  import { Markdown, MarkpageOptions } from '@markpage/svelte';
-  import Button from './Button.svelte';
-  import Alert from './Alert.svelte';
-
-  const options = new MarkpageOptions()
-    .addCustomComponent('Button', Button)
-    .addCustomComponent('Alert', Alert);
-
-  const markdown = `
-  ## Examples
-
-  <Button variant="primary">Primary Button</Button>
-
-  <Alert variant="info">
-    This is an informational alert with **markdown** content inside.
-  </Alert>
-  `;
-</script>
-
-<Markdown source={markdown} {options} />
 ```
 
 ## CLI Usage
@@ -270,23 +271,11 @@ Components are registered upfront and can receive props like `variant`, `size`, 
 npx markpage build ./my-docs --output ./src/lib/content
 ```
 
-
-## Use Cases
-
-### Content Sites
-Perfect for documentation, blogs, knowledge bases, and any markdown-based content.
-
-### Websites
-Create websites with organized content and easy navigation management.
-
-
 ## What's Next?
 
-Ready to get started? Check out the [Installation](./guides/installation.md) guide to set up your first content site!
-
-## Examples
-
-- **Test Suite**: Comprehensive examples in the [tests directory](https://github.com/mitkury/markpage/tree/main/packages/tests)
+- **[Custom Components](custom-components.md)** - Learn how to create and use custom components in markdown
+- **[Token Overrides](token-overrides.md)** - Override built-in markdown tokens and create extensions
+- **[Installation Guide](guides/installation.md)** - Detailed installation instructions
 ---
 
 # From docs/how-to-contribute.md:
@@ -784,7 +773,7 @@ You can override any built-in markdown token (like `codespan`, `heading`, `parag
 
 {
   "name": "markpage-monorepo",
-  "version": "0.0.2",
+  "version": "0.1.0",
   "description": "Monorepo for markpage - markdown content management system",
   "private": true,
   "workspaces": [
@@ -798,19 +787,19 @@ You can override any built-in markdown token (like `codespan`, `heading`, `parag
     "test:watch": "npm run test:watch --workspace=@markpage/tests",
     "test:coverage": "npm run test:coverage --workspace=@markpage/tests",
     "build:website": "npm run build --workspace=@markpage/website",
-    "dev:website": "npm run dev --workspace=@markpage/website",
+    "dev:website": "npm run build:pkgs && npm run dev --workspace=@markpage/website",
     "copy-readme": "cp README.md packages/markpage/README.md",
     "prepublishOnly": "npm run build && npm run test"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
-    "typescript": "^5.0.0"
+    "typescript": "^5.0.0",
+    "tsup": "^8.5.0",
+    "@sveltejs/package": "^2.5.0"
   },
   "repository": "https://github.com/mitkury/markpage",
   "license": "MIT",
-  "overrides": {
-    "@sveltejs/vite-plugin-svelte": "^4.0.0-next.6"
-  }
+  "overrides": {}
 }
 ---
 

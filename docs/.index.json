@@ -1,7 +1,34 @@
 {
   "items": [
-    { "name": "getting-started", "type": "page", "label": "Getting Started" },
-    { "name": "guides", "type": "section", "label": "Guides" },
-    { "name": "api", "type": "section", "label": "API Reference" }
+    {
+      "name": "getting-started",
+      "type": "page",
+      "label": "Getting Started"
+    },
+    {
+      "name": "custom-components",
+      "type": "page",
+      "label": "Custom Components"
+    },
+    {
+      "name": "token-overrides",
+      "type": "page",
+      "label": "Token Overrides"
+    },
+    {
+      "name": "guides",
+      "type": "section",
+      "label": "Guides"
+    },
+    {
+      "name": "api",
+      "type": "section",
+      "label": "API Reference"
+    },
+    {
+      "name": "how-to-contribute",
+      "type": "page",
+      "label": "How to Contribute"
+    }
   ]
 }

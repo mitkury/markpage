@@ -6,6 +6,18 @@
     "path": "getting-started.md"
   },
   {
+    "name": "custom-components",
+    "type": "page",
+    "label": "Custom Components",
+    "path": "custom-components.md"
+  },
+  {
+    "name": "token-overrides",
+    "type": "page",
+    "label": "Token Overrides",
+    "path": "token-overrides.md"
+  },
+  {
     "name": "guides",
     "type": "section",
     "label": "Guides",
@@ -61,5 +73,11 @@
         "path": "api/types.md"
       }
     ]
+  },
+  {
+    "name": "how-to-contribute",
+    "type": "page",
+    "label": "How to Contribute",
+    "path": "how-to-contribute.md"
   }
 ]
