@@ -2,7 +2,9 @@
 
 ## Issue Summary
 
-**CRITICAL BUG**: Unregistered components with content break all subsequent markdown parsing, causing headers and paragraphs to render as empty elements.
+**CRITICAL BUG**: Components with content (both registered and unregistered) break all subsequent markdown parsing, causing headers and paragraphs to render as empty elements.
+
+**Self-closing components work correctly**, but **components with content between tags break the parser**.
 
 ## Root Cause Analysis
 
@@ -13,10 +15,11 @@
 - Components are rendered as fallback components correctly
 
 ### What's Broken
-- **All content AFTER unregistered components fails to parse**
+- **All content AFTER components with content fails to parse**
 - Headers become empty: `<h2></h2>`
 - Paragraphs become empty: `<p></p>`
 - Markdown syntax (bold, links) is not processed
+- **Affects both registered and unregistered components with content**
 
 ### Evidence
 
@@ -25,9 +28,18 @@
 ## Before
 Content before.
 
-<UnknownComponent>
-  Some content
-</UnknownComponent>
+<Button variant="primary">Primary Button</Button>
+
+## After
+Content after should still work.
+```
+
+**Working markdown:**
+```markdown
+## Before
+Content before.
+
+<Button variant="primary" text="Primary Button" />
 
 ## After
 Content after should still work.
