@@ -30,7 +30,8 @@ function parseProps(attrs: string): Record<string, unknown> {
 
 function findMatchingClose(src: string, name: string, startIndex: number): number {
   const openTag = new RegExp(`<${name}(?:\s[^>]*)?>`, 'g');
-  const closeTag = new RegExp(`</${name}>`, 'g');
+  // Handle both regular closing tags and HTML-encoded closing tags
+  const closeTag = new RegExp(`(?:</${name}>|&lt;/${name}&gt;)`, 'g');
   openTag.lastIndex = startIndex;
   closeTag.lastIndex = startIndex;
 
