@@ -3,9 +3,7 @@ import { expect, test, describe } from 'vitest';
 import { Markdown, MarkpageOptions } from '@markpage/svelte';
 
 describe('Debug Component Parsing', () => {
-  test.skip('should handle unregistered components without breaking parsing', () => {
-    // TODO: Fix critical bug - see docs/proposals/critical-component-parsing-bug.md
-    // Issue: Unregistered components break all subsequent markdown parsing
+  test('should handle unregistered components without breaking parsing', () => {
     const markdown = `
 ## Before
 

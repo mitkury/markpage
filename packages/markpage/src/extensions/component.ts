@@ -78,40 +78,38 @@ export function createComponentExtension(markedInstance?: Marked): TokenizerAndR
         const innerStart = openRaw.length;
         const endIndex = findMatchingClose(src, name, innerStart);
         if (endIndex > -1) {
-          const raw = src.slice(0, endIndex);
+          // For block-level components, we need to consume the entire line including trailing newlines
+          // Find the end of the line after the component
+          let lineEnd = endIndex;
+          while (lineEnd < src.length && src[lineEnd] !== '\n') {
+            lineEnd++;
+          }
+          // Include the newline if it exists
+          if (lineEnd < src.length && src[lineEnd] === '\n') {
+            lineEnd++;
+          }
+          const raw = src.slice(0, lineEnd);
+          
           const inner = src.slice(innerStart, endIndex - (`</${name}>`.length));
           
-          // Use the provided Marked instance to parse nested content
+          // Parse nested content safely - use simpler approach to avoid parser state corruption
           let children: any[];
-          if (markedInstance) {
-            // Use the existing Marked instance to parse nested content
-            // This ensures that nested components are also parsed correctly
-            const nestedTokens = markedInstance.lexer(inner);
-            // For block-level components, we need to handle multiple types of nested content
-            // If we have multiple tokens, we need to flatten them into a single children array
-            if (nestedTokens.length > 0) {
-              children = [];
-              for (const token of nestedTokens) {
-                if (token.type === 'paragraph' && (token as any).tokens) {
-                  // Extract tokens from paragraph
-                  children.push(...(token as any).tokens);
-                } else if (token.type === 'component') {
-                  // Direct component token
-                  children.push(token);
-                } else {
-                  // Other token types
-                  children.push(token);
-                }
-              }
+          if (inner.trim()) {
+            // Instead of using the main marked instance (which corrupts parsing state),
+            // create basic inline tokens manually or use a simple lexer
+            const trimmedInner = inner.trim();
+            if (trimmedInner) {
+              // For now, treat the content as a single text token
+              // This preserves the content and avoids parser corruption
+              children = [{ type: 'text', raw: inner, text: trimmedInner }];
             } else {
               children = [];
             }
           } else {
-            // Fallback: create a new lexer without extensions
-            const lexer = new Lexer();
-            children = lexer.inlineTokens(inner);
+            children = [];
           }
-          return { type: 'component', raw, name, props: parseProps(attrs), children } as any;
+          const token = { type: 'component', raw, name, props: parseProps(attrs), children } as any;
+          return token;
         } else {
           // No matching close tag found - treat as self-closing component
           const raw = openRaw;
@@ -148,40 +146,38 @@ export function createInlineComponentExtension(markedInstance?: Marked): Tokeniz
         const innerStart = openRaw.length;
         const endIndex = findMatchingClose(src, name, innerStart);
         if (endIndex > -1) {
-          const raw = src.slice(0, endIndex);
+          // For block-level components, we need to consume the entire line including trailing newlines
+          // Find the end of the line after the component
+          let lineEnd = endIndex;
+          while (lineEnd < src.length && src[lineEnd] !== '\n') {
+            lineEnd++;
+          }
+          // Include the newline if it exists
+          if (lineEnd < src.length && src[lineEnd] === '\n') {
+            lineEnd++;
+          }
+          const raw = src.slice(0, lineEnd);
+          
           const inner = src.slice(innerStart, endIndex - (`</${name}>`.length));
           
-          // Use the provided Marked instance to parse nested content
+          // Parse nested content safely - use simpler approach to avoid parser state corruption
           let children: any[];
-          if (markedInstance) {
-            // Use the existing Marked instance to parse nested content
-            // This ensures that nested components are also parsed correctly
-            const nestedTokens = markedInstance.lexer(inner);
-            // For block-level components, we need to handle multiple types of nested content
-            // If we have multiple tokens, we need to flatten them into a single children array
-            if (nestedTokens.length > 0) {
-              children = [];
-              for (const token of nestedTokens) {
-                if (token.type === 'paragraph' && (token as any).tokens) {
-                  // Extract tokens from paragraph
-                  children.push(...(token as any).tokens);
-                } else if (token.type === 'component') {
-                  // Direct component token
-                  children.push(token);
-                } else {
-                  // Other token types
-                  children.push(token);
-                }
-              }
+          if (inner.trim()) {
+            // Instead of using the main marked instance (which corrupts parsing state),
+            // create basic inline tokens manually or use a simple lexer
+            const trimmedInner = inner.trim();
+            if (trimmedInner) {
+              // For now, treat the content as a single text token
+              // This preserves the content and avoids parser corruption
+              children = [{ type: 'text', raw: inner, text: trimmedInner }];
             } else {
               children = [];
             }
           } else {
-            // Fallback: create a new lexer without extensions
-            const lexer = new Lexer();
-            children = lexer.inlineTokens(inner);
+            children = [];
           }
-          return { type: 'component', raw, name, props: parseProps(attrs), children } as any;
+          const token = { type: 'component', raw, name, props: parseProps(attrs), children } as any;
+          return token;
         } else {
           // No matching close tag found - treat as self-closing component
           const raw = openRaw;

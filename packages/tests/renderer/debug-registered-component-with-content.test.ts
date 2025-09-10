@@ -4,9 +4,7 @@ import { Markdown, MarkpageOptions } from '@markpage/svelte';
 import Button from './components/Button.svelte';
 
 describe('Debug Registered Component With Content', () => {
-  test.skip('should handle registered component with content without breaking parsing', () => {
-    // TODO: Fix critical bug - see docs/proposals/critical-component-parsing-bug.md
-    // Issue: Components with content break all subsequent markdown parsing
+  test('should handle registered component with content without breaking parsing', () => {
     const markdown = `
 ## Before
 
@@ -66,9 +64,7 @@ Content after should still work.
     expect(headers[1]?.textContent).toContain('After');
   });
 
-  test.skip('should handle both types of components in sequence', () => {
-    // TODO: Fix critical bug - see docs/proposals/critical-component-parsing-bug.md
-    // Issue: Components with content break all subsequent markdown parsing
+  test('should handle both types of components in sequence', () => {
     const markdown = `
 ## Before
 

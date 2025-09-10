@@ -3,9 +3,7 @@ import { expect, test, describe } from 'vitest';
 import { Markdown, MarkpageOptions } from '@markpage/svelte';
 
 describe('Debug HTML Entities', () => {
-  test.skip('should handle HTML entities in component tags', () => {
-    // TODO: Fix critical bug - see docs/proposals/critical-component-parsing-bug.md
-    // Issue: Unregistered components break all subsequent markdown parsing
+  test('should handle HTML entities in component tags', () => {
     const markdown = `
 ## Before
 
@@ -33,9 +31,7 @@ Content after should still work.
     expect(headers[1]?.textContent).toContain('After');
   });
 
-  test.skip('should handle raw component tags without HTML entities', () => {
-    // TODO: Fix critical bug - see docs/proposals/critical-component-parsing-bug.md
-    // Issue: Unregistered components break all subsequent markdown parsing
+  test('should handle raw component tags without HTML entities', () => {
     const markdown = `
 ## Before
 
