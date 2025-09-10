@@ -56,8 +56,8 @@ export function createComponentExtension(markedInstance?: Marked): TokenizerAndR
     name: 'component',
     level: 'block',
     start(src: string) {
-      // Only process components that are at the start of a line (block-level)
-      const i = src.search(/^<[A-Z]/m);
+      // Process components that are at the start of a line or indented (block-level)
+      const i = src.search(/^\s*<[A-Z]/m);
       return i < 0 ? undefined : i;
     },
     tokenizer(src: string) {
@@ -86,10 +86,22 @@ export function createComponentExtension(markedInstance?: Marked): TokenizerAndR
             // Use the existing Marked instance to parse nested content
             // This ensures that nested components are also parsed correctly
             const nestedTokens = markedInstance.lexer(inner);
-            // Extract inline tokens from the parsed result
-            if (nestedTokens.length > 0 && nestedTokens[0] && nestedTokens[0].type === 'paragraph') {
-              const paragraphToken = nestedTokens[0] as any;
-              children = paragraphToken.tokens || [];
+            // For block-level components, we need to handle multiple types of nested content
+            // If we have multiple tokens, we need to flatten them into a single children array
+            if (nestedTokens.length > 0) {
+              children = [];
+              for (const token of nestedTokens) {
+                if (token.type === 'paragraph' && (token as any).tokens) {
+                  // Extract tokens from paragraph
+                  children.push(...(token as any).tokens);
+                } else if (token.type === 'component') {
+                  // Direct component token
+                  children.push(token);
+                } else {
+                  // Other token types
+                  children.push(token);
+                }
+              }
             } else {
               children = [];
             }
@@ -140,10 +152,22 @@ export function createInlineComponentExtension(markedInstance?: Marked): Tokeniz
             // Use the existing Marked instance to parse nested content
             // This ensures that nested components are also parsed correctly
             const nestedTokens = markedInstance.lexer(inner);
-            // Extract inline tokens from the parsed result
-            if (nestedTokens.length > 0 && nestedTokens[0] && nestedTokens[0].type === 'paragraph') {
-              const paragraphToken = nestedTokens[0] as any;
-              children = paragraphToken.tokens || [];
+            // For block-level components, we need to handle multiple types of nested content
+            // If we have multiple tokens, we need to flatten them into a single children array
+            if (nestedTokens.length > 0) {
+              children = [];
+              for (const token of nestedTokens) {
+                if (token.type === 'paragraph' && (token as any).tokens) {
+                  // Extract tokens from paragraph
+                  children.push(...(token as any).tokens);
+                } else if (token.type === 'component') {
+                  // Direct component token
+                  children.push(token);
+                } else {
+                  // Other token types
+                  children.push(token);
+                }
+              }
             } else {
               children = [];
             }
