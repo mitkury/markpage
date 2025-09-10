@@ -4,11 +4,13 @@ Svelte integration for Markpage with component support and markdown extensions.
 
 ## Features
 
-- **Component Registration**: Register Svelte components for use in markdown
+- **Component Registration**: Register Svelte components for use in markdown with the new `MarkpageOptions` API
+- **Nested Component Support**: Components can contain other components and full markdown content
 - **Markdown Extensions**: Add custom markdown syntax with components
-- **Built-in Overrides**: Override any built-in markdown token
+- **Built-in Overrides**: Override any built-in markdown token (paragraphs, headings, lists, etc.)
+- **Enhanced Marked Integration**: Automatic Marked instance management with extensions
 - **SSR Support**: Full server-side rendering support for SvelteKit
-- **Type Safety**: Full TypeScript support
+- **Type Safety**: Full TypeScript support with improved type definitions
 - **Automatic Parsing**: Extensions are automatically applied to markdown parsing
 
 ## Installation
@@ -42,19 +44,21 @@ This is **bold** text and this is *italic*.
 <Markdown {source} />
 ```
 
-### 2. Custom Components
+### 2. Custom Components with Nested Content
 
-Add custom Svelte components that can be used as tags in markdown:
+Add custom Svelte components that can be used as tags in markdown. Components now support full markdown content and can be nested:
 
 ```svelte
 <script lang="ts">
   import { Markdown, MarkpageOptions } from '@markpage/svelte';
   import Button from './Button.svelte';
   import Alert from './Alert.svelte';
+  import Card from './Card.svelte';
 
   const options = new MarkpageOptions()
     .addCustomComponent('Button', Button)
-    .addCustomComponent('Alert', Alert);
+    .addCustomComponent('Alert', Alert)
+    .addCustomComponent('Card', Card);
 
   const source = `
 # Custom Components
@@ -63,7 +67,19 @@ Add custom Svelte components that can be used as tags in markdown:
 
 <Alert variant="warning" title="Important">
   This is a warning message with **markdown** inside!
+  
+  - List items work
+  - **Bold text** works
+  - [Links](https://example.com) work too
 </Alert>
+
+<Card title="Nested Components" subtitle="Components can contain other components">
+  <Alert variant="info">
+    This alert is **inside** a card component!
+  </Alert>
+  
+  <Button variant="secondary">Button in card</Button>
+</Card>
   `;
 </script>
 
@@ -227,7 +243,7 @@ $$
 
 ### MarkpageOptions
 
-The main configuration class for all markdown customization:
+The main configuration class for all markdown customization. This class provides a fluent interface for setting up component registration, token overrides, and markdown extensions:
 
 ```typescript
 const options = new MarkpageOptions()
@@ -240,11 +256,18 @@ const options = new MarkpageOptions()
 
 ### Methods
 
-- **`addCustomComponent(name, component)`**: Register a custom component for use as a tag in markdown
-- **`overrideBuiltinToken(name, component)`**: Override a built-in markdown token with a custom component
-- **`extendMarkdown(extensions)`**: Register markdown extensions with their associated components
-- **`useMarkedInstance(instance)`**: Use a specific Marked instance for parsing
-- **`useMarkedFactory(factory)`**: Use a factory function to create Marked instances
+- **`addCustomComponent(name, component)`**: Register a custom component for use as a tag in markdown. Components can contain nested markdown content and other components.
+- **`overrideBuiltinToken(name, component)`**: Override a built-in markdown token with a custom component (e.g., `paragraph`, `heading`, `list`, etc.)
+- **`extendMarkdown(extensions)`**: Register markdown extensions with their associated components. Extensions can add completely new markdown syntax.
+- **`useMarkedInstance(instance)`**: Use a specific Marked instance for parsing. Useful for advanced customization.
+- **`useMarkedFactory(factory)`**: Use a factory function to create Marked instances. Allows for dynamic instance creation.
+
+### Internal Methods
+
+- **`getComponents()`**: Get the Map of registered custom components
+- **`getExtensionComponents()`**: Get the Map of extension and override components
+- **`getMarked()`**: Get the configured Marked instance (creates default with extensions if none set)
+- **`getExtensions()`**: Get all registered markdown extensions
 
 ### Built-in Tokens You Can Override
 
@@ -276,6 +299,42 @@ interface MarkdownExtension {
 ```
 
 ## Advanced Usage
+
+### Nested Component Support
+
+The new API provides enhanced support for nested components. Components can contain other components and full markdown content:
+
+```svelte
+<script lang="ts">
+  import { Markdown, MarkpageOptions } from '@markpage/svelte';
+  import Card from './Card.svelte';
+  import Alert from './Alert.svelte';
+  import Button from './Button.svelte';
+
+  const options = new MarkpageOptions()
+    .addCustomComponent('Card', Card)
+    .addCustomComponent('Alert', Alert)
+    .addCustomComponent('Button', Button);
+
+  const source = `
+<Card title="Complex Nested Example">
+  <Alert variant="info">
+    This alert contains:
+    
+    - **Bold text**
+    - *Italic text*
+    - [A link](https://example.com)
+    
+    And even another component:
+    
+    <Button variant="primary">Nested Button</Button>
+  </Alert>
+</Card>
+  `;
+</script>
+
+<Markdown {source} {options} />
+```
 
 ### Manual Marked Instance
 

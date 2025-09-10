@@ -151,6 +151,18 @@ Components are registered upfront and can receive props like `variant`, `size`, 
 <Markdown source={markdown} {options} />
 ```
 
+### Key Features of the New API
+
+The `MarkpageOptions` class provides a fluent interface for configuring markdown rendering:
+
+- **`addCustomComponent(name, component)`**: Register custom components for use as tags in markdown
+- **`overrideBuiltinToken(name, component)`**: Override built-in markdown tokens (like `paragraph`, `heading`, etc.)
+- **`extendMarkdown(extensions)`**: Add completely new markdown syntax with custom components
+- **`useMarkedInstance(instance)`**: Use a specific Marked instance for advanced customization
+- **`useMarkedFactory(factory)`**: Use a factory function to create Marked instances
+
+This new API provides better type safety, more flexibility, and improved support for nested components and markdown extensions.
+
 ## CLI Usage
 
 ### Build for App/Website
