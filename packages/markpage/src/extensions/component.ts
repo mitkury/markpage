@@ -146,17 +146,8 @@ export function createInlineComponentExtension(markedInstance?: Marked): Tokeniz
         const innerStart = openRaw.length;
         const endIndex = findMatchingClose(src, name, innerStart);
         if (endIndex > -1) {
-          // For block-level components, we need to consume the entire line including trailing newlines
-          // Find the end of the line after the component
-          let lineEnd = endIndex;
-          while (lineEnd < src.length && src[lineEnd] !== '\n') {
-            lineEnd++;
-          }
-          // Include the newline if it exists
-          if (lineEnd < src.length && src[lineEnd] === '\n') {
-            lineEnd++;
-          }
-          const raw = src.slice(0, lineEnd);
+          // For inline components, only consume up to the closing tag
+          const raw = src.slice(0, endIndex + (`</${name}>`.length));
           
           const inner = src.slice(innerStart, endIndex - (`</${name}>`.length));
           
