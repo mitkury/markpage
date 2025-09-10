@@ -52,7 +52,7 @@ function findMatchingClose(src: string, name: string, startIndex: number): numbe
 }
 
 // Create a function that returns the extension with access to the Marked instance
-export function createComponentExtension(markedInstance?: Marked): TokenizerAndRendererExtension {
+export function createComponentExtension(markedInstance?: Marked, depth = 0): TokenizerAndRendererExtension {
   return {
     name: 'component',
     level: 'block',
@@ -88,10 +88,19 @@ export function createComponentExtension(markedInstance?: Marked): TokenizerAndR
           let children: any[];
           if (inner.trim()) {
             try {
-              // Create a fresh Marked instance for nested parsing to avoid corrupting the main parser state
-              // This prevents interference with the main parsing process
-              const nestedMarked = new Marked();
-              const nestedTokens = nestedMarked.lexer(inner);
+              // For nested parsing, create a fresh Marked instance with component extensions
+              // but use a different instance to prevent recursion and parser state corruption
+              let nestedTokens: any[];
+              if (depth < 10) { // Prevent infinite recursion with reasonable depth limit
+                const nestedMarked = new Marked();
+                const nestedBlockExt = createComponentExtension(nestedMarked, depth + 1);
+                const nestedInlineExt = createInlineComponentExtension(nestedMarked, depth + 1);
+                nestedMarked.use({ extensions: [nestedBlockExt as any, nestedInlineExt as any] as any } as any);
+                nestedTokens = nestedMarked.lexer(inner);
+              } else {
+                // Fallback to simple text token if depth limit reached
+                nestedTokens = [{ type: 'text', raw: inner, text: inner.trim() }];
+              }
               
               // Flatten nested tokens into children array
               children = nestedTokens.flatMap((token: any) => {
@@ -121,7 +130,7 @@ export function createComponentExtension(markedInstance?: Marked): TokenizerAndR
 }
 
 // Create an inline component extension for components within inline text
-export function createInlineComponentExtension(markedInstance?: Marked): TokenizerAndRendererExtension {
+export function createInlineComponentExtension(markedInstance?: Marked, depth = 0): TokenizerAndRendererExtension {
   return {
     name: 'inline-component',
     level: 'inline',
@@ -155,10 +164,19 @@ export function createInlineComponentExtension(markedInstance?: Marked): Tokeniz
           let children: any[];
           if (inner.trim()) {
             try {
-              // Create a fresh Marked instance for nested parsing to avoid corrupting the main parser state
-              // This prevents interference with the main parsing process
-              const nestedMarked = new Marked();
-              const nestedTokens = nestedMarked.lexer(inner);
+              // For nested parsing, create a fresh Marked instance with component extensions
+              // but use a different instance to prevent recursion and parser state corruption
+              let nestedTokens: any[];
+              if (depth < 10) { // Prevent infinite recursion with reasonable depth limit
+                const nestedMarked = new Marked();
+                const nestedBlockExt = createComponentExtension(nestedMarked, depth + 1);
+                const nestedInlineExt = createInlineComponentExtension(nestedMarked, depth + 1);
+                nestedMarked.use({ extensions: [nestedBlockExt as any, nestedInlineExt as any] as any } as any);
+                nestedTokens = nestedMarked.lexer(inner);
+              } else {
+                // Fallback to simple text token if depth limit reached
+                nestedTokens = [{ type: 'text', raw: inner, text: inner.trim() }];
+              }
               
               // Flatten nested tokens into children array
               children = nestedTokens.flatMap((token: any) => {

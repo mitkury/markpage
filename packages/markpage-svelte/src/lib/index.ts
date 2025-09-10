@@ -37,8 +37,8 @@ export {
 export function newMarked() {
   const md = new Marked();
   // Create both block and inline component extensions with access to the Marked instance
-  const blockExt = createComponentExtension(md);
-  const inlineExt = createInlineComponentExtension(md);
+  const blockExt = createComponentExtension(md, 0);
+  const inlineExt = createInlineComponentExtension(md, 0);
   md.use({ extensions: [blockExt as any, inlineExt as any] as any } as any);
   return md;
 }
