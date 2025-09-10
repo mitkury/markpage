@@ -1,11 +1,11 @@
 import { sveltekit } from '@sveltejs/kit/vite';
-import { defineConfig } from 'vite';
+import { defineConfig, type Plugin } from 'vite';
 import type { ViteDevServer } from 'vite';
 import { watch } from 'chokidar';
 import path from 'path';
 
 // Vite plugin to build content on server start and watch for changes
-const buildContentPlugin = () => {
+const buildContentPlugin = (): Plugin => {
   let isBuilding = false;
   
   const buildContent = async () => {

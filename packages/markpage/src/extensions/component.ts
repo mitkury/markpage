@@ -52,7 +52,7 @@ function findMatchingClose(src: string, name: string, startIndex: number): numbe
 }
 
 // Create a function that returns the extension with access to the Marked instance
-export function createComponentExtension(markedInstance?: Marked): TokenizerAndRendererExtension {
+export function createComponentExtension(markedInstance?: Marked, depth = 0): TokenizerAndRendererExtension {
   return {
     name: 'component',
     level: 'block',
@@ -78,17 +78,9 @@ export function createComponentExtension(markedInstance?: Marked): TokenizerAndR
         const innerStart = openRaw.length;
         const endIndex = findMatchingClose(src, name, innerStart);
         if (endIndex > -1) {
-          // For block-level components, we need to consume the entire line including trailing newlines
-          // Find the end of the line after the component
-          let lineEnd = endIndex;
-          while (lineEnd < src.length && src[lineEnd] !== '\n') {
-            lineEnd++;
-          }
-          // Include the newline if it exists
-          if (lineEnd < src.length && src[lineEnd] === '\n') {
-            lineEnd++;
-          }
-          const raw = src.slice(0, lineEnd);
+          // For block-level components, consume only up to the closing tag
+          // Don't consume extra newlines that might interfere with subsequent parsing
+          const raw = src.slice(0, endIndex);
           
           const inner = src.slice(innerStart, endIndex - (`</${name}>`.length));
           
@@ -96,13 +88,19 @@ export function createComponentExtension(markedInstance?: Marked): TokenizerAndR
           let children: any[];
           if (inner.trim()) {
             try {
-              // Use a simple approach: create a new Marked instance with basic extensions only
-              const { Marked } = require('marked');
-              const nestedMarked = new Marked();
-              
-              // Only use basic markdown extensions, no custom component extensions
-              // This prevents recursion and parser state corruption
-              const nestedTokens = nestedMarked.lexer(inner);
+              // For nested parsing, create a fresh Marked instance with component extensions
+              // but use a different instance to prevent recursion and parser state corruption
+              let nestedTokens: any[];
+              if (depth < 10) { // Prevent infinite recursion with reasonable depth limit
+                const nestedMarked = new Marked();
+                const nestedBlockExt = createComponentExtension(nestedMarked, depth + 1);
+                const nestedInlineExt = createInlineComponentExtension(nestedMarked, depth + 1);
+                nestedMarked.use({ extensions: [nestedBlockExt as any, nestedInlineExt as any] as any } as any);
+                nestedTokens = nestedMarked.lexer(inner);
+              } else {
+                // Fallback to simple text token if depth limit reached
+                nestedTokens = [{ type: 'text', raw: inner, text: inner.trim() }];
+              }
               
               // Flatten nested tokens into children array
               children = nestedTokens.flatMap((token: any) => {
@@ -113,6 +111,7 @@ export function createComponentExtension(markedInstance?: Marked): TokenizerAndR
               });
             } catch (error) {
               // Fallback to simple text token if parsing fails
+              console.error('Component extension parsing error:', error);
               children = [{ type: 'text', raw: inner, text: inner.trim() }];
             }
           } else {
@@ -131,7 +130,7 @@ export function createComponentExtension(markedInstance?: Marked): TokenizerAndR
 }
 
 // Create an inline component extension for components within inline text
-export function createInlineComponentExtension(markedInstance?: Marked): TokenizerAndRendererExtension {
+export function createInlineComponentExtension(markedInstance?: Marked, depth = 0): TokenizerAndRendererExtension {
   return {
     name: 'inline-component',
     level: 'inline',
@@ -157,7 +156,7 @@ export function createInlineComponentExtension(markedInstance?: Marked): Tokeniz
         const endIndex = findMatchingClose(src, name, innerStart);
         if (endIndex > -1) {
           // For inline components, only consume up to the closing tag
-          const raw = src.slice(0, endIndex + (`</${name}>`.length));
+          const raw = src.slice(0, endIndex);
           
           const inner = src.slice(innerStart, endIndex - (`</${name}>`.length));
           
@@ -165,13 +164,19 @@ export function createInlineComponentExtension(markedInstance?: Marked): Tokeniz
           let children: any[];
           if (inner.trim()) {
             try {
-              // Use a simple approach: create a new Marked instance with basic extensions only
-              const { Marked } = require('marked');
-              const nestedMarked = new Marked();
-              
-              // Only use basic markdown extensions, no custom component extensions
-              // This prevents recursion and parser state corruption
-              const nestedTokens = nestedMarked.lexer(inner);
+              // For nested parsing, create a fresh Marked instance with component extensions
+              // but use a different instance to prevent recursion and parser state corruption
+              let nestedTokens: any[];
+              if (depth < 10) { // Prevent infinite recursion with reasonable depth limit
+                const nestedMarked = new Marked();
+                const nestedBlockExt = createComponentExtension(nestedMarked, depth + 1);
+                const nestedInlineExt = createInlineComponentExtension(nestedMarked, depth + 1);
+                nestedMarked.use({ extensions: [nestedBlockExt as any, nestedInlineExt as any] as any } as any);
+                nestedTokens = nestedMarked.lexer(inner);
+              } else {
+                // Fallback to simple text token if depth limit reached
+                nestedTokens = [{ type: 'text', raw: inner, text: inner.trim() }];
+              }
               
               // Flatten nested tokens into children array
               children = nestedTokens.flatMap((token: any) => {
@@ -182,6 +187,7 @@ export function createInlineComponentExtension(markedInstance?: Marked): Tokeniz
               });
             } catch (error) {
               // Fallback to simple text token if parsing fails
+              console.error('Component extension parsing error:', error);
               children = [{ type: 'text', raw: inner, text: inner.trim() }];
             }
           } else {
