@@ -78,17 +78,9 @@ export function createComponentExtension(markedInstance?: Marked): TokenizerAndR
         const innerStart = openRaw.length;
         const endIndex = findMatchingClose(src, name, innerStart);
         if (endIndex > -1) {
-          // For block-level components, we need to consume the entire line including trailing newlines
-          // Find the end of the line after the component
-          let lineEnd = endIndex;
-          while (lineEnd < src.length && src[lineEnd] !== '\n') {
-            lineEnd++;
-          }
-          // Include the newline if it exists
-          if (lineEnd < src.length && src[lineEnd] === '\n') {
-            lineEnd++;
-          }
-          const raw = src.slice(0, lineEnd);
+          // For block-level components, consume only up to the closing tag
+          // Don't consume extra newlines that might interfere with subsequent parsing
+          const raw = src.slice(0, endIndex);
           
           const inner = src.slice(innerStart, endIndex - (`</${name}>`.length));
           
@@ -96,10 +88,10 @@ export function createComponentExtension(markedInstance?: Marked): TokenizerAndR
           let children: any[];
           if (inner.trim()) {
             try {
-              // Use a simple approach: create a new Marked instance with basic extensions only
-              // Use the existing Marked instance but parse without custom extensions
-              // This prevents recursion while still parsing markdown correctly
-              const nestedTokens = markedInstance?.lexer(inner) || [];
+              // Create a fresh Marked instance for nested parsing to avoid corrupting the main parser state
+              // This prevents interference with the main parsing process
+              const nestedMarked = new Marked();
+              const nestedTokens = nestedMarked.lexer(inner);
               
               // Flatten nested tokens into children array
               children = nestedTokens.flatMap((token: any) => {
@@ -155,7 +147,7 @@ export function createInlineComponentExtension(markedInstance?: Marked): Tokeniz
         const endIndex = findMatchingClose(src, name, innerStart);
         if (endIndex > -1) {
           // For inline components, only consume up to the closing tag
-          const raw = src.slice(0, endIndex + (`</${name}>`.length));
+          const raw = src.slice(0, endIndex);
           
           const inner = src.slice(innerStart, endIndex - (`</${name}>`.length));
           
@@ -163,10 +155,10 @@ export function createInlineComponentExtension(markedInstance?: Marked): Tokeniz
           let children: any[];
           if (inner.trim()) {
             try {
-              // Use a simple approach: create a new Marked instance with basic extensions only
-              // Use the existing Marked instance but parse without custom extensions
-              // This prevents recursion while still parsing markdown correctly
-              const nestedTokens = markedInstance?.lexer(inner) || [];
+              // Create a fresh Marked instance for nested parsing to avoid corrupting the main parser state
+              // This prevents interference with the main parsing process
+              const nestedMarked = new Marked();
+              const nestedTokens = nestedMarked.lexer(inner);
               
               // Flatten nested tokens into children array
               children = nestedTokens.flatMap((token: any) => {
