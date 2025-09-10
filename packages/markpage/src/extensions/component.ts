@@ -111,6 +111,10 @@ export function createComponentExtension(markedInstance?: Marked): TokenizerAndR
             children = lexer.inlineTokens(inner);
           }
           return { type: 'component', raw, name, props: parseProps(attrs), children } as any;
+        } else {
+          // No matching close tag found - treat as self-closing component
+          const raw = openRaw;
+          return { type: 'component', raw, name, props: parseProps(attrs) } as any;
         }
       }
     },
@@ -177,6 +181,10 @@ export function createInlineComponentExtension(markedInstance?: Marked): Tokeniz
             children = lexer.inlineTokens(inner);
           }
           return { type: 'component', raw, name, props: parseProps(attrs), children } as any;
+        } else {
+          // No matching close tag found - treat as self-closing component
+          const raw = openRaw;
+          return { type: 'component', raw, name, props: parseProps(attrs) } as any;
         }
       }
     },
