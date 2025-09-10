@@ -1,8 +1,24 @@
 <script lang="ts">
-  import type { Snippet } from "svelte";
-  let { children } = $props<{ children: Snippet }>();
+  import MarkdownTokens from "../MarkdownTokens.svelte";
+  import type { ComponentName } from "../types";
+  
+  let { 
+    token, 
+    components = new Map<ComponentName, any>(), 
+    extensionComponents = new Map<string, any>(), 
+    unknownToken 
+  }: { 
+    token: any; 
+    components?: Map<ComponentName, any>; 
+    extensionComponents?: Map<string, any>; 
+    unknownToken?: ((token: any) => any) | undefined 
+  } = $props();
 </script>
 
 <strong>
-  {@render children()}
+  {#if token?.tokens && token.tokens.length > 0}
+    <MarkdownTokens tokens={token.tokens} {components} {extensionComponents} {unknownToken} />
+  {:else}
+    {token?.text ?? token?.raw ?? ''}
+  {/if}
 </strong>
