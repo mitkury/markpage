@@ -30,7 +30,7 @@ await buildPages('./my-content', {
 
 ## Component System (via @markpage/svelte)
 
-Component embedding is provided by the separate `@markpage/svelte` package (React version is not available yet — contributions welcome). It lets you embed interactive Svelte components directly in markdown files, similar to MDX but simpler:
+Component embedding is provided by the separate `@markpage/svelte` package. It lets you embed interactive Svelte components directly in markdown files:
 
 ```markdown
 # My Documentation
@@ -45,33 +45,37 @@ Components are registered and rendered with the `Markdown` component:
 
 ```svelte
 <script>
-  import { Markdown } from '@markpage/svelte';
+  import { Markdown, MarkpageOptions } from '@markpage/svelte';
   import TestButton from './TestButton.svelte';
 
-  const components = new Map([
-    ['TestButton', TestButton]
-  ]);
+  const options = new MarkpageOptions()
+    .addCustomComponent('TestButton', TestButton);
 </script>
 
 <Markdown 
   source={markdownContent}
-  components={components}
+  {options}
 />
 ```
 
 ### Framework Integrations
 
-- Svelte: `@markpage/svelte` is available on npm.
+- **Svelte**: `@markpage/svelte` is available on npm.
 
 ```bash
 npm install @markpage/svelte
 ```
 
-- React: not available yet — feel free to contribute an official `@markpage/react` integration (PRs welcome).
+- **React**: not available yet — feel free to contribute an official `@markpage/react` integration (PRs welcome).
 
 ## Getting Started
 
 For detailed step-by-step instructions, see the [Getting Started Guide](docs/getting-started.md).
+
+## Advanced Features
+
+- **[Custom Components](docs/custom-components.md)** - Create and use custom Svelte components in markdown
+- **[Token Overrides](docs/token-overrides.md)** - Override built-in markdown tokens and create extensions
 
 ## CLI Usage
 

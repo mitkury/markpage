@@ -509,24 +509,57 @@ const contentWithToc = addTableOfContents(content, toc);
 ```
 
 ### Custom Content Processing
-### Svelte Markdown: custom and overridden token components
+### Svelte Markdown: Custom Components and Extensions
 
-Render markdown in Svelte with custom token components using the `MarkpageOptions` API:
+Render markdown in Svelte with custom components and extensions using the new `MarkpageOptions` API:
+
+#### Custom Components with Nested Content
 
 ```svelte
 <script lang="ts">
-  import { Markdown, Marked, MarkpageOptions } from '@markpage/svelte';
+  import { Markdown, MarkpageOptions } from '@markpage/svelte';
+  import Button from '$lib/components/Button.svelte';
+  import Alert from '$lib/components/Alert.svelte';
+  import Card from '$lib/components/Card.svelte';
+
+  const options = new MarkpageOptions()
+    .addCustomComponent('Button', Button)
+    .addCustomComponent('Alert', Alert)
+    .addCustomComponent('Card', Card);
+
+  const source = `
+<Card title="Nested Components Example">
+  <Alert variant="info">
+    This alert contains **markdown** content and other components:
+    
+    <Button variant="primary">Nested Button</Button>
+  </Alert>
+</Card>
+  `;
+</script>
+
+<Markdown {source} {options} />
+```
+
+#### Markdown Extensions (LaTeX Math)
+
+```svelte
+<script lang="ts">
+  import { Markdown, MarkpageOptions } from '@markpage/svelte';
   import MathInline from '$lib/components/MathInline.svelte';
   import MathBlock from '$lib/components/MathBlock.svelte';
 
-  function mathExtensionWithComponents() {
+  function mathExtension() {
     return {
       extensions: [
         {
           name: 'math_block',
           level: 'block' as const,
           component: MathBlock,
-          start: (s: string) => s.indexOf('$$') ?? undefined,
+          start: (src: string) => {
+            const i = src.indexOf('$$');
+            return i < 0 ? undefined : i;
+          },
           tokenizer(src: string) {
             if (!src.startsWith('$$')) return;
             const end = src.indexOf('$$', 2);
@@ -540,9 +573,12 @@ Render markdown in Svelte with custom token components using the `MarkpageOption
           name: 'math_inline',
           level: 'inline' as const,
           component: MathInline,
-          start: (s: string) => s.indexOf('$') ?? undefined,
+          start: (src: string) => {
+            const i = src.indexOf('$');
+            return i < 0 ? undefined : i;
+          },
           tokenizer(src: string) {
-            if (src.startsWith('$$')) return;
+            if (src.startsWith('$$')) return; // let block handle
             if (!src.startsWith('$')) return;
             const end = src.indexOf('$', 1);
             if (end === -1) return;
@@ -555,30 +591,52 @@ Render markdown in Svelte with custom token components using the `MarkpageOption
     };
   }
 
-  const markedInstance = new Marked();
-  markedInstance.use(mathExtensionWithComponents());
-
   const options = new MarkpageOptions()
-    .extendMarkdown(mathExtensionWithComponents())
-    .useMarkedInstance(markedInstance);
+    .extendMarkdown(mathExtension());
 
-  const source = 'Here is inline $a+b=c$ and a block:\n\n$$\nE=mc^2\n$$';
+  const source = 'Here is inline $E = mc^2$ and a block:\n\n$$\n\\int_{-\\infty}^{\\infty} e^{-x^2} dx = \\sqrt{\\pi}\n$$';
 </script>
 
 <Markdown {source} {options} />
 ```
 
-Override a built-in token (e.g., `codespan`):
+#### Override Built-in Tokens
 
 ```svelte
 <script lang="ts">
   import { Markdown, MarkpageOptions } from '@markpage/svelte';
-  import OverrideCodeSpan from '$lib/components/OverrideCodeSpan.svelte';
+  import CustomCodeSpan from '$lib/components/CustomCodeSpan.svelte';
+  import CustomHeading from '$lib/components/CustomHeading.svelte';
 
   const options = new MarkpageOptions()
-    .overrideBuiltinToken('codespan', OverrideCodeSpan);
+    .overrideBuiltinToken('codespan', CustomCodeSpan)
+    .overrideBuiltinToken('heading', CustomHeading);
 
-  const source = 'Inline `code` here';
+  const source = `
+# Custom Heading
+
+Here is \`inline code\` with custom styling!
+  `;
+</script>
+
+<Markdown {source} {options} />
+```
+
+#### Advanced: Manual Marked Instance
+
+```svelte
+<script lang="ts">
+  import { Markdown, MarkpageOptions, Marked } from '@markpage/svelte';
+
+  const markedInstance = new Marked();
+  // Add custom Marked configuration
+  markedInstance.setOptions({ breaks: true });
+
+  const options = new MarkpageOptions()
+    .addCustomComponent('Button', Button)
+    .useMarkedInstance(markedInstance);
+
+  const source = 'Line breaks are now preserved\n\n<Button>Custom Button</Button>';
 </script>
 
 <Markdown {source} {options} />

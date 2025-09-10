@@ -45,17 +45,16 @@ Components are registered and rendered with the `Markdown` component:
 
 ```svelte
 <script>
-  import { Markdown } from '@markpage/svelte';
+  import { Markdown, MarkpageOptions } from '@markpage/svelte';
   import TestButton from './TestButton.svelte';
 
-  const components = new Map([
-    ['TestButton', TestButton]
-  ]);
+  const options = new MarkpageOptions()
+    .addCustomComponent('TestButton', TestButton);
 </script>
 
 <Markdown 
   source={markdownContent}
-  components={components}
+  {options}
 />
 ```
 

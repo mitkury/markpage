@@ -520,29 +520,34 @@ function validatePlugin(plugin: unknown): Plugin {
 
 ### MarkpageOptions
 
-Configuration class for the Markdown component in `@markpage/svelte`.
+Configuration class for the Markdown component in `@markpage/svelte`. This class provides a fluent interface for setting up component registration, token overrides, and markdown extensions.
 
 ```typescript
 class MarkpageOptions {
   addCustomComponent(name: string, component: Component): this;
+  overrideBuiltinToken(name: string, component: Component): this;
   extendMarkdown(extensions: MarkdownExtensionSet | MarkdownExtensionSet[]): this;
   useMarkedInstance(instance: Marked): this;
   useMarkedFactory(factory: () => Marked): this;
   getComponents(): Map<string, Component>;
   getExtensionComponents(): Map<string, Component>;
   getMarked(): Marked;
+  getExtensions(): MarkdownExtensionSet[];
 }
 ```
 
-**Methods:**
-- `addCustomComponent(name, component)`: Register a custom component for use as a tag in markdown
-- `extendMarkdown(extensions)`: Register markdown extensions with their associated components
-- `overrideBuiltinToken(name, component)`: Override a built-in markdown token with a custom component
-- `useMarkedInstance(instance)`: Use a specific Marked instance for parsing
-- `useMarkedFactory(factory)`: Use a factory function to create Marked instances
-- `getComponents()`: Get the map of registered custom components
-- `getExtensionComponents()`: Get the map of registered extension components
-- `getMarked()`: Get the configured Marked instance
+**Public Methods:**
+- `addCustomComponent(name, component)`: Register a custom component for use as a tag in markdown. Components can contain nested markdown content and other components.
+- `overrideBuiltinToken(name, component)`: Override a built-in markdown token with a custom component (e.g., `paragraph`, `heading`, `list`, etc.)
+- `extendMarkdown(extensions)`: Register markdown extensions with their associated components. Extensions can add completely new markdown syntax.
+- `useMarkedInstance(instance)`: Use a specific Marked instance for parsing. Useful for advanced customization.
+- `useMarkedFactory(factory)`: Use a factory function to create Marked instances. Allows for dynamic instance creation.
+
+**Internal Methods:**
+- `getComponents()`: Get the Map of registered custom components
+- `getExtensionComponents()`: Get the Map of extension and override components
+- `getMarked()`: Get the configured Marked instance (creates default with extensions if none set)
+- `getExtensions()`: Get all registered markdown extensions
 
 ### MarkdownExtension
 
