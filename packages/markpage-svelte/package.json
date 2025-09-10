@@ -1,6 +1,6 @@
 {
   "name": "@markpage/svelte",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Svelte integration for Markpage with component support",
   "type": "module",
   "exports": {
@@ -58,6 +58,6 @@
     "url": "https://github.com/mitkury/markpage"
   },
   "dependencies": {
-    "markpage": "file:../markpage"
+    "markpage": "^0.4.1"
   }
 }
