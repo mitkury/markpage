@@ -16,7 +16,6 @@ describe('Debug Nested Components', () => {
       options
     });
 
-    console.log('Simple Button Container HTML:', container.innerHTML);
     
     const buttons = container.querySelectorAll('button');
     expect(buttons).toHaveLength(1);
@@ -34,7 +33,6 @@ describe('Debug Nested Components', () => {
       options
     });
 
-    console.log('List Button Container HTML:', container.innerHTML);
     
     const buttons = container.querySelectorAll('button');
     expect(buttons).toHaveLength(1);
@@ -53,7 +51,6 @@ describe('Debug Nested Components', () => {
       options
     });
 
-    console.log('Nested Button Container HTML:', container.innerHTML);
     
     const buttons = container.querySelectorAll('button');
     expect(buttons).toHaveLength(1);

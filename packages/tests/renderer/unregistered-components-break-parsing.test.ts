@@ -35,7 +35,6 @@ This content should still be rendered correctly.
       source: markdown
     });
 
-    console.log('Unregistered components test HTML:', container.innerHTML);
 
     // Check that content before components is rendered
     const beforeSection = container.querySelector('h2');
