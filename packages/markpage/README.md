@@ -85,6 +85,15 @@ For detailed step-by-step instructions, see the [Getting Started Guide](docs/get
 npx markpage build ./my-docs --output ./src/lib/content
 ```
 
+### Optional: Check Internal Links During Build
+
+```bash
+npx markpage build ./my-docs --output ./src/lib/content \
+  --check-links \
+  --warn-unindexed-links \
+  --fail-on-broken-links
+```
+
 
 ## Use Cases
 
