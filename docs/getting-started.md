@@ -40,7 +40,12 @@ import { buildPages } from 'markpage/builder';
 
 await buildPages('./my-docs', {
   appOutput: './src/lib/content',
-  includeContent: true
+  includeContent: true,
+  // Optional: warn/fail on broken internal markdown links (local files)
+  linkCheck: {
+    warnOnUnindexed: true,
+    failOnBroken: true
+  }
 });
 ```
 
@@ -153,6 +158,15 @@ Create `.index.json` files to define custom navigation order:
 
 ```bash
 npx markpage build ./my-docs --output ./src/lib/content
+```
+
+### Build with Link Checking (Optional)
+
+```bash
+npx markpage build ./my-docs --output ./src/lib/content \
+  --check-links \
+  --warn-unindexed-links \
+  --fail-on-broken-links
 ```
 
 ## What's Next?
