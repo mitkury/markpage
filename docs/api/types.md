@@ -65,9 +65,13 @@ interface BuildOptions {
   websiteOutput?: string;
   staticOutput?: string;
   includeContent?: boolean;
-  processor?: ContentProcessor;
-  plugins?: Plugin[];
-  hooks?: BuildHooks;
+  autoDiscover?: boolean;
+  linkCheck?:
+    | boolean
+    | {
+        warnOnUnindexed?: boolean;
+        failOnBroken?: boolean;
+      };
 }
 ```
 
@@ -76,9 +80,8 @@ interface BuildOptions {
 - `websiteOutput` (string, optional): Directory for website-specific output files
 - `staticOutput` (string, optional): Directory for static site output
 - `includeContent` (boolean, optional): Whether to include content in output bundles
-- `processor` (ContentProcessor, optional): Custom content processor
-- `plugins` (Plugin[], optional): Array of plugins to apply
-- `hooks` (BuildHooks, optional): Build lifecycle hooks
+- `autoDiscover` (boolean, optional): Enable auto-discovery when `.index.json` is missing
+- `linkCheck` (boolean | object, optional): Check internal markdown links (local files) during build
 
 ### StaticSiteOptions
 
@@ -113,10 +116,18 @@ Result object returned by `buildPages`.
 
 ```typescript
 interface BuildResult {
-  navigation: NavigationData;
-  content?: ContentBundle;
-  files: string[];
-  stats: BuildStats;
+  navigation: NavigationItem[];
+  content?: Record<string, string>;
+  pages?: Array<{
+    path: string;
+    content: string;
+    html: string;
+  }>;
+  linkCheck?: {
+    filesChecked: number;
+    issues: Array<{ file: string; target: string; reason: 'missing file' | 'unsupported protocol' }>;
+    warnings: Array<{ file: string; target: string; resolvedFile: string; reason: 'not in navigation' }>;
+  };
 }
 ```
 

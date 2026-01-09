@@ -3,6 +3,7 @@ import { join, dirname } from 'path';
 import { marked } from 'marked';
 import { buildNavigationTree, validateContentStructure } from './parser.js';
 import { BuildOptions, BuildResult, NavigationItem, ContentProcessor } from '../types.js';
+import { checkMarkdownLinksForNavigation } from './link-check.js';
 
 export class BuilderError extends Error {
   constructor(message: string, public filePath?: string) {
@@ -31,6 +32,24 @@ export async function buildPages(
     if (options.includeContent !== false) {
       content = bundleMarkdownContent(navigation, contentPath);
     }
+
+    // Optional link checking (warnings-only unless failOnBroken is set)
+    let linkCheck: BuildResult['linkCheck'] | undefined;
+    const linkCheckOptRaw = options.linkCheck;
+    const linkCheckEnabled = !!linkCheckOptRaw;
+    const linkCheckOpt = typeof linkCheckOptRaw === 'object' && linkCheckOptRaw ? linkCheckOptRaw : {};
+
+    if (linkCheckEnabled) {
+      linkCheck = checkMarkdownLinksForNavigation(contentPath, navigation, {
+        warnOnUnindexed: linkCheckOpt.warnOnUnindexed,
+      });
+      if (linkCheckOpt.failOnBroken && linkCheck.issues.length > 0) {
+        throw new BuilderError(
+          `Link check failed: ${linkCheck.issues.length} issue(s) found`,
+          contentPath
+        );
+      }
+    }
     
     // Write outputs
     if (options.appOutput) {
@@ -43,7 +62,8 @@ export async function buildPages(
     
     return {
       navigation,
-      content: content || undefined
+      content: content || undefined,
+      linkCheck
     };
   } catch (error) {
     if (error instanceof BuilderError) {

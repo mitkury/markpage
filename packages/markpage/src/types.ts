@@ -54,6 +54,13 @@ export interface BuildOptions {
   staticOutput?: string;
   includeContent?: boolean;
   autoDiscover?: boolean; // Enable auto-discovery when .index.json is missing
+  /**
+   * Optional link checking during build (off by default).
+   *
+   * - `true` enables checks with defaults (warnings only)
+   * - object form lets you tune behavior
+   */
+  linkCheck?: boolean | LinkCheckBuildOptions;
 }
 
 export interface BuildResult {
@@ -64,9 +71,46 @@ export interface BuildResult {
     content: string;
     html: string;
   }> | undefined;
+  linkCheck?: LinkCheckResult | undefined;
 }
 
 // Content processing types
 export interface ContentProcessor {
   process(content: string): string;
+}
+
+// Link checking (builder-only feature, but result data is browser-safe)
+export type LinkIssueReason = 'missing file' | 'unsupported protocol';
+export type LinkWarningReason = 'not in navigation';
+
+export interface LinkIssue {
+  file: string; // absolute path to source markdown file
+  target: string;
+  reason: LinkIssueReason;
+}
+
+export interface LinkWarning {
+  file: string; // absolute path to source markdown file
+  target: string;
+  resolvedFile: string; // absolute resolved markdown file path
+  reason: LinkWarningReason;
+}
+
+export interface LinkCheckResult {
+  filesChecked: number;
+  issues: LinkIssue[];
+  warnings: LinkWarning[];
+}
+
+export interface LinkCheckBuildOptions {
+  /**
+   * Warn if a link resolves to a markdown file inside the docs root,
+   * but that file is not present in the generated navigation tree.
+   */
+  warnOnUnindexed?: boolean;
+  /**
+   * When true, `buildPages()` throws if any issues are found.
+   * When false/undefined, issues are reported in `BuildResult.linkCheck` only.
+   */
+  failOnBroken?: boolean;
 }

@@ -53,6 +53,24 @@ await buildPages('./docs', {
 });
 ```
 
+### `linkCheck` (optional)
+Check internal markdown links (local files) during build.
+
+```typescript
+await buildPages('./docs', {
+  appOutput: './src/lib/content',
+  includeContent: true,
+  linkCheck: {
+    warnOnUnindexed: true,
+    failOnBroken: true
+  }
+});
+```
+
+Notes:
+- Only checks **internal file links** (relative paths) and image targets.
+- Does **not** check external URLs, site-absolute routes (`/docs/...`), or `#anchor` links.
+
 ### `staticOutput`
 Directory for static site generation.
 
