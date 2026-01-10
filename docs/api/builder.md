@@ -21,7 +21,13 @@ import { buildPages } from 'markpage/builder';
 const result = await buildPages('./docs', {
   appOutput: './src/lib/content',
   websiteOutput: './src/lib/content',
-  includeContent: true
+  includeContent: true,
+  linkCheck: {
+    // Optional: check internal markdown links (local files) during build
+    // (does not check external links or `#anchors`)
+    failOnBroken: true,
+    warnOnUnindexed: true
+  }
 });
 ```
 
@@ -59,6 +65,13 @@ interface BuildOptions {
   websiteOutput?: string;
   staticOutput?: string;
   includeContent?: boolean;
+  autoDiscover?: boolean;
+  linkCheck?:
+    | boolean
+    | {
+        warnOnUnindexed?: boolean;
+        failOnBroken?: boolean;
+      };
 }
 ```
 
@@ -67,6 +80,17 @@ interface BuildOptions {
 - `websiteOutput` (string, optional): Directory for website-specific output files
 - `staticOutput` (string, optional): Directory for static site output
 - `includeContent` (boolean, optional): Whether to include content in output bundles (default: false)
+- `autoDiscover` (boolean, optional): Enable auto-discovery when `.index.json` is missing
+- `linkCheck` (boolean | object, optional): Enable internal link checking during build
+
+### Link Checking
+
+Markpage can optionally check **internal markdown links** during `buildPages()`:
+
+- **What it checks**: relative file links like `[x](./other.md)` (and images like `![alt](./img.png)`)
+- **What it ignores**: external links (`https://...`, `mailto:...`, etc.), site-absolute routes (`/docs/...`), and anchor-only links (`#...`)
+
+Use `linkCheck.failOnBroken` to make the build fail if broken links are found, and `linkCheck.warnOnUnindexed` to warn when a link points to an existing markdown file that is not present in the generated navigation tree.
 
 ### StaticSiteOptions
 
