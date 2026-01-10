@@ -1,6 +1,6 @@
 {
   "name": "@markpage/svelte",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Svelte integration for Markpage with component support",
   "type": "module",
   "exports": {
@@ -30,7 +30,7 @@
     "dev:local": "npm run link:local && npm run dev",
     "dev:published": "npm run unlink:local && npm run dev",
     "link:local": "npm link markpage",
-    "unlink:local": "npm unlink markpage && npm install markpage@^0.5.0"
+    "unlink:local": "npm unlink markpage && npm install markpage@^0.5.1"
   },
   "peerDependencies": {
     "svelte": "^5.38.6"
@@ -59,6 +59,6 @@
     "url": "https://github.com/mitkury/markpage"
   },
   "dependencies": {
-    "markpage": "^0.5.0"
+    "markpage": "^0.5.1"
   }
 }
