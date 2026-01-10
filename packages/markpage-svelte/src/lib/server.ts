@@ -27,5 +27,9 @@ export {
   componentExtension
 } from 'markpage';
 
+// Server-safe utilities from @markpage/svelte (no .svelte imports)
+export { MarkpageOptions } from './markdown/MarkpageOptions.js';
+export { newMarked } from './markdown/newMarked.js';
+
 
 

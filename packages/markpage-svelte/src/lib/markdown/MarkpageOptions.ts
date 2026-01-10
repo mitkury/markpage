@@ -1,6 +1,6 @@
 import type { Component } from 'svelte';
 import type { Marked } from 'marked';
-import { newMarked } from '../index.js';
+import { newMarked } from './newMarked.js';
 
 export interface MarkdownExtension {
   name: string;

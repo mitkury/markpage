@@ -1,4 +1,4 @@
-import * as markpage from 'markpage';
+export { newMarked } from './markdown/newMarked.js';
 
 // Svelte component exports
 export { default as Markdown } from './markdown/Markdown.svelte';
@@ -33,18 +33,7 @@ export {
   Lexer
 } from 'markpage';
 
-// Convenience: create a Marked instance with the component extension applied
-export function newMarked() {
-  // Important: use a namespace import so bundlers don't accidentally turn Marked
-  // into an uninitialized ESM stub (seen in some SvelteKit SSR/Vite bundles as
-  // `TypeError: Marked is not a constructor`).
-  const md = new markpage.Marked();
-  // Create both block and inline component extensions with access to the Marked instance
-  const blockExt = markpage.createComponentExtension(md);
-  const inlineExt = markpage.createInlineComponentExtension(md);
-  md.use({ extensions: [blockExt as any, inlineExt as any] as any } as any);
-  return md;
-}
+// newMarked is exported above from the server-safe module
 
 // Type exports specific to @markpage/svelte
 export type {

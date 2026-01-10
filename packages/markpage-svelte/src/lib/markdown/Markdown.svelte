@@ -14,16 +14,7 @@
   } = $props();
 
   let tokens = $derived.by(() => {
-    let md;
-    
-    if (options) {
-      // Use options to get Marked instance (this now creates a default instance with extensions)
-      md = options.getMarked();
-    } else {
-      // No options provided, use default instance
-      md = newMarked();
-    }
-    
+    const md = options ? options.getMarked() : newMarked();
     return md.lexer(source);
   });
 
