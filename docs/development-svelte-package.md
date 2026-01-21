@@ -74,7 +74,7 @@ The development scripts use `npm link` to create a symlink between the local `ma
 
 ### Package Dependencies
 
-- **Published version**: `"markpage": "^0.5.1"` (in dependencies)
+- **Published version**: `"markpage": "^0.5.2"` (in dependencies)
 - **Local version**: Symlinked to `../markpage` (via npm link)
 
 ## Testing the Published Package

@@ -30,7 +30,7 @@
     "dev:local": "npm run link:local && npm run dev",
     "dev:published": "npm run unlink:local && npm run dev",
     "link:local": "npm link markpage",
-    "unlink:local": "npm unlink markpage && npm install markpage@^0.5.1"
+    "unlink:local": "npm unlink markpage && npm install markpage@^0.5.2"
   },
   "peerDependencies": {
     "svelte": "^5.38.6"
@@ -59,7 +59,7 @@
     "url": "https://github.com/mitkury/markpage"
   },
   "dependencies": {
-    "markpage": "^0.5.1",
+    "markpage": "^0.5.2",
     "marked": "^16.2.1"
   }
 }
