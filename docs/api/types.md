@@ -66,6 +66,7 @@ interface BuildOptions {
   staticOutput?: string;
   includeContent?: boolean;
   autoDiscover?: boolean;
+  contentMode?: 'all' | 'index-only';
   linkCheck?:
     | boolean
     | {
@@ -81,6 +82,7 @@ interface BuildOptions {
 - `staticOutput` (string, optional): Directory for static site output
 - `includeContent` (boolean, optional): Whether to include content in output bundles
 - `autoDiscover` (boolean, optional): Enable auto-discovery when `.index.json` is missing
+- `contentMode` ('all' | 'index-only', optional): Choose which markdown files to bundle; `'all'` includes every markdown file, `'index-only'` limits to the `.index.json` entries (default: `'all'`)
 - `linkCheck` (boolean | object, optional): Check internal markdown links (local files) during build
 
 ### StaticSiteOptions
@@ -424,6 +426,7 @@ const BuildOptionsSchema = z.object({
   websiteOutput: z.string().optional(),
   staticOutput: z.string().optional(),
   includeContent: z.boolean().optional(),
+  contentMode: z.enum(['all', 'index-only']).optional(),
   processor: z.object({
     process: z.function().args(z.string()).returns(z.string())
   }).optional(),

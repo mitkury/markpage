@@ -31,6 +31,8 @@ const result = await buildPages('./docs', {
 });
 ```
 
+By default the generated content bundle includes every markdown file found under the content directory, even if the file is not listed in `.index.json`. The navigation tree still follows the structure in `.index.json`, so you can reference extra pages inside articles while keeping the menu opinionated. Set `contentMode: 'index-only'` if you only want to bundle the files referenced in the `.index.json` structure.
+
 ### `generateStaticSite(contentPath, outputPath, options?)`
 
 Generates a complete static HTML site from markdown content.
@@ -66,6 +68,7 @@ interface BuildOptions {
   staticOutput?: string;
   includeContent?: boolean;
   autoDiscover?: boolean;
+  contentMode?: 'all' | 'index-only';
   linkCheck?:
     | boolean
     | {
@@ -81,6 +84,7 @@ interface BuildOptions {
 - `staticOutput` (string, optional): Directory for static site output
 - `includeContent` (boolean, optional): Whether to include content in output bundles (default: false)
 - `autoDiscover` (boolean, optional): Enable auto-discovery when `.index.json` is missing
+- `contentMode` (`'all' | 'index-only'`, optional): Choose which markdown files to include in the content bundle (`'all'` includes every markdown file in the directory, `'index-only'` limits to files referenced in `.index.json`; defaults to `'all'`)
 - `linkCheck` (boolean | object, optional): Enable internal link checking during build
 
 ### Link Checking

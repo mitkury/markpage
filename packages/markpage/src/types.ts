@@ -47,6 +47,8 @@ export interface NavigationItem extends DocItem {
   parent?: NavigationItem | undefined;
 }
 
+export type ContentMode = 'all' | 'index-only';
+
 // Build output types
 export interface BuildOptions {
   appOutput?: string;
@@ -54,6 +56,12 @@ export interface BuildOptions {
   staticOutput?: string;
   includeContent?: boolean;
   autoDiscover?: boolean; // Enable auto-discovery when .index.json is missing
+  /**
+   * Choose which markdown files to bundle:
+   * - `'all'` (default): include every markdown file under the content directory.
+   * - `'index-only'`: bundle only the files referenced in the generated navigation tree (aka `.index.json` entries).
+   */
+  contentMode?: ContentMode;
   /**
    * Optional link checking during build (off by default).
    *

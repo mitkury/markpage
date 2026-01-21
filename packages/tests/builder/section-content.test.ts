@@ -39,6 +39,7 @@ describe('Section Content Bundling', () => {
     writeFileSync(join(contentDir, 'getting-started.md'), '# Getting Started\n\nWelcome to the documentation!');
     writeFileSync(join(guidesDir, 'installation.md'), '# Installation\n\nFollow these steps to install.');
     writeFileSync(join(guidesDir, 'README.md'), '# Guides Overview\n\nThis section contains various guides.');
+    writeFileSync(join(contentDir, 'extra.md'), '# Extra Content\n\nThis page is not referenced in the navigation.');
   });
 
   afterEach(() => {
@@ -65,5 +66,26 @@ describe('Section Content Bundling', () => {
     expect(result.content!['guides/README.md']).toBe('# Guides Overview\n\nThis section contains various guides.');
     expect(result.content!['getting-started.md']).toBe('# Getting Started\n\nWelcome to the documentation!');
     expect(result.content!['guides/installation.md']).toBe('# Installation\n\nFollow these steps to install.');
+  });
+
+  it('should include every markdown file by default when bundling content', async () => {
+    const result = await buildPages(contentDir, {
+      appOutput: outputDir,
+      includeContent: true
+    });
+
+    expect(result.content).toBeDefined();
+    expect(result.content!['extra.md']).toBe('# Extra Content\n\nThis page is not referenced in the navigation.');
+  });
+
+  it('should limit bundled content to navigation entries when requested', async () => {
+    const result = await buildPages(contentDir, {
+      appOutput: outputDir,
+      includeContent: true,
+      contentMode: 'index-only'
+    });
+
+    expect(result.content).toBeDefined();
+    expect(result.content!['extra.md']).toBeUndefined();
   });
 });

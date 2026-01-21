@@ -1,5 +1,5 @@
-import { readFileSync, writeFileSync, mkdirSync } from 'fs';
-import { join, dirname } from 'path';
+import { readFileSync, writeFileSync, mkdirSync, readdirSync } from 'fs';
+import { join, dirname, relative } from 'path';
 import { marked } from 'marked';
 import { buildNavigationTree, validateContentStructure } from './parser.js';
 import { BuildOptions, BuildResult, NavigationItem, ContentProcessor } from '../types.js';
@@ -30,7 +30,7 @@ export async function buildPages(
     // Bundle markdown content if requested
     let content: ContentBundle | undefined;
     if (options.includeContent !== false) {
-      content = bundleMarkdownContent(navigation, contentPath);
+      content = bundleMarkdownContent(navigation, contentPath, options);
     }
 
     // Optional link checking (warnings-only unless failOnBroken is set)
@@ -79,10 +79,21 @@ export async function buildPages(
 
 function bundleMarkdownContent(
   navigation: NavigationItem[],
+  basePath: string,
+  options: BuildOptions
+): ContentBundle {
+  const mode = options.contentMode || 'all';
+  return mode === 'index-only'
+    ? bundleNavigationContent(navigation, basePath)
+    : bundleAllMarkdownContent(basePath);
+}
+
+function bundleNavigationContent(
+  navigation: NavigationItem[],
   basePath: string
 ): ContentBundle {
   const content: ContentBundle = {};
-  
+
   function processItems(items: NavigationItem[]): void {
     for (const item of items) {
       if (item.type === 'page' && item.path) {
@@ -109,14 +120,58 @@ function bundleMarkdownContent(
           );
         }
       }
-      
+
       if (item.items) {
         processItems(item.items);
       }
     }
   }
-  
+
   processItems(navigation);
+  return content;
+}
+
+function bundleAllMarkdownContent(basePath: string): ContentBundle {
+  const content: ContentBundle = {};
+
+  function walk(directory: string): void {
+    let entries;
+    try {
+      entries = readdirSync(directory, { withFileTypes: true });
+    } catch (error) {
+      throw new BuilderError(
+        `Failed to read directory: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        directory
+      );
+    }
+
+    for (const entry of entries) {
+      const entryPath = join(directory, entry.name);
+
+      if (entry.isDirectory()) {
+        if (entry.name.startsWith('.')) {
+          continue;
+        }
+        walk(entryPath);
+        continue;
+      }
+
+      if (entry.isFile() && entry.name.endsWith('.md')) {
+        const relativePath = relative(basePath, entryPath);
+        try {
+          const markdownContent = readFileSync(entryPath, 'utf-8');
+          content[relativePath] = markdownContent;
+        } catch (error) {
+          throw new BuilderError(
+            `Failed to read markdown file: ${error instanceof Error ? error.message : 'Unknown error'}`,
+            entryPath
+          );
+        }
+      }
+    }
+  }
+
+  walk(basePath);
   return content;
 }
 
